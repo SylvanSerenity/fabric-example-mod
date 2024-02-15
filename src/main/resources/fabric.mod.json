@@ -1,31 +1,29 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "presence",
 	"version": "${version}",
-	"name": "Example mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Presence",
+	"description": "A presence lingers in the darkness. Its unseen gaze fills you with dread. You are being watched.",
 	"authors": [
-		"Me!"
+		"SylvanSerenity"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
+	"license": "MIT-0",
+	"icon": "assets/presence/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.ExampleMod"
+			"com.sylvan.Presence"
 		],
 		"client": [
-			"com.example.ExampleModClient"
+			"com.sylvan.PresenceClient"
 		]
 	},
 	"mixins": [
-		"modid.mixins.json",
+		"presence.mixins.json",
 		{
-			"config": "modid.client.mixins.json",
+			"config": "presence.client.mixins.json",
 			"environment": "client"
 		}
 	],
