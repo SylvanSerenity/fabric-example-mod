@@ -7,10 +7,7 @@ import java.util.concurrent.TimeUnit;
 import com.sylvan.Presence;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.TypedActionResult;
 
 public class Events {
 	public static ScheduledExecutorService scheduler;
@@ -35,10 +32,5 @@ public class Events {
 				Footsteps.scheduleEvent(serverPlayNetworkHandler.getPlayer());
 			});
 		}
-
-		// Test event
-		UseItemCallback.EVENT.register((player, world, hand) -> {
-			return TypedActionResult.pass(ItemStack.EMPTY);
-		});
 	}
 }
