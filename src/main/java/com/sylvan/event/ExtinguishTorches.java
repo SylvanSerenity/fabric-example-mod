@@ -68,9 +68,9 @@ public class ExtinguishTorches {
 			for (BlockPos torchPos : torchStack) {
 				block = world.getBlockState(torchPos).getBlock();
 				if (
-					((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) &&	// The block is a torch
-					(world.getLightLevel(LightType.SKY, player.getBlockPos()) > 0) &&		// Player is above ground
-					!blockCanBeSeen(world.getPlayers(), torchPos)			// Player cannot see the torches being removed
+					((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) &&		// The block is a torch
+					(world.getLightLevel(LightType.SKY, player.getBlockPos()) > 0) &&	// Player is above ground
+					!blockCanBeSeen(world.getPlayers(), torchPos)				// Player cannot see the torches being removed
 				) {
 					world.removeBlock(torchPos, false);
 				}
