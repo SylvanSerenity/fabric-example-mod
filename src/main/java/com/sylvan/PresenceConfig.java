@@ -9,13 +9,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class PresenceConfig {
-	public int footstepsMinDelay = 60 * 15;
-	public int footstepsMaxDelay = 60 * 60 * 2;
-	public int footstepsReflexTime = 500;
+	public int footstepsDelayMin = 60 * 45;
+	public int footstepsDelayMax = 60 * 60 * 3;
+	public int footstepsReflexMs = 500;
 	public int footstepsMaxReflexVariance = 150;
-	public int footstepsMinSteps = 1;
-	public int footstepsMaxSteps = 5;
-	public int footstepsMaxStepVariance = 25;
+	public int footstepsStepsMin = 1;
+	public int footstepsStepsMax = 5;
+	public int footstepsStepVarianceMax = 25;
 
 	public static PresenceConfig loadConfig() {
 		Gson gson = new Gson();

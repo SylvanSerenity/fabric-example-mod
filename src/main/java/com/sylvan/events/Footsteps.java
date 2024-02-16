@@ -14,20 +14,20 @@ import net.minecraft.world.World;
 public class Footsteps {
 	public static void scheduleEvent(final PlayerEntity player) {
 		Presence.scheduler.schedule(() -> {
-			generateFootsteps(player, Presence.RANDOM.nextBetween(Presence.config.footstepsMinSteps, Presence.config.footstepsMaxSteps));
+			generateFootsteps(player, Presence.RANDOM.nextBetween(Presence.config.footstepsStepsMin, Presence.config.footstepsStepsMax));
 			scheduleEvent(player);
-		}, Presence.RANDOM.nextBetween(Presence.config.footstepsMinDelay, Presence.config.footstepsMaxDelay), TimeUnit.SECONDS);
+		}, Presence.RANDOM.nextBetween(Presence.config.footstepsDelayMin, Presence.config.footstepsDelayMax), TimeUnit.SECONDS);
 	}
 
 	public static void generateFootsteps(final PlayerEntity player, final int footstepCount) {
-		final int msPerStep = (Presence.config.footstepsReflexTime + Presence.RANDOM.nextBetween(0, Presence.config.footstepsMaxReflexVariance)) / footstepCount;
+		final int msPerStep = (Presence.config.footstepsReflexMs + Presence.RANDOM.nextBetween(0, Presence.config.footstepsMaxReflexVariance)) / footstepCount;
 
 		final BlockPos blockPos = player.getBlockPos().offset(Direction.DOWN);
 		final Direction behindPlayer = player.getHorizontalFacing().getOpposite();
 		int delay;
 		// Play footstep on each block approaching the player
 		for (int distance = footstepCount; distance > 0; --distance) {
-			delay = (footstepCount - distance) * msPerStep + Presence.RANDOM.nextBetween(0, Presence.config.footstepsMaxStepVariance);
+			delay = (footstepCount - distance) * msPerStep + Presence.RANDOM.nextBetween(0, Presence.config.footstepsStepVarianceMax);
 			final int blockDistance = distance;
 			Presence.scheduler.schedule(() -> {
 				playFootstep(player, blockPos.offset(behindPlayer, blockDistance));
