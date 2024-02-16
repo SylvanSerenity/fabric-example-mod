@@ -21,6 +21,7 @@ public class Presence implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("presence");
 	public static final Random RANDOM = Random.create();
 	public static ScheduledExecutorService scheduler;
+	public static PresenceConfig config;
 
 	@Override
 	public void onInitialize() {
@@ -28,13 +29,16 @@ public class Presence implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+		// Load/save config
+		config = PresenceConfig.loadConfig();
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			config.saveConfig();
+		}));
+
+		// Start/stop scheduler with server
 		ServerLifecycleEvents.SERVER_STARTING.register((serverStarting) -> {
 			scheduler = Executors.newSingleThreadScheduledExecutor();
 		});
-		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
-			Footsteps.scheduleEvent(serverPlayNetworkHandler.getPlayer());
-		});
-
 		ServerLifecycleEvents.SERVER_STOPPING.register((serverStopping) -> {
 			scheduler.shutdown();
 			try {
@@ -42,6 +46,11 @@ public class Presence implements ModInitializer {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		});
+
+		// Schedule footstep event on player join
+		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
+			Footsteps.scheduleEvent(serverPlayNetworkHandler.getPlayer());
 		});
 
 		LOGGER.info("Presence loaded.");

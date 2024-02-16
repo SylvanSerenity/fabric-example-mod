@@ -12,31 +12,22 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class Footsteps {
-	// TODO Config
-	public static final int MIN_SECONDS_BETWEEN_FOOTSTEPS = 60 * 15;
-	public static final int MAX_SECONDS_BETWEEN_FOOTSTEPS = 60 * 60 * 2;
-	public static final int REFLEX_TIME = 500;
-	public static final int MAX_REFLEX_VARIANCE = 150;
-	public static final int MIN_STEPS = 1;
-	public static final int MAX_STEPS = 5;
-	public static final int MAX_STEP_VARIANCE = 25;
-
 	public static void scheduleEvent(final PlayerEntity player) {
 		Presence.scheduler.schedule(() -> {
-			generateFootsteps(player, Presence.RANDOM.nextBetween(MIN_STEPS, MAX_STEPS));
+			generateFootsteps(player, Presence.RANDOM.nextBetween(Presence.config.footstepsMinSteps, Presence.config.footstepsMaxSteps));
 			scheduleEvent(player);
-		}, Presence.RANDOM.nextBetween(MIN_SECONDS_BETWEEN_FOOTSTEPS, MAX_SECONDS_BETWEEN_FOOTSTEPS), TimeUnit.SECONDS);
+		}, Presence.RANDOM.nextBetween(Presence.config.footstepsMinDelay, Presence.config.footstepsMaxDelay), TimeUnit.SECONDS);
 	}
 
 	public static void generateFootsteps(final PlayerEntity player, final int footstepCount) {
-		final int msPerStep = (REFLEX_TIME + Presence.RANDOM.nextBetween(0, MAX_REFLEX_VARIANCE)) / footstepCount;
+		final int msPerStep = (Presence.config.footstepsReflexTime + Presence.RANDOM.nextBetween(0, Presence.config.footstepsMaxReflexVariance)) / footstepCount;
 
 		final BlockPos blockPos = player.getBlockPos().offset(Direction.DOWN);
 		final Direction behindPlayer = player.getHorizontalFacing().getOpposite();
 		int delay;
 		// Play footstep on each block approaching the player
 		for (int distance = footstepCount; distance > 0; --distance) {
-			delay = (footstepCount - distance) * msPerStep + Presence.RANDOM.nextBetween(0, MAX_STEP_VARIANCE);
+			delay = (footstepCount - distance) * msPerStep + Presence.RANDOM.nextBetween(0, Presence.config.footstepsMaxStepVariance);
 			final int blockDistance = distance;
 			Presence.scheduler.schedule(() -> {
 				playFootstep(player, blockPos.offset(behindPlayer, blockDistance));
