@@ -2,6 +2,8 @@ package com.sylvan.event;
 
 import java.util.*;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -36,11 +38,14 @@ public class ExtinguishTorches {
 		final DimensionType playerDimension = world.getDimension();
 		DimensionType torchDimension;
 		BlockPos torchPos;
+		Block block;
 		for (Map.Entry<DimensionType, BlockPos> torch : torchPlacementMap.get(player.getUuid())) {
 			torchDimension = torch.getKey();
 			torchPos = torch.getValue();
+			block = world.getBlockState(torchPos).getBlock();
 			if (
 				playerDimension == torchDimension &&
+				((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) &&
 				!playerCanSeeBlock(player, torchPos)
 			) {
 				world.removeBlock(torchPos, false);
