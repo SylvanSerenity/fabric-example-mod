@@ -14,7 +14,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.storage.LevelStorage;
 
 public class ExtinguishTorches {
-	public static Map<UUID, List<Map.Entry<DimensionType, BlockPos>>> torchPlacementMap = new HashMap<>();
+	public static Map<UUID, Stack<Map.Entry<DimensionType, BlockPos>>> torchPlacementMap = new HashMap<>();
 
 	public static void loadSaveData(LevelStorage.Session session) {
 		// TODO
@@ -26,7 +26,7 @@ public class ExtinguishTorches {
 	}
 
 	public static void startTrackingTorches(final PlayerEntity player) {
-		torchPlacementMap.put(player.getUuid(), new ArrayList<>());
+		torchPlacementMap.put(player.getUuid(), new Stack<>());
 	}
 
 	public static void removeTrackedTorches(final PlayerEntity player) {
@@ -37,7 +37,8 @@ public class ExtinguishTorches {
 		DimensionType torchDimension;
 		BlockPos torchPos;
 		Block block;
-		for (Map.Entry<DimensionType, BlockPos> torch : torchPlacementMap.get(player.getUuid())) {
+		final Stack<Map.Entry<DimensionType, BlockPos>> torchStack = torchPlacementMap.get(player.getUuid());
+		for (Map.Entry<DimensionType, BlockPos> torch : torchStack) {
 			torchDimension = torch.getKey();
 			torchPos = torch.getValue();
 			block = world.getBlockState(torchPos).getBlock();
@@ -50,6 +51,7 @@ public class ExtinguishTorches {
 			}
 		}
 
+		torchStack.clear();
 		torchPlacementMap.remove(player.getUuid());
 	}
 

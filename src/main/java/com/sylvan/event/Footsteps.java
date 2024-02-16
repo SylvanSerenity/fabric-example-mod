@@ -20,11 +20,13 @@ public class Footsteps {
 	}
 
 	public static void generateFootsteps(final PlayerEntity player, final int footstepCount) {
-		final int msPerStep = (footstepCount > 2) ?
+		final int msPerStep = (
+			(footstepCount > 2) ?
 			Math.min(
 				(Presence.config.footstepsReflexMs + Presence.RANDOM.nextBetween(0, Presence.config.footstepsMaxReflexVariance)) / footstepCount,
 				Presence.config.footstepsMsPerStepMax
-			) : (Presence.config.footstepsReflexMs + Presence.RANDOM.nextBetween(0, Presence.config.footstepsMaxReflexVariance)) / footstepCount;
+			) : (Presence.config.footstepsReflexMs + Presence.RANDOM.nextBetween(0, Presence.config.footstepsMaxReflexVariance)) / footstepCount
+		);
 
 		final BlockPos blockPos = player.getBlockPos().offset(Direction.DOWN);
 		final Direction behindPlayer = player.getHorizontalFacing().getOpposite();
