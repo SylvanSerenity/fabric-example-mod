@@ -44,6 +44,8 @@ public class ExtinguishTorches {
 			if (torchPlacementMap.containsKey(player.getUuid()) && !ExtinguishTorches.extinguishTrackedTorches(player)) {
 				// Wait for torches to be placed if first try yielded no results
 				scheduleExtinguish(player);
+			} else if (!player.isRemoved()) {
+				scheduleTracking(player);
 			}
 		}, Presence.config.extinguishTorchesExtinguishTryInterval, TimeUnit.SECONDS);
 	}
