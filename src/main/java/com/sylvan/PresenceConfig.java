@@ -20,7 +20,7 @@ public class PresenceConfig {
 	public int footstepsStepVarianceMax = 25;
 
 	public boolean extinguishTorchesEnabled = true;
-	public int extinguishTorchesTrackedMax = 64;
+	public int extinguishTorchesTrackedMax = 32;
 	public int extinguishTorchesTorchDistanceMax = 32;
 	public int extinguishTorchesExtinguishTryInterval = 60 * 5;
 	public int extinguishTorchesTrackIntervalMin = 60 * 60 * 2;

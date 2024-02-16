@@ -23,18 +23,10 @@ public class Presence implements ModInitializer {
 		// Proceed with mild caution.
 		LOGGER.info("Presence loading...");
 
-		initConfig();
+		config = PresenceConfig.loadConfig();
 		Events.registerEvents();
 		Commands.registerCommands();
 
 		LOGGER.info("Presence loaded.");
-	}
-
-	private void initConfig() {
-		// Load/save config
-		config = PresenceConfig.loadConfig();
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			config.saveConfig();
-		}));
 	}
 }
