@@ -2,6 +2,7 @@ package com.sylvan;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -19,7 +20,7 @@ public class Presence implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger("presence");
 	public static final Random RANDOM = Random.create();
-	public static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor();
+	public static ScheduledExecutorService scheduler;
 
 	@Override
 	public void onInitialize() {
@@ -27,12 +28,20 @@ public class Presence implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+		ServerLifecycleEvents.SERVER_STARTING.register((serverStarting) -> {
+			scheduler = Executors.newSingleThreadScheduledExecutor();
+		});
 		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
 			Footsteps.scheduleEvent(serverPlayNetworkHandler.getPlayer());
 		});
 
 		ServerLifecycleEvents.SERVER_STOPPING.register((serverStopping) -> {
-			SCHEDULER.shutdown();
+			scheduler.shutdown();
+			try {
+				scheduler.awaitTermination(1000, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		});
 
 		LOGGER.info("Presence loaded.");
