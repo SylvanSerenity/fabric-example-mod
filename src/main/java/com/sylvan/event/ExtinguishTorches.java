@@ -1,64 +1,97 @@
 package com.sylvan.event;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+
+import com.sylvan.Presence;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.LightType;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.level.storage.LevelStorage;
 
 public class ExtinguishTorches {
-	public static Map<UUID, Stack<Map.Entry<DimensionType, BlockPos>>> torchPlacementMap = new HashMap<>();
+	public static Map<UUID, Map.Entry<DimensionType, Stack<BlockPos>>> torchPlacementMap = new HashMap<>();
 
-	public static void loadSaveData(LevelStorage.Session session) {
-		// TODO
-	}
-
-	public static void scheduleEvent() {
-		// TODO Schedule torch placement tracking
-		// TODO Schedule removal of torches
+	public static void scheduleTracking(final PlayerEntity player) {
+		Events.scheduler.schedule(() -> {
+				ExtinguishTorches.startTrackingTorches(player);
+			},
+			Presence.RANDOM.nextBetween(
+				Presence.config.extinguishTorchesTrackIntervalMin,
+				Presence.config.extinguishTorchesTrackIntervalMax
+			),
+			TimeUnit.SECONDS
+		);
 	}
 
 	public static void startTrackingTorches(final PlayerEntity player) {
-		torchPlacementMap.put(player.getUuid(), new Stack<>());
-	}
-
-	public static void removeTrackedTorches(final PlayerEntity player) {
-		if (!torchPlacementMap.containsKey(player.getUuid()));
-
-		final World world = player.getWorld();
-		final DimensionType playerDimension = world.getDimension();
-		DimensionType torchDimension;
-		BlockPos torchPos;
-		Block block;
-		final Stack<Map.Entry<DimensionType, BlockPos>> torchStack = torchPlacementMap.get(player.getUuid());
-		for (Map.Entry<DimensionType, BlockPos> torch : torchStack) {
-			torchDimension = torch.getKey();
-			torchPos = torch.getValue();
-			block = world.getBlockState(torchPos).getBlock();
-			if (
-				playerDimension == torchDimension &&
-				((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) &&
-				!playerCanSeeBlock(player, torchPos)
-			) {
-				world.removeBlock(torchPos, false);
-			}
+		if (!player.isRemoved()) {
+			torchPlacementMap.put(player.getUuid(), new AbstractMap.SimpleEntry<>(player.getWorld().getDimension(), new Stack<>()));
+			scheduleExtinguish(player);
 		}
-
-		torchStack.clear();
-		torchPlacementMap.remove(player.getUuid());
 	}
 
-	public static boolean playerCanSeeBlock(final PlayerEntity player, final BlockPos blockPos) {
-		Vec3d vec3d = new Vec3d(player.getX(), player.getEyeY(), player.getZ());
-		Vec3d vec3d2 = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-		if (vec3d2.distanceTo(vec3d) > 128.0) return false;
-		return player.getWorld().raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, player)).getType() == HitResult.Type.MISS;
+	public static void scheduleExtinguish(final PlayerEntity player) {
+		Events.scheduler.schedule(() -> {
+			if (torchPlacementMap.containsKey(player.getUuid()) && !ExtinguishTorches.extinguishTrackedTorches(player)) {
+				// Wait for torches to be placed if first try yielded no results
+				scheduleExtinguish(player);
+			}
+		}, Presence.config.extinguishTorchesExtinguishTryInterval, TimeUnit.SECONDS);
+	}
+
+	public static boolean extinguishTrackedTorches(final PlayerEntity player) {
+		if (!player.isRemoved()) {
+			// Player must be tracked
+			if (!torchPlacementMap.containsKey(player.getUuid())) return false;
+
+			final Map.Entry<DimensionType, Stack<BlockPos>> entry = torchPlacementMap.get(player.getUuid());
+			final Stack<BlockPos> torchStack = entry.getValue();
+			final World world = player.getWorld();
+			// Player must be in same dimension
+			if (entry.getKey() != world.getDimension()) {
+				torchStack.clear();
+				torchPlacementMap.remove(player.getUuid());
+				return false;
+			}
+			if (torchStack.empty()) return false;
+
+			Block block;
+			for (BlockPos torchPos : torchStack) {
+				block = world.getBlockState(torchPos).getBlock();
+				if (
+					((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) &&	// The block is a torch
+					(world.getLightLevel(LightType.SKY, player.getBlockPos()) > 0) &&		// Player is above ground
+					!blockCanBeSeen(world.getPlayers(), torchPos)			// Player cannot see the torches being removed
+				) {
+					world.removeBlock(torchPos, false);
+				}
+			}
+
+			torchStack.clear();
+		}
+		torchPlacementMap.remove(player.getUuid());
+		return true;
+	}
+
+	public static boolean blockCanBeSeen(final List<? extends PlayerEntity> players, final BlockPos blockPos) {
+		for (PlayerEntity player : players) {
+			Vec3d vec3d = new Vec3d(player.getX(), player.getEyeY(), player.getZ());
+			Vec3d vec3d2 = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+			if (vec3d2.distanceTo(vec3d) > 128.0) continue;
+			if (player.getWorld().raycast(
+					new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, player)
+				).getType() != HitResult.Type.BLOCK
+			) return true;
+		}
+		return false;
 	}
 }

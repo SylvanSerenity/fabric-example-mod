@@ -14,12 +14,19 @@ import net.minecraft.world.World;
 public class Footsteps {
 	public static void scheduleEvent(final PlayerEntity player) {
 		Events.scheduler.schedule(() -> {
-			generateFootsteps(player, Presence.RANDOM.nextBetween(Presence.config.footstepsStepsMin, Presence.config.footstepsStepsMax));
-			scheduleEvent(player);
-		}, Presence.RANDOM.nextBetween(Presence.config.footstepsDelayMin, Presence.config.footstepsDelayMax), TimeUnit.SECONDS);
+				generateFootsteps(player, Presence.RANDOM.nextBetween(Presence.config.footstepsStepsMin, Presence.config.footstepsStepsMax));
+				scheduleEvent(player);
+			},
+			Presence.RANDOM.nextBetween(
+				Presence.config.footstepsDelayMin,
+				Presence.config.footstepsDelayMax
+			), TimeUnit.SECONDS
+		);
 	}
 
 	public static void generateFootsteps(final PlayerEntity player, final int footstepCount) {
+		if (player.isRemoved()) return;
+
 		final int msPerStep = (
 			(footstepCount > 2) ?
 			Math.min(

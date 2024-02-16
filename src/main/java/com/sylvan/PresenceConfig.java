@@ -20,7 +20,11 @@ public class PresenceConfig {
 	public int footstepsStepVarianceMax = 25;
 
 	public boolean extinguishTorchesEnabled = true;
-	public int extinguishTorchesMax = 32;
+	public int extinguishTorchesTrackedMax = 64;
+	public int extinguishTorchesTorchDistanceMax = 32;
+	public int extinguishTorchesExtinguishTryInterval = 60 * 5;
+	public int extinguishTorchesTrackIntervalMin = 60 * 60 * 2;
+	public int extinguishTorchesTrackIntervalMax = 60 * 60 * 5;
 
 	public static PresenceConfig loadConfig() {
 		Gson gson = new Gson();

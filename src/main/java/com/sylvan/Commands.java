@@ -68,7 +68,7 @@ public class Commands {
 								context.getSource().sendFeedback(() -> Text.literal(
 									"Extinguished tracked torches for " + player.getName().getString() + "."
 								).withColor(Formatting.BLUE.getColorValue()), false);
-								ExtinguishTorches.removeTrackedTorches(player);
+								ExtinguishTorches.extinguishTrackedTorches(player);
 							} else {
 								context.getSource().sendFeedback(() -> Text.literal("Player is not being tracked for torch placements.").withColor(Formatting.RED.getColorValue()), false);
 							}
@@ -120,7 +120,7 @@ public class Commands {
 									context.getSource().sendFeedback(() -> Text.literal(
 										"Extinguished tracked torches for " + player.getName().getString() + "."
 									).withColor(Formatting.BLUE.getColorValue()), false);
-									ExtinguishTorches.removeTrackedTorches(player);
+									ExtinguishTorches.extinguishTrackedTorches(player);
 								} else {
 									context.getSource().sendFeedback(() -> Text.literal("Player is not being tracked for torch placements.").withColor(Formatting.RED.getColorValue()), false);
 								}
@@ -138,7 +138,7 @@ public class Commands {
 									context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.RED.getColorValue()), false);
 								} else if (ExtinguishTorches.torchPlacementMap.containsKey(player.getUuid())) {
 									context.getSource().sendFeedback(() -> Text.literal("Extinguished torches for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-									ExtinguishTorches.removeTrackedTorches(player);
+									ExtinguishTorches.extinguishTrackedTorches(player);
 								} else {
 									context.getSource().sendFeedback(() -> Text.literal("Player is not being tracked for torch placements.").withColor(Formatting.RED.getColorValue()), false);
 								}
