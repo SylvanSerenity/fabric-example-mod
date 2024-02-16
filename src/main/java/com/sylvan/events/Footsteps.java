@@ -1,5 +1,9 @@
 package com.sylvan.events;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -8,13 +12,24 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class Footsteps {
+	public static final int REFLEX_TIME = 500;
+	public static final int MIN_STEPS = 1;
+	public static final int MAX_STEPS = 10;
+
 	public static void generateFootsteps(final PlayerEntity player, final int footstepCount) {
+		final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+		final int msPerStep = REFLEX_TIME / footstepCount;
+
 		final BlockPos blockPos = player.getBlockPos().offset(Direction.DOWN);
 		final Direction behindPlayer = player.getHorizontalFacing().getOpposite();
+		int delay;
 		// Play footstep on each block approaching the player
 		for (int distance = footstepCount; distance > 0; --distance) {
-			playFootstep(player, blockPos.offset(behindPlayer, distance));
-			// TODO Wait one tick
+			delay = (footstepCount - distance) * msPerStep;
+			final int blockDistance = distance;
+			scheduler.schedule(() -> {
+				playFootstep(player, blockPos.offset(behindPlayer, blockDistance));
+			}, delay, TimeUnit.MILLISECONDS);
 		}
 	}
 
