@@ -1,7 +1,5 @@
 package com.sylvan.events;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.sylvan.Presence;
@@ -14,14 +12,23 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class Footsteps {
+	// TODO Config
+	public static final int MIN_SECONDS_BETWEEN_FOOTSTEPS = 60 * 45;
+	public static final int MAX_SECONDS_BETWEEN_FOOTSTEPS = 60 * 60 * 2;
 	public static final int REFLEX_TIME = 500;
 	public static final int MAX_REFLEX_VARIANCE = 150;
 	public static final int MIN_STEPS = 1;
 	public static final int MAX_STEPS = 5;
 	public static final int MAX_STEP_VARIANCE = 25;
 
+	public static void scheduleEvent(final PlayerEntity player) {
+		Presence.SCHEDULER.schedule(() -> {
+			generateFootsteps(player, Presence.RANDOM.nextBetween(MIN_STEPS, MAX_STEPS));
+			scheduleEvent(player);
+		}, Presence.RANDOM.nextBetween(MIN_SECONDS_BETWEEN_FOOTSTEPS, MAX_SECONDS_BETWEEN_FOOTSTEPS), TimeUnit.SECONDS);
+	}
+
 	public static void generateFootsteps(final PlayerEntity player, final int footstepCount) {
-		final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 		final int msPerStep = (REFLEX_TIME + Presence.RANDOM.nextBetween(0, MAX_REFLEX_VARIANCE)) / footstepCount;
 
 		final BlockPos blockPos = player.getBlockPos().offset(Direction.DOWN);
@@ -31,7 +38,7 @@ public class Footsteps {
 		for (int distance = footstepCount; distance > 0; --distance) {
 			delay = (footstepCount - distance) * msPerStep + Presence.RANDOM.nextBetween(0, MAX_STEP_VARIANCE);
 			final int blockDistance = distance;
-			scheduler.schedule(() -> {
+			Presence.SCHEDULER.schedule(() -> {
 				playFootstep(player, blockPos.offset(behindPlayer, blockDistance));
 			}, delay, TimeUnit.MILLISECONDS);
 		}

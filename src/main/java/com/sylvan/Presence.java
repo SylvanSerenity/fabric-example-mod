@@ -1,8 +1,11 @@
 package com.sylvan;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
-import net.minecraft.util.ActionResult;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.util.math.random.Random;
 
 import org.slf4j.Logger;
@@ -16,6 +19,7 @@ public class Presence implements ModInitializer {
 	// That way, it's clear which mod wrote info, warnings, and errors.
 	public static final Logger LOGGER = LoggerFactory.getLogger("presence");
 	public static final Random RANDOM = Random.create();
+	public static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor();
 
 	@Override
 	public void onInitialize() {
@@ -23,11 +27,12 @@ public class Presence implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		// TODO Register on-player-join events
+		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
+			Footsteps.scheduleEvent(serverPlayNetworkHandler.getPlayer());
+		});
 
-		AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
-			if (!world.isClient()) Footsteps.generateFootsteps(player, RANDOM.nextBetween(Footsteps.MIN_STEPS, Footsteps.MAX_STEPS));
-			return ActionResult.PASS;
+		ServerLifecycleEvents.SERVER_STOPPING.register((serverStopping) -> {
+			SCHEDULER.shutdown();
 		});
 
 		LOGGER.info("Presence loaded.");
