@@ -12,9 +12,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public class Footsteps {
-	public static final int REFLEX_TIME = 500;
+	public static final int REFLEX_TIME = 600;
 	public static final int MIN_STEPS = 1;
-	public static final int MAX_STEPS = 10;
+	public static final int MAX_STEPS = 5;
 
 	public static void generateFootsteps(final PlayerEntity player, final int footstepCount) {
 		final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();

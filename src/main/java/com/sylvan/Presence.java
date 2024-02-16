@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.random.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ public class Presence implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		final Random random = Random.create();
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
@@ -29,7 +31,7 @@ public class Presence implements ModInitializer {
 		// TODO Register on-player-join events
 
 		AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
-			if (!world.isClient()) Footsteps.generateFootsteps(player, 3);
+			if (!world.isClient()) Footsteps.generateFootsteps(player, random.nextBetween(Footsteps.MIN_STEPS, Footsteps.MAX_STEPS));
 			return ActionResult.PASS;
 		});
 
