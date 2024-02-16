@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 public class Footsteps {
 	public static void scheduleEvent(final PlayerEntity player) {
-		Presence.scheduler.schedule(() -> {
+		Events.scheduler.schedule(() -> {
 			generateFootsteps(player, Presence.RANDOM.nextBetween(Presence.config.footstepsStepsMin, Presence.config.footstepsStepsMax));
 			scheduleEvent(player);
 		}, Presence.RANDOM.nextBetween(Presence.config.footstepsDelayMin, Presence.config.footstepsDelayMax), TimeUnit.SECONDS);
@@ -29,7 +29,7 @@ public class Footsteps {
 		for (int distance = footstepCount; distance > 0; --distance) {
 			delay = (footstepCount - distance) * msPerStep + Presence.RANDOM.nextBetween(0, Presence.config.footstepsStepVarianceMax);
 			final int blockDistance = distance;
-			Presence.scheduler.schedule(() -> {
+			Events.scheduler.schedule(() -> {
 				playFootstep(player, blockPos.offset(behindPlayer, blockDistance));
 			}, delay, TimeUnit.MILLISECONDS);
 		}
