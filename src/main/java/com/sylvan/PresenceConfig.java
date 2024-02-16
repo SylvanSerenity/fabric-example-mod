@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class PresenceConfig {
+	public boolean footstepsEnabled = true;
 	public int footstepsDelayMin = 60 * 45;
 	public int footstepsDelayMax = 60 * 60 * 3;
 	public int footstepsReflexMs = 500;
