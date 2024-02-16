@@ -28,13 +28,24 @@ public class Presence implements ModInitializer {
 		// This code runs as soon as Minecraft is in a mod-load-ready state.
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
+		LOGGER.info("Presence loading...");
 
+		initConfig();
+		initScheduler();
+		initEvents();
+
+		LOGGER.info("Presence loaded.");
+	}
+
+	private void initConfig() {
 		// Load/save config
 		config = PresenceConfig.loadConfig();
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			config.saveConfig();
 		}));
+	}
 
+	private void initScheduler() {
 		// Start/stop scheduler with server
 		ServerLifecycleEvents.SERVER_STARTING.register((serverStarting) -> {
 			scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -47,12 +58,12 @@ public class Presence implements ModInitializer {
 				e.printStackTrace();
 			}
 		});
+	}
 
+	private void initEvents() {
 		// Schedule footstep event on player join
 		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
 			Footsteps.scheduleEvent(serverPlayNetworkHandler.getPlayer());
 		});
-
-		LOGGER.info("Presence loaded.");
 	}
 }
