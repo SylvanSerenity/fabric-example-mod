@@ -21,7 +21,7 @@ public class PresenceConfig {
 		Gson gson = new Gson();
 		File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "presence.json");
 
-		// Return on empty
+		// Return default if no file is not found
 		if (!configFile.exists()) return new PresenceConfig();
 
 		try (FileReader reader = new FileReader(configFile)) {
