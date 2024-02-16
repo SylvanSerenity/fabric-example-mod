@@ -16,6 +16,7 @@ public class PresenceConfig {
 	public int footstepsMaxReflexVariance = 150;
 	public int footstepsStepsMin = 1;
 	public int footstepsStepsMax = 5;
+	public int footstepsMsPerStepMax = 300;
 	public int footstepsStepVarianceMax = 25;
 
 	public boolean extinguishTorchesEnabled = true;
@@ -25,17 +26,17 @@ public class PresenceConfig {
 		File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "presence.json");
 
 		// Return default if no file is not found
-		if (!configFile.exists()) return new PresenceConfig();
+		if (!configFile.exists()) return new PresenceConfig().saveConfig();
 
 		try (FileReader reader = new FileReader(configFile)) {
 			return gson.fromJson(reader, PresenceConfig.class);
 		} catch (IOException e) {
 			e.printStackTrace();
-			return new PresenceConfig();
+			return new PresenceConfig().saveConfig();
 		}
 	}
 
-	public void saveConfig() {
+	public PresenceConfig saveConfig() {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "presence.json");
 		try (FileWriter writer = new FileWriter(configFile)) {
@@ -43,6 +44,7 @@ public class PresenceConfig {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return this;
 	}
 	
 }

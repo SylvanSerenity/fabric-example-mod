@@ -55,7 +55,7 @@ public class Commands {
 						return 1;
 					})
 					.then(
-						literal("startTracking")
+						literal("track")
 						.executes(context -> {
 							if (context.getSource().isExecutedByPlayer()) {
 								context.getSource().sendFeedback(() -> Text.literal(
