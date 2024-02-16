@@ -1,4 +1,4 @@
-package com.sylvan.events;
+package com.sylvan.event;
 
 import java.util.concurrent.TimeUnit;
 
@@ -51,9 +51,7 @@ public class Footsteps {
 			null,
 			blockPos,
 			stepSound,
-			SoundCategory.BLOCKS,
-			1.0f,
-			1.0f
+			SoundCategory.BLOCKS
 		);
 	}
 }

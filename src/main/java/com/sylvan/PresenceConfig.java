@@ -18,6 +18,8 @@ public class PresenceConfig {
 	public int footstepsStepsMax = 5;
 	public int footstepsStepVarianceMax = 25;
 
+	public boolean extinguishTorchesEnabled = true;
+
 	public static PresenceConfig loadConfig() {
 		Gson gson = new Gson();
 		File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "presence.json");

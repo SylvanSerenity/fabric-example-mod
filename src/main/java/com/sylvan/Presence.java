@@ -6,7 +6,7 @@ import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sylvan.events.Events;
+import com.sylvan.event.Events;
 
 public class Presence implements ModInitializer {
 	// This logger is used to write text to the console and the log file.
