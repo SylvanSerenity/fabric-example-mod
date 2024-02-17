@@ -39,6 +39,15 @@ public class PresenceConfig {
 	public float nearbySoundsEatWeight = 9.5f;
 	public float nearbySoundsBreathWeight = 0.5f;
 
+	public boolean ambientSoundsEnabled = true;
+	public int ambientSoundsDelayMin = 60 * 45;
+	public int ambientSoundsDelayMax = 60 * 60 * 2;
+	public float ambientSoundsCaveWeight = 95.0f;
+	public float ambientSoundsUnderwaterRareWeight = 4.5f;
+	public float ambientSoundsUnderwaterUltraRareWeight = 0.5f;
+	public float ambientSoundsPitchMin = 0.5f;
+	public float ambientSoundsPitchMax = 1.0f;
+
 	public static PresenceConfig loadConfig() {
 		Gson gson = new Gson();
 		File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), "presence.json");

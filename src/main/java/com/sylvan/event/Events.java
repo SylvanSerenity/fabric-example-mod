@@ -21,6 +21,7 @@ public class Events {
 
 	public static void registerEvents() {
 		NearbySounds.initEvent();
+		AmbientSounds.initEvent();
 
 		// Start/stop scheduler with server
 		ServerLifecycleEvents.SERVER_STARTING.register((serverStarting) -> {
@@ -44,6 +45,7 @@ public class Events {
 				if (Presence.config.footstepsEnabled) Footsteps.scheduleEvent(player);
 				if (Presence.config.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);
 				if (Presence.config.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
+				if (Presence.config.ambientSoundsEnabled) AmbientSounds.scheduleEvent(player);
 			}
 		});
 

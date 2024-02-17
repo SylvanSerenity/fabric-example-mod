@@ -9,6 +9,7 @@ import static net.minecraft.server.command.CommandManager.*;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.sylvan.event.AmbientSounds;
 import com.sylvan.event.ExtinguishTorches;
 import com.sylvan.event.Footsteps;
 import com.sylvan.event.NearbySounds;
@@ -20,6 +21,32 @@ public class Commands {
 			.requires(source -> source.hasPermissionLevel(2))
 			.then(
 				literal("event")
+				.then(
+					literal("ambientSounds")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							context.getSource().sendFeedback(() -> Text.literal("Executing ambient sounds event.").withColor(Formatting.BLUE.getColorValue()), false);
+							AmbientSounds.playAmbientSound(context.getSource().getPlayer());
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot execute ambient sounds event on server. Please specify a player.").withColor(Formatting.RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("player", StringArgumentType.word())
+						.executes(context -> {
+							final String playerName = StringArgumentType.getString(context, "player");
+							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+							if (player == null) {
+								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.RED.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Executing ambient sounds event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+								AmbientSounds.playAmbientSound(player);
+							}
+							return 1;
+						})
+					)
+				)
 				.then(
 					literal("extinguishTorches")
 					.executes(context -> {
