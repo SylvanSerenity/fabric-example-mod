@@ -33,14 +33,14 @@ public class Config {
 		}
 	}
 
-	private <T> JsonObject setValue(JsonObject jsonObject, final String key, final T value) {
+	private <T> JsonElement setValue(JsonObject jsonObject, final String key, final T value) {
 		final Gson gson = new Gson();
 		if (jsonObject == null) {
 			jsonObject = new JsonObject();
 		}
 		jsonObject.add(key, gson.toJsonTree(value));
 		saveConfig(jsonObject);
-		return jsonObject;
+		return jsonObject.get(key);
 	}
 
 	public <T> JsonElement getOrSetValue(final String key, final T defaultValue) {
