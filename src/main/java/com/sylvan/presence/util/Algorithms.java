@@ -123,15 +123,14 @@ public class Algorithms {
 		// Move to nearest standable block
 		blockPos = getNearestStandableBlockPosTowardsPlayer(player, blockPos, maxDistanceDown, maxDistanceUp);
 
-		// Check if out of range
 		final Vec3d direction = getDirectionFromPlayer(blockPos, player);
+		final int moveDistanceX = (int) (direction.getX() * moveDistance);
+		final int moveDistanceY = (int) (direction.getY() * moveDistance);
+		final int moveDistanceZ = (int) (direction.getZ() * moveDistance);
+		// Check if out of range
 		if (blockPos.isWithinDistance(playerPos, distanceMin)) {
 			// Move farther
-			blockPos = blockPos.add(
-				(int) (direction.getX() * moveDistance),
-				(int) (direction.getY() * moveDistance),
-				(int) (direction.getZ() * moveDistance)
-			);
+			blockPos = blockPos.add(moveDistanceX, moveDistanceY, moveDistanceZ);
 			blockPos = getNearestStandableBlockPosTowardsPlayer(
 				player,
 				blockPos,
@@ -140,11 +139,19 @@ public class Algorithms {
 			);
 		} else if (!blockPos.isWithinDistance(playerPos, distanceMax)) {
 			// Move closer
-			blockPos = blockPos.add(
-				(int) (-direction.getX() * moveDistance),
-				(int) (-direction.getY() * moveDistance),
-				(int) (-direction.getZ() * moveDistance)
+			blockPos = blockPos.add(-moveDistanceX, -moveDistanceY, -moveDistanceZ);
+			blockPos = getNearestStandableBlockPosTowardsPlayer(
+				player,
+				blockPos,
+				maxDistanceDown,
+				maxDistanceUp
 			);
+		}
+
+		// Prefer distant over close sounds (in case previous move was too close)
+		if (blockPos.isWithinDistance(playerPos, distanceMin)) {
+			// Move farther
+			blockPos = blockPos.add(moveDistanceX, moveDistanceY, moveDistanceZ);
 			blockPos = getNearestStandableBlockPosTowardsPlayer(
 				player,
 				blockPos,
