@@ -23,7 +23,7 @@ public class NearbySounds {
 	protected static boolean nearbySoundsEnabled = true;
 	private static int nearbySoundsDelayMin = 60 * 45;
 	private static int nearbySoundsDelayMax = 60 * 60 * 2;
-	private static int nearbySoundsDistanceMin = 5;
+	private static int nearbySoundsDistanceMin = 8;
 	private static int nearbySoundsDistanceMax = 15;
 	private static float nearbySoundsItemPickupWeight = 45.0f;
 	private static float nearbySoundsBigFallWeight = 15.0f;
