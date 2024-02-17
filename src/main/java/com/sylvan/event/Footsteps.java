@@ -36,7 +36,7 @@ public class Footsteps {
 			) : (Presence.config.footstepsReflexMs + Presence.RANDOM.nextBetween(0, Presence.config.footstepsMaxReflexVariance)) / footstepCount
 		);
 
-		final BlockPos blockPos = player.getBlockPos().offset(Direction.DOWN);
+		final BlockPos blockPos = player.getBlockPos().down();
 		final Direction behindPlayer = player.getHorizontalFacing().getOpposite();
 		int delay;
 		// Play footstep on each block approaching the player
@@ -54,8 +54,8 @@ public class Footsteps {
 		// Test if a player could stand on source block
 		if (
 			world.getBlockState(blockPos).isAir() ||
-			!world.getBlockState(blockPos.offset(Direction.UP, 1)).isAir() ||
-			!world.getBlockState(blockPos.offset(Direction.UP, 2)).isAir()
+			!world.getBlockState(blockPos.up()).isAir() ||
+			!world.getBlockState(blockPos.up(2)).isAir()
 		) return;
 
 		// Play the sound of the block distance blocks behind the player
