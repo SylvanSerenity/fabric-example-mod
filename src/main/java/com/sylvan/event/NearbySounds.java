@@ -9,6 +9,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.World;
 
 public class NearbySounds {
 	private static final List<Map.Entry<SoundEvent, Float>> nearbySounds = new ArrayList<>();
@@ -52,9 +56,47 @@ public class NearbySounds {
 		return SoundEvents.ENTITY_FOX_SCREECH;
 	}
 
+	public static BlockPos getRandomSourceBlock(final PlayerEntity player) {
+		// Generate random direction and distance
+		final Vec3d randomDirection = new Vec3d(
+			Presence.RANDOM.nextDouble() * 2 - 1,
+			Presence.RANDOM.nextDouble() * 2 - 1,
+			Presence.RANDOM.nextDouble() * 2 - 1
+		).normalize();
+		final int distance = Presence.RANDOM.nextBetween(Presence.config.nearbySoundsDistanceMin, Presence.config.nearbySoundsDistanceMax);
+
+		// Scale the direction vector by the random distance
+		Vec3d randomOffset = randomDirection.multiply(distance);
+
+		// Add the random offset to the player's position to get a random nearby position
+		final BlockPos playerPos = player.getBlockPos();
+		Vec3i randomNearbyPos = new Vec3i(playerPos.getX(), playerPos.getY(), playerPos.getZ()).add(
+			(int) Math.floor(randomOffset.getX()),
+			(int) Math.floor(randomOffset.getY()),
+			(int) Math.floor(randomOffset.getZ())
+		);
+
+		// Ensure the position is within the world bounds
+		final World world = player.getWorld();
+
+		// Find the top solid block
+		BlockPos soundPos = new BlockPos(randomNearbyPos);
+		if (soundPos.getY() > player.getY()) {
+			while (soundPos.getY() > world.getBottomY() && world.getBlockState(soundPos).isAir()) {
+				soundPos = soundPos.down();
+			}
+		} else {
+			while (soundPos.getY() < world.getTopY() && world.getBlockState(soundPos).isAir()) {
+				soundPos = soundPos.up();
+			}
+		}
+
+		return soundPos;
+	}
+
 	public static void playNearbySound(final PlayerEntity player) {
 		if (!player.isRemoved()) {
-			player.getWorld().playSound(null, player.getBlockPos(), getRandomSound(), SoundCategory.PLAYERS);
+			player.getWorld().playSound(null, getRandomSourceBlock(player), getRandomSound(), SoundCategory.PLAYERS);
 		}
 	}
 }

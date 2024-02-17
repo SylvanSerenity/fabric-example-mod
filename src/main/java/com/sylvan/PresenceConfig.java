@@ -29,11 +29,13 @@ public class PresenceConfig {
 	public boolean nearbySoundsEnabled = true;
 	public int nearbySoundsDelayMin = 60 * 45;
 	public int nearbySoundsDelayMax = 60 * 60 * 2;
-	public float nearbySoundsItemPickupWeight = 0.55f;
-	public float nearbySoundsBigFallWeight = 0.2f;
-	public float nearbySoundsSmallFallWeight = 0.15f;
-	public float nearbySoundsEatWeight = 0.09f;
-	public float nearbySoundsBreathWeight = 0.01f;
+	public int nearbySoundsDistanceMin = 2;
+	public int nearbySoundsDistanceMax = 10;
+	public float nearbySoundsItemPickupWeight = 0.45f;
+	public float nearbySoundsBigFallWeight = 0.25f;
+	public float nearbySoundsSmallFallWeight = 0.2f;
+	public float nearbySoundsEatWeight = 0.095f;
+	public float nearbySoundsBreathWeight = 0.005f;
 
 	public static PresenceConfig loadConfig() {
 		Gson gson = new Gson();
