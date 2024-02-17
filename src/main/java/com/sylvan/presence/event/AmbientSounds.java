@@ -18,6 +18,7 @@ public class AmbientSounds {
 	private static final List<Map.Entry<SoundEvent, Float>> ambientSounds = new ArrayList<>();
 
 	// Config
+	protected static boolean ambientSoundsEnabled = true;
 	private static int ambientSoundsDelayMin = 60 * 45;
 	private static int ambientSoundsDelayMax = 60 * 60 * 2;
 	private static int ambientSoundsRetryDelay = 60;
@@ -30,6 +31,7 @@ public class AmbientSounds {
 
 	private static void loadConfig() {
 		try {
+			ambientSoundsEnabled = Presence.config.getOrSetValue("ambientSoundsEnabled", ambientSoundsEnabled).getAsBoolean();
 			ambientSoundsDelayMin = Presence.config.getOrSetValue("ambientSoundsDelayMin", ambientSoundsDelayMin).getAsInt();
 			ambientSoundsDelayMax = Presence.config.getOrSetValue("ambientSoundsDelayMax", ambientSoundsDelayMax).getAsInt();
 			ambientSoundsRetryDelay = Presence.config.getOrSetValue("ambientSoundsRetryDelay", ambientSoundsRetryDelay).getAsInt();

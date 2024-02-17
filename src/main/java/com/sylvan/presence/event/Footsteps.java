@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 
 public class Footsteps {
 	// Config
+	protected static boolean footstepsEnabled = true;
 	private static int footstepsDelayMin = 60 * 60;
 	private static int footstepsDelayMax = 60 * 60 * 4;
 	private static int footstepsReflexMs = 500;
@@ -25,6 +26,7 @@ public class Footsteps {
 
 	private static void loadConfig() {
 		try {
+			footstepsEnabled = Presence.config.getOrSetValue("footstepsEnabled", footstepsEnabled).getAsBoolean();
 			footstepsDelayMin = Presence.config.getOrSetValue("footstepsDelayMin", footstepsDelayMin).getAsInt();
 			footstepsDelayMax = Presence.config.getOrSetValue("footstepsDelayMax", footstepsDelayMax).getAsInt();
 			footstepsReflexMs = Presence.config.getOrSetValue("footstepsReflexMs", footstepsReflexMs).getAsInt();

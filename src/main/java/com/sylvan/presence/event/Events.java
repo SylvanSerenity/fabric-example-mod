@@ -26,18 +26,10 @@ public class Events {
 
 	// Config
 	private static float hauntChance = 1.0f;
-	private static boolean ambientSoundsEnabled = true;
-	private static boolean extinguishTorchesEnabled = true;
-	private static boolean footstepsEnabled = true;
-	private static boolean nearbySoundsEnabled = true;
 
 	private static void loadConfig() {
 		try {
 			hauntChance = Presence.config.getOrSetValue("hauntChance", hauntChance).getAsFloat();
-			ambientSoundsEnabled = Presence.config.getOrSetValue("ambientSoundsEnabled", ambientSoundsEnabled).getAsBoolean();
-			extinguishTorchesEnabled = Presence.config.getOrSetValue("extinguishTorchesEnabled", extinguishTorchesEnabled).getAsBoolean();
-			footstepsEnabled = Presence.config.getOrSetValue("footstepsEnabled", footstepsEnabled).getAsBoolean();
-			nearbySoundsEnabled = Presence.config.getOrSetValue("nearbySoundsEnabled", nearbySoundsEnabled).getAsBoolean();
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for Events.java. Wiping and using default default.", e);
 			Presence.config.clearConfig();
@@ -74,22 +66,22 @@ public class Events {
 			final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
 			if (Algorithms.RANDOM.nextFloat() <= hauntChance) {
 				hauntedPlayers.add(player.getUuid());
-				if (footstepsEnabled) Footsteps.scheduleEvent(player);
-				if (extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);
-				if (nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
-				if (ambientSoundsEnabled) AmbientSounds.scheduleEvent(player);
+				if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
+				if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);
+				if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
+				if (AmbientSounds.ambientSoundsEnabled) AmbientSounds.scheduleEvent(player);
 			}
 		});
 
 		// Attempt to remove torches when player disconnects
 		ServerPlayConnectionEvents.DISCONNECT.register((serverPlayNetworkHandler, server) -> {
 			final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
-			if (extinguishTorchesEnabled) ExtinguishTorches.extinguishTrackedTorches(player);
+			if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.extinguishTrackedTorches(player);
 			if (hauntedPlayers.contains(player.getUuid())) hauntedPlayers.remove(player.getUuid());
 		});
 
 		// Add torch tracker for extinguish torches event
-		if (extinguishTorchesEnabled) {
+		if (ExtinguishTorches.extinguishTorchesEnabled) {
 			UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
 				final BlockPos torchPos = hitResult.getBlockPos().offset(hitResult.getSide()); // Offset by 1 block in the direction of torch placement
 				if (

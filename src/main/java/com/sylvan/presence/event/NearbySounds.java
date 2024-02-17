@@ -20,6 +20,7 @@ public class NearbySounds {
 	private static final List<Map.Entry<SoundEvent, Float>> nearbySounds = new ArrayList<>();
 
 	// Config
+	protected static boolean nearbySoundsEnabled = true;
 	private static int nearbySoundsDelayMin = 60 * 45;
 	private static int nearbySoundsDelayMax = 60 * 60 * 2;
 	private static int nearbySoundsDistanceMin = 5;
@@ -32,6 +33,7 @@ public class NearbySounds {
 
 	private static void loadConfig() {
 		try {
+			nearbySoundsEnabled = Presence.config.getOrSetValue("nearbySoundsEnabled", nearbySoundsEnabled).getAsBoolean();
 			nearbySoundsDelayMin = Presence.config.getOrSetValue("nearbySoundsDelayMin", nearbySoundsDelayMin).getAsInt();
 			nearbySoundsDelayMax = Presence.config.getOrSetValue("nearbySoundsDelayMax", nearbySoundsDelayMax).getAsInt();
 			nearbySoundsDistanceMin = Presence.config.getOrSetValue("nearbySoundsDistanceMin", nearbySoundsDistanceMin).getAsInt();

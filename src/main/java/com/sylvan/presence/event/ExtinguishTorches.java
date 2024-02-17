@@ -22,6 +22,7 @@ public class ExtinguishTorches {
 	public static Map<UUID, Map.Entry<DimensionType, Stack<BlockPos>>> torchPlacementMap = new HashMap<>();
 
 	// Config
+	protected static boolean extinguishTorchesEnabled = true;
 	protected static int extinguishTorchesTrackedMax = 32;
 	protected static int extinguishTorchesTorchDistanceMax = 32;
 	private static int extinguishTorchesExtinguishTryInterval = 60;
@@ -30,6 +31,7 @@ public class ExtinguishTorches {
 
 	private static void loadConfig() {
 		try {
+			extinguishTorchesEnabled = Presence.config.getOrSetValue("extinguishTorchesEnabled", extinguishTorchesEnabled).getAsBoolean();
 			extinguishTorchesTrackedMax = Presence.config.getOrSetValue("extinguishTorchesTrackedMax", extinguishTorchesTrackedMax).getAsInt();
 			extinguishTorchesTorchDistanceMax = Presence.config.getOrSetValue("extinguishTorchesTorchDistanceMax", extinguishTorchesTorchDistanceMax).getAsInt();
 			extinguishTorchesExtinguishTryInterval = Presence.config.getOrSetValue("extinguishTorchesExtinguishTryInterval", extinguishTorchesExtinguishTryInterval).getAsInt();
