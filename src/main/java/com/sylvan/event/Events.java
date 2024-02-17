@@ -17,6 +17,7 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class Events {
 	public static ScheduledExecutorService scheduler;
+	public static List<UUID> hauntedPlayers = new ArrayList<>();
 
 	public static void registerEvents() {
 		NearbySounds.initEvent();
@@ -35,23 +36,26 @@ public class Events {
 			}
 		});
 
-		if (Presence.config.footstepsEnabled) {
-			// Schedule footstep event on player join
-			ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
-				final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
-				Footsteps.scheduleEvent(player);
-				ExtinguishTorches.scheduleTracking(player);
-				NearbySounds.scheduleEvent(player);
-			});
-		}
+		// Schedule player join events
+		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
+			final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
+			if (Presence.RANDOM.nextFloat() <= Presence.config.hauntChance) {
+				hauntedPlayers.add(player.getUuid());
+				if (Presence.config.footstepsEnabled) Footsteps.scheduleEvent(player);
+				if (Presence.config.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);
+				if (Presence.config.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
+			}
+		});
 
+		// Attempt to remove torches when player disconnects
+		ServerPlayConnectionEvents.DISCONNECT.register((serverPlayNetworkHandler, server) -> {
+			final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
+			if (Presence.config.extinguishTorchesEnabled) ExtinguishTorches.extinguishTrackedTorches(player);
+			if (hauntedPlayers.contains(player.getUuid())) hauntedPlayers.remove(player.getUuid());
+		});
+
+		// Add torch tracker for extinguish torches event
 		if (Presence.config.extinguishTorchesEnabled) {
-			// Attempt to remove torches when player disconnects
-			ServerPlayConnectionEvents.DISCONNECT.register((serverPlayNetworkHandler, server) -> {
-				ExtinguishTorches.extinguishTrackedTorches(serverPlayNetworkHandler.getPlayer());
-			});
-
-			// Add torch tracker for extinguish torches event
 			UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
 				final BlockPos torchPos = hitResult.getBlockPos().offset(hitResult.getSide()); // Offset by 1 block in the direction of torch placement
 				if (

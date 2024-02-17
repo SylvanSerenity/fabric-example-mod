@@ -9,6 +9,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class PresenceConfig {
+	public float hauntChance = 1.0f;
+
 	public boolean footstepsEnabled = true;
 	public int footstepsDelayMin = 60 * 60;
 	public int footstepsDelayMax = 60 * 60 * 4;
