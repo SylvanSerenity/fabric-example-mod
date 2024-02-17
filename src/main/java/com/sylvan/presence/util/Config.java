@@ -1,6 +1,7 @@
 package com.sylvan.presence.util;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -18,24 +19,26 @@ import java.lang.reflect.Type;
 
 public class Config {
 	private String configFileName;
+	File configFile;
 
 	public Config(final String configName) {
 		configFileName = configName + ".json";
-		File configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), configFileName);
+		configFile = new File(FabricLoader.getInstance().getConfigDir().toFile(), configFileName);
 
 		// Return default if no file is not found
 		if (!configFile.exists()) {
 			try {
 				configFile.createNewFile();
 			} catch (IOException e) {
-				Presence.LOGGER.warn("Failed to create configuration file for \"" + configFileName + "\":\n" + e.getStackTrace().toString());
+				Presence.LOGGER.warn("Failed to create configuration file for \"" + configFileName + "\".");
+				e.printStackTrace();
 			}
 		}
 	}
 
 	public <T> T getOrSetValue(final String key, final T defaultValue) {
 		try {
-			JsonElement element = JsonParser.parseReader(new FileReader(configFileName));
+			JsonElement element = JsonParser.parseReader(new FileReader(configFile));
 			if (element.isJsonObject()) {
 				JsonObject object = element.getAsJsonObject();
 				// Get the value if it exists
@@ -46,7 +49,8 @@ public class Config {
                     				return gson.fromJson(object.get(key), type);
 					} catch (JsonSyntaxException e) {
 						// Remove key on invalid input and have it reset to default
-						Presence.LOGGER.warn("Invalid type for JSON value for \"" + key + "\":\n" + e.getStackTrace().toString());
+						Presence.LOGGER.warn("Invalid type for JSON value for \"" + key + "\".");
+						e.printStackTrace();
 						object.remove(key);
 					}
 				}
@@ -59,16 +63,20 @@ public class Config {
 			}
 			return defaultValue;
 		} catch (IOException e) {
-			Presence.LOGGER.warn("Failed to get/set JSON value for \"" + key + "\":\n" + e.getStackTrace().toString());
+			Presence.LOGGER.warn("Failed to get/set JSON value for \"" + key + "\".");
+			e.printStackTrace();
 		}
 		return defaultValue;
 	}
 
 	public void saveConfig(JsonObject object) {
-		try (FileWriter fileWriter = new FileWriter(configFileName)) {
-			fileWriter.write(object.toString());
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+		try (FileWriter fileWriter = new FileWriter(configFile)) {
+			fileWriter.write(gson.toJson(object));
 		} catch(IOException e) {
-			Presence.LOGGER.warn("Failed to save config file for \"" + configFileName + "\":\n" + e.getStackTrace().toString());
+			Presence.LOGGER.warn("Failed to save config file for \"" + configFileName + "\".");
+			e.printStackTrace();
 		}
 	}
 }
