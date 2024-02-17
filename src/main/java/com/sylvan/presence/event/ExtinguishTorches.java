@@ -14,7 +14,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -25,6 +24,7 @@ public class ExtinguishTorches {
 	protected static boolean extinguishTorchesEnabled = true;
 	protected static int extinguishTorchesTrackedMax = 32;
 	protected static int extinguishTorchesTorchDistanceMax = 32;
+	protected static int extinguishTorchesSkyLightLevelMax = 6;
 	private static int extinguishTorchesExtinguishTryInterval = 60;
 	private static int extinguishTorchesTrackIntervalMin = 60 * 60 * 2;
 	private static int extinguishTorchesTrackIntervalMax = 60 * 60 * 5;
@@ -34,6 +34,7 @@ public class ExtinguishTorches {
 			extinguishTorchesEnabled = Presence.config.getOrSetValue("extinguishTorchesEnabled", extinguishTorchesEnabled).getAsBoolean();
 			extinguishTorchesTrackedMax = Presence.config.getOrSetValue("extinguishTorchesTrackedMax", extinguishTorchesTrackedMax).getAsInt();
 			extinguishTorchesTorchDistanceMax = Presence.config.getOrSetValue("extinguishTorchesTorchDistanceMax", extinguishTorchesTorchDistanceMax).getAsInt();
+			extinguishTorchesSkyLightLevelMax = Presence.config.getOrSetValue("extinguishTorchesSkyLightLevelMax", extinguishTorchesSkyLightLevelMax).getAsInt();
 			extinguishTorchesExtinguishTryInterval = Presence.config.getOrSetValue("extinguishTorchesExtinguishTryInterval", extinguishTorchesExtinguishTryInterval).getAsInt();
 			extinguishTorchesTrackIntervalMin = Presence.config.getOrSetValue("extinguishTorchesTrackIntervalMin", extinguishTorchesTrackIntervalMin).getAsInt();
 			extinguishTorchesTrackIntervalMax = Presence.config.getOrSetValue("extinguishTorchesTrackIntervalMax", extinguishTorchesTrackIntervalMax).getAsInt();
