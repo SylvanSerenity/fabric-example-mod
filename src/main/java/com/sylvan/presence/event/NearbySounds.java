@@ -23,8 +23,8 @@ public class NearbySounds {
 	protected static boolean nearbySoundsEnabled = true;
 	private static int nearbySoundsDelayMin = 60 * 45;
 	private static int nearbySoundsDelayMax = 60 * 60 * 2;
-	private static int nearbySoundsDistanceMin = 8;
-	private static int nearbySoundsDistanceMax = 15;
+	private static int nearbySoundsDistanceMin = 12;
+	private static int nearbySoundsDistanceMax = 16; // 16 is maximum distance to hear sounds
 	private static float nearbySoundsItemPickupWeight = 45.0f;
 	private static float nearbySoundsBigFallWeight = 15.0f;
 	private static float nearbySoundsSmallFallWeight = 30.0f;
@@ -78,7 +78,7 @@ public class NearbySounds {
 		if (player.isRemoved()) return;
 
 		final World world = player.getWorld();
-		final BlockPos soundPos = Algorithms.getRandomStandableBlockNearPlayer(player, nearbySoundsDistanceMin, nearbySoundsDistanceMax, 50);
+		final BlockPos soundPos = Algorithms.getRandomStandableBlockNearPlayer(player, nearbySoundsDistanceMin, nearbySoundsDistanceMax, 20);
 		final SoundEvent sound = Algorithms.randomKeyFromWeightMap(nearbySounds);
 		world.playSound(null, soundPos, sound, SoundCategory.PLAYERS);
 	}
