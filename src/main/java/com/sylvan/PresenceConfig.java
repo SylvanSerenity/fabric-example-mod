@@ -10,8 +10,8 @@ import java.io.IOException;
 
 public class PresenceConfig {
 	public boolean footstepsEnabled = true;
-	public int footstepsDelayMin = 60 * 45;
-	public int footstepsDelayMax = 60 * 60 * 3;
+	public int footstepsDelayMin = 60 * 60;
+	public int footstepsDelayMax = 60 * 60 * 4;
 	public int footstepsReflexMs = 500;
 	public int footstepsMaxReflexVariance = 150;
 	public int footstepsStepsMin = 1;
@@ -22,9 +22,18 @@ public class PresenceConfig {
 	public boolean extinguishTorchesEnabled = true;
 	public int extinguishTorchesTrackedMax = 32;
 	public int extinguishTorchesTorchDistanceMax = 32;
-	public int extinguishTorchesExtinguishTryInterval = 60 * 5;
+	public int extinguishTorchesExtinguishTryInterval = 60;
 	public int extinguishTorchesTrackIntervalMin = 60 * 60 * 2;
 	public int extinguishTorchesTrackIntervalMax = 60 * 60 * 5;
+
+	public boolean nearbySoundsEnabled = true;
+	public int nearbySoundsDelayMin = 60 * 45;
+	public int nearbySoundsDelayMax = 60 * 60 * 2;
+	public float nearbySoundsItemPickupWeight = 0.55f;
+	public float nearbySoundsBigFallWeight = 0.2f;
+	public float nearbySoundsSmallFallWeight = 0.15f;
+	public float nearbySoundsEatWeight = 0.09f;
+	public float nearbySoundsBreathWeight = 0.01f;
 
 	public static PresenceConfig loadConfig() {
 		Gson gson = new Gson();
