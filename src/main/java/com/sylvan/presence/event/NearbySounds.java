@@ -31,15 +31,20 @@ public class NearbySounds {
 	private static float nearbySoundsBreathWeight = 0.5f;
 
 	private static void loadConfig() {
-		nearbySoundsDelayMin = Presence.config.getOrSetValue("nearbySoundsDelayMin", nearbySoundsDelayMin);
-		nearbySoundsDelayMax = Presence.config.getOrSetValue("nearbySoundsDelayMax", nearbySoundsDelayMax);
-		nearbySoundsDistanceMin = Presence.config.getOrSetValue("nearbySoundsDistanceMin", nearbySoundsDistanceMin);
-		nearbySoundsDistanceMax = Presence.config.getOrSetValue("nearbySoundsDistanceMax", nearbySoundsDistanceMax);
-		nearbySoundsItemPickupWeight = Presence.config.getOrSetValue("nearbySoundsItemPickupWeight", nearbySoundsItemPickupWeight);
-		nearbySoundsBigFallWeight = Presence.config.getOrSetValue("nearbySoundsBigFallWeight", nearbySoundsBigFallWeight);
-		nearbySoundsSmallFallWeight = Presence.config.getOrSetValue("nearbySoundsSmallFallWeight", nearbySoundsSmallFallWeight);
-		nearbySoundsEatWeight = Presence.config.getOrSetValue("nearbySoundsEatWeight", nearbySoundsEatWeight);
-		nearbySoundsBreathWeight = Presence.config.getOrSetValue("nearbySoundsBreathWeight", nearbySoundsBreathWeight);
+		try {
+			nearbySoundsDelayMin = Presence.config.getOrSetValue("nearbySoundsDelayMin", nearbySoundsDelayMin).getAsInt();
+			nearbySoundsDelayMax = Presence.config.getOrSetValue("nearbySoundsDelayMax", nearbySoundsDelayMax).getAsInt();
+			nearbySoundsDistanceMin = Presence.config.getOrSetValue("nearbySoundsDistanceMin", nearbySoundsDistanceMin).getAsInt();
+			nearbySoundsDistanceMax = Presence.config.getOrSetValue("nearbySoundsDistanceMax", nearbySoundsDistanceMax).getAsInt();
+			nearbySoundsItemPickupWeight = Presence.config.getOrSetValue("nearbySoundsItemPickupWeight", nearbySoundsItemPickupWeight).getAsFloat();
+			nearbySoundsBigFallWeight = Presence.config.getOrSetValue("nearbySoundsBigFallWeight", nearbySoundsBigFallWeight).getAsFloat();
+			nearbySoundsSmallFallWeight = Presence.config.getOrSetValue("nearbySoundsSmallFallWeight", nearbySoundsSmallFallWeight).getAsFloat();
+			nearbySoundsEatWeight = Presence.config.getOrSetValue("nearbySoundsEatWeight", nearbySoundsEatWeight).getAsFloat();
+			nearbySoundsBreathWeight = Presence.config.getOrSetValue("nearbySoundsBreathWeight", nearbySoundsBreathWeight).getAsFloat();
+		} catch (UnsupportedOperationException e) {
+			Presence.LOGGER.error("Configuration issue for NearbySounds.java. Wiping and using default default.", e);
+			Presence.config.clearConfig();
+		}
 	}
 
 	public static void initEvent() {

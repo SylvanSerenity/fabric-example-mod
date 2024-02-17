@@ -27,13 +27,18 @@ public class AmbientSounds {
 	private static float ambientSoundsPitchMax = 1.0f;
 
 	private static void loadConfig() {
-		ambientSoundsDelayMin = Presence.config.getOrSetValue("ambientSoundsDelayMin", ambientSoundsDelayMin);
-		ambientSoundsDelayMax = Presence.config.getOrSetValue("ambientSoundsDelayMax", ambientSoundsDelayMax);
-		ambientSoundsCaveWeight = Presence.config.getOrSetValue("ambientSoundsCaveWeight", ambientSoundsCaveWeight);
-		ambientSoundsUnderwaterRareWeight = Presence.config.getOrSetValue("ambientSoundsUnderwaterRareWeight", ambientSoundsUnderwaterRareWeight);
-		ambientSoundsUnderwaterUltraRareWeight = Presence.config.getOrSetValue("ambientSoundsUnderwaterUltraRareWeight", ambientSoundsUnderwaterUltraRareWeight);
-		ambientSoundsPitchMin = Presence.config.getOrSetValue("ambientSoundsPitchMin", ambientSoundsPitchMin);
-		ambientSoundsPitchMax = Presence.config.getOrSetValue("ambientSoundsPitchMax", ambientSoundsPitchMax);
+		try {
+			ambientSoundsDelayMin = Presence.config.getOrSetValue("ambientSoundsDelayMin", ambientSoundsDelayMin).getAsInt();
+			ambientSoundsDelayMax = Presence.config.getOrSetValue("ambientSoundsDelayMax", ambientSoundsDelayMax).getAsInt();
+			ambientSoundsCaveWeight = Presence.config.getOrSetValue("ambientSoundsCaveWeight", ambientSoundsCaveWeight).getAsFloat();
+			ambientSoundsUnderwaterRareWeight = Presence.config.getOrSetValue("ambientSoundsUnderwaterRareWeight", ambientSoundsUnderwaterRareWeight).getAsFloat();
+			ambientSoundsUnderwaterUltraRareWeight = Presence.config.getOrSetValue("ambientSoundsUnderwaterUltraRareWeight", ambientSoundsUnderwaterUltraRareWeight).getAsFloat();
+			ambientSoundsPitchMin = Presence.config.getOrSetValue("ambientSoundsPitchMin", ambientSoundsPitchMin).getAsFloat();
+			ambientSoundsPitchMax = Presence.config.getOrSetValue("ambientSoundsPitchMax", ambientSoundsPitchMax).getAsFloat();
+		} catch (UnsupportedOperationException e) {
+			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default default.", e);
+			Presence.config.clearConfig();
+		}
 	}
 
 	public static void initEvent() {

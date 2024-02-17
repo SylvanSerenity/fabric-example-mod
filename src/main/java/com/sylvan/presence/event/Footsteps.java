@@ -24,14 +24,19 @@ public class Footsteps {
 	private static int footstepsStepVarianceMax = 25;
 
 	private static void loadConfig() {
-		footstepsDelayMin = Presence.config.getOrSetValue("footstepsDelayMin", footstepsDelayMin);
-		footstepsDelayMax = Presence.config.getOrSetValue("footstepsDelayMax", footstepsDelayMax);
-		footstepsReflexMs = Presence.config.getOrSetValue("footstepsReflexMs", footstepsReflexMs);
-		footstepsMaxReflexVariance = Presence.config.getOrSetValue("footstepsMaxReflexVariance", footstepsMaxReflexVariance);
-		footstepsStepsMin = Presence.config.getOrSetValue("footstepsStepsMin", footstepsStepsMin);
-		footstepsStepsMax = Presence.config.getOrSetValue("footstepsStepsMax", footstepsStepsMax);
-		footstepsMsPerStepMax = Presence.config.getOrSetValue("footstepsMsPerStepMax", footstepsMsPerStepMax);
-		footstepsStepVarianceMax = Presence.config.getOrSetValue("footstepsStepVarianceMax", footstepsStepVarianceMax);
+		try {
+			footstepsDelayMin = Presence.config.getOrSetValue("footstepsDelayMin", footstepsDelayMin).getAsInt();
+			footstepsDelayMax = Presence.config.getOrSetValue("footstepsDelayMax", footstepsDelayMax).getAsInt();
+			footstepsReflexMs = Presence.config.getOrSetValue("footstepsReflexMs", footstepsReflexMs).getAsInt();
+			footstepsMaxReflexVariance = Presence.config.getOrSetValue("footstepsMaxReflexVariance", footstepsMaxReflexVariance).getAsInt();
+			footstepsStepsMin = Presence.config.getOrSetValue("footstepsStepsMin", footstepsStepsMin).getAsInt();
+			footstepsStepsMax = Presence.config.getOrSetValue("footstepsStepsMax", footstepsStepsMax).getAsInt();
+			footstepsMsPerStepMax = Presence.config.getOrSetValue("footstepsMsPerStepMax", footstepsMsPerStepMax).getAsInt();
+			footstepsStepVarianceMax = Presence.config.getOrSetValue("footstepsStepVarianceMax", footstepsStepVarianceMax).getAsInt();
+		} catch (UnsupportedOperationException e) {
+			Presence.LOGGER.error("Configuration issue for Footsteps.java. Wiping and using default default.", e);
+			Presence.config.clearConfig();
+		}
 	}
 
 	public static void initEvent() {

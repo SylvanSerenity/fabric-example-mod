@@ -29,11 +29,16 @@ public class ExtinguishTorches {
 	private static int extinguishTorchesTrackIntervalMax = 60 * 60 * 5;
 
 	private static void loadConfig() {
-		extinguishTorchesTrackedMax = Presence.config.getOrSetValue("extinguishTorchesTrackedMax", extinguishTorchesTrackedMax);
-		extinguishTorchesTorchDistanceMax = Presence.config.getOrSetValue("extinguishTorchesTorchDistanceMax", extinguishTorchesTorchDistanceMax);
-		extinguishTorchesExtinguishTryInterval = Presence.config.getOrSetValue("extinguishTorchesExtinguishTryInterval", extinguishTorchesExtinguishTryInterval);
-		extinguishTorchesTrackIntervalMin = Presence.config.getOrSetValue("extinguishTorchesTrackIntervalMin", extinguishTorchesTrackIntervalMin);
-		extinguishTorchesTrackIntervalMax = Presence.config.getOrSetValue("extinguishTorchesTrackIntervalMax", extinguishTorchesTrackIntervalMax);
+		try {
+			extinguishTorchesTrackedMax = Presence.config.getOrSetValue("extinguishTorchesTrackedMax", extinguishTorchesTrackedMax).getAsInt();
+			extinguishTorchesTorchDistanceMax = Presence.config.getOrSetValue("extinguishTorchesTorchDistanceMax", extinguishTorchesTorchDistanceMax).getAsInt();
+			extinguishTorchesExtinguishTryInterval = Presence.config.getOrSetValue("extinguishTorchesExtinguishTryInterval", extinguishTorchesExtinguishTryInterval).getAsInt();
+			extinguishTorchesTrackIntervalMin = Presence.config.getOrSetValue("extinguishTorchesTrackIntervalMin", extinguishTorchesTrackIntervalMin).getAsInt();
+			extinguishTorchesTrackIntervalMax = Presence.config.getOrSetValue("extinguishTorchesTrackIntervalMax", extinguishTorchesTrackIntervalMax).getAsInt();
+		} catch (UnsupportedOperationException e) {
+			Presence.LOGGER.error("Configuration issue for ExtinguishTorches.java. Wiping and using default.", e);
+			Presence.config.clearConfig();
+		}
 	}
 
 	public static void initEvent() {

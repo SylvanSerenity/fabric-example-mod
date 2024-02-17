@@ -32,11 +32,16 @@ public class Events {
 	private static boolean nearbySoundsEnabled = true;
 
 	private static void loadConfig() {
-		hauntChance = Presence.config.getOrSetValue("hauntChance", hauntChance);
-		ambientSoundsEnabled = Presence.config.getOrSetValue("ambientSoundsEnabled", ambientSoundsEnabled);
-		extinguishTorchesEnabled = Presence.config.getOrSetValue("extinguishTorchesEnabled", extinguishTorchesEnabled);
-		footstepsEnabled = Presence.config.getOrSetValue("footstepsEnabled", footstepsEnabled);
-		nearbySoundsEnabled = Presence.config.getOrSetValue("nearbySoundsEnabled", nearbySoundsEnabled);
+		try {
+			hauntChance = Presence.config.getOrSetValue("hauntChance", hauntChance).getAsFloat();
+			ambientSoundsEnabled = Presence.config.getOrSetValue("ambientSoundsEnabled", ambientSoundsEnabled).getAsBoolean();
+			extinguishTorchesEnabled = Presence.config.getOrSetValue("extinguishTorchesEnabled", extinguishTorchesEnabled).getAsBoolean();
+			footstepsEnabled = Presence.config.getOrSetValue("footstepsEnabled", footstepsEnabled).getAsBoolean();
+			nearbySoundsEnabled = Presence.config.getOrSetValue("nearbySoundsEnabled", nearbySoundsEnabled).getAsBoolean();
+		} catch (UnsupportedOperationException e) {
+			Presence.LOGGER.error("Configuration issue for Events.java. Wiping and using default default.", e);
+			Presence.config.clearConfig();
+		}
 	}
 
 	public static void registerEvents() {
@@ -55,7 +60,7 @@ public class Events {
 			try {
 				scheduler.awaitTermination(1000, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				Presence.LOGGER.error("Failed to await termination of event scheduler.", e);
 			}
 		});
 
