@@ -81,6 +81,7 @@ public class AmbientSounds {
 					playAmbientSound(player);
 				}, ambientSoundsRetryDelay, TimeUnit.SECONDS
 			);
+			return;
 		}
 
 		final float pitch = Algorithms.randomBetween(ambientSoundsPitchMin, ambientSoundsPitchMax);
