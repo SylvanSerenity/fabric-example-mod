@@ -150,14 +150,8 @@ public class Algorithms {
 
 		// Prefer distant over close sounds (in case previous move was too close)
 		if (blockPos.isWithinDistance(playerPos, distanceMin)) {
-			// Move farther
+			// Move farther, even if it's in a wall
 			blockPos = blockPos.add(moveDistanceX, moveDistanceY, moveDistanceZ);
-			blockPos = getNearestStandableBlockPosTowardsPlayer(
-				player,
-				blockPos,
-				maxDistanceDown,
-				maxDistanceUp
-			);
 		}
 		return blockPos;
 	}
