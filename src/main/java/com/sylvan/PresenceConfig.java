@@ -30,10 +30,10 @@ public class PresenceConfig {
 	public int nearbySoundsDelayMin = 60 * 45;
 	public int nearbySoundsDelayMax = 60 * 60 * 2;
 	public int nearbySoundsDistanceMin = 5;
-	public int nearbySoundsDistanceMax = 20;
+	public int nearbySoundsDistanceMax = 15;
 	public float nearbySoundsItemPickupWeight = 45.0f;
-	public float nearbySoundsBigFallWeight = 25.0f;
-	public float nearbySoundsSmallFallWeight = 20.0f;
+	public float nearbySoundsBigFallWeight = 15.0f;
+	public float nearbySoundsSmallFallWeight = 30.0f;
 	public float nearbySoundsEatWeight = 9.5f;
 	public float nearbySoundsBreathWeight = 0.5f;
 
