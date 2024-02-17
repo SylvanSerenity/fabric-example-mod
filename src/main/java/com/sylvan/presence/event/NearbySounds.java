@@ -44,6 +44,7 @@ public class NearbySounds {
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for NearbySounds.java. Wiping and using default default.", e);
 			Presence.config.clearConfig();
+			Events.initEvents();
 		}
 	}
 

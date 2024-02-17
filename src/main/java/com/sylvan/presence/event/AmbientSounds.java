@@ -38,6 +38,7 @@ public class AmbientSounds {
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default default.", e);
 			Presence.config.clearConfig();
+			Events.initEvents();
 		}
 	}
 

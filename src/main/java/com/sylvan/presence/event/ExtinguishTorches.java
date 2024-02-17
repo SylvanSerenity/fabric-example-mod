@@ -38,6 +38,7 @@ public class ExtinguishTorches {
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for ExtinguishTorches.java. Wiping and using default.", e);
 			Presence.config.clearConfig();
+			Events.initEvents();
 		}
 	}
 

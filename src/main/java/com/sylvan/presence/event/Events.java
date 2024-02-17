@@ -41,14 +41,19 @@ public class Events {
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for Events.java. Wiping and using default default.", e);
 			Presence.config.clearConfig();
+			initEvents();
 		}
 	}
 
-	public static void registerEvents() {
+	public static void initEvents() {
 		loadConfig();
 		AmbientSounds.initEvent();
 		ExtinguishTorches.initEvent();
 		NearbySounds.initEvent();
+	}
+
+	public static void registerEvents() {
+		initEvents();
 
 		// Start/stop scheduler with server
 		ServerLifecycleEvents.SERVER_STARTING.register((serverStarting) -> {
