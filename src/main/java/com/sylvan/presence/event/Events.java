@@ -54,6 +54,11 @@ public class Events {
 		ServerLifecycleEvents.SERVER_STOPPING.register((serverStopping) -> {
 			scheduler.shutdown();
 
+			if (!Presence.config.exists()) {
+				Presence.config.clearConfig();
+				initEvents();
+			}
+
 			try {
 				scheduler.awaitTermination(1000, TimeUnit.MILLISECONDS);
 			} catch (InterruptedException e) {

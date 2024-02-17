@@ -87,4 +87,8 @@ public class Config {
 			Presence.LOGGER.error("Failed to clear configuration file for \"" + configFileName + "\".", e);
 		}
 	}
+
+	public boolean exists() {
+		return configFile.exists();
+	}
 }
