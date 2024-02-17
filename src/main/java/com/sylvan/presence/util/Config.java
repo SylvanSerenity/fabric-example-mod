@@ -38,15 +38,16 @@ public class Config {
 
 	public <T> T getOrSetValue(final String key, final T defaultValue) {
 		try {
+			final Gson gson = new Gson();
 			JsonElement element = JsonParser.parseReader(new FileReader(configFile));
 			if (element.isJsonObject()) {
 				JsonObject object = element.getAsJsonObject();
 				// Get the value if it exists
 				if (object.has(key)) {
-					Gson gson = new Gson();
 					Type type = new TypeToken<T>() {}.getType();
 					try {
-                    				return gson.fromJson(object.get(key), type);
+                    				final T value = gson.fromJson(object.get(key), type);
+						return value;
 					} catch (JsonSyntaxException e) {
 						// Remove key on invalid input and have it reset to default
 						Presence.LOGGER.warn("Invalid type for JSON value for \"" + key + "\".");
@@ -54,11 +55,11 @@ public class Config {
 						object.remove(key);
 					}
 				}
-				object.addProperty(key, defaultValue.toString());
+				object.add(key, gson.toJsonTree(defaultValue));
 				saveConfig(object);
 			} else {
 				JsonObject object = new JsonObject();
-				object.addProperty(key, defaultValue.toString());
+				object.add(key, gson.toJsonTree(defaultValue));
 				saveConfig(object);
 			}
 			return defaultValue;
