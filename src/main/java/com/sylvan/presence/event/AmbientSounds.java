@@ -22,7 +22,7 @@ public class AmbientSounds {
 	private static int ambientSoundsDelayMin = 60 * 45;
 	private static int ambientSoundsDelayMax = 60 * 60 * 2;
 	private static int ambientSoundsRetryDelay = 60;
-	private static int ambientSoundsLightLevelMax = 4;
+	private static int ambientSoundsLightLevelMax = 7;
 	private static float ambientSoundsCaveWeight = 95.0f;
 	private static float ambientSoundsUnderwaterRareWeight = 4.5f;
 	private static float ambientSoundsUnderwaterUltraRareWeight = 0.5f;
@@ -60,18 +60,8 @@ public class AmbientSounds {
 	public static void scheduleEvent(final PlayerEntity player) {
 		Events.scheduler.schedule(
 			() -> {
-				if (!player.isRemoved()) {
-					if (playAmbientSound(player)) {
-						scheduleEvent(player);
-					} else {
-						// Retry if it is a bad time
-						Events.scheduler.schedule(
-							() -> {
-								playAmbientSound(player);
-							}, ambientSoundsRetryDelay, TimeUnit.SECONDS
-						);
-					}
-				}
+				playAmbientSound(player);
+				if (!player.isRemoved()) scheduleEvent(player);
 			},
 			Algorithms.RANDOM.nextBetween(
 				ambientSoundsDelayMin,
@@ -80,15 +70,21 @@ public class AmbientSounds {
 		);
 	}
 
-	public static boolean playAmbientSound(final PlayerEntity player) {
-		if (!player.isRemoved()) {
-			// Player must be in darkness
-			if (player.getWorld().getLightLevel(player.getBlockPos()) > ambientSoundsLightLevelMax) return false;
+	public static void playAmbientSound(final PlayerEntity player) {
+		if (player.isRemoved()) return;
 
-			final float pitch = Algorithms.randomBetween(ambientSoundsPitchMin, ambientSoundsPitchMax);
-			final SoundEvent sound = Algorithms.randomKeyFromWeightMap(ambientSounds);
-			player.playSound(sound, SoundCategory.AMBIENT, 256.0f, pitch);
+		// Player must be in darkness
+		if (player.getWorld().getLightLevel(player.getBlockPos()) > ambientSoundsLightLevelMax) {
+			// Retry if it is a bad time
+			Events.scheduler.schedule(
+				() -> {
+					playAmbientSound(player);
+				}, ambientSoundsRetryDelay, TimeUnit.SECONDS
+			);
 		}
-		return true;
+
+		final float pitch = Algorithms.randomBetween(ambientSoundsPitchMin, ambientSoundsPitchMax);
+		final SoundEvent sound = Algorithms.randomKeyFromWeightMap(ambientSounds);
+		player.playSound(sound, SoundCategory.AMBIENT, 256.0f, pitch);
 	}
 }
