@@ -1,39 +1,60 @@
-package com.sylvan.event;
+package com.sylvan.presence.event;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import com.sylvan.Presence;
+import com.sylvan.presence.Presence;
+import com.sylvan.presence.util.Algorithms;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 public class ExtinguishTorches {
 	public static Map<UUID, Map.Entry<DimensionType, Stack<BlockPos>>> torchPlacementMap = new HashMap<>();
 
+	// Config
+	protected static int extinguishTorchesTrackedMax = 32;
+	protected static int extinguishTorchesTorchDistanceMax = 32;
+	private static int extinguishTorchesExtinguishTryInterval = 60;
+	private static int extinguishTorchesTrackIntervalMin = 60 * 60 * 2;
+	private static int extinguishTorchesTrackIntervalMax = 60 * 60 * 5;
+
+	private static void loadConfig() {
+		extinguishTorchesTrackedMax = Presence.config.getOrSetValue("extinguishTorchesTrackedMax", extinguishTorchesTrackedMax);
+		extinguishTorchesTorchDistanceMax = Presence.config.getOrSetValue("extinguishTorchesTorchDistanceMax", extinguishTorchesTorchDistanceMax);
+		extinguishTorchesExtinguishTryInterval = Presence.config.getOrSetValue("extinguishTorchesExtinguishTryInterval", extinguishTorchesExtinguishTryInterval);
+		extinguishTorchesTrackIntervalMin = Presence.config.getOrSetValue("extinguishTorchesTrackIntervalMin", extinguishTorchesTrackIntervalMin);
+		extinguishTorchesTrackIntervalMax = Presence.config.getOrSetValue("extinguishTorchesTrackIntervalMax", extinguishTorchesTrackIntervalMax);
+	}
+
+	public static void initEvent() {
+		loadConfig();
+	}
+
 	public static void scheduleTracking(final PlayerEntity player) {
 		Events.scheduler.schedule(
 			() -> {
 				ExtinguishTorches.startTrackingTorches(player);
 			},
-			Presence.RANDOM.nextBetween(
-				Presence.config.extinguishTorchesTrackIntervalMin,
-				Presence.config.extinguishTorchesTrackIntervalMax
+			Algorithms.RANDOM.nextBetween(
+				extinguishTorchesTrackIntervalMin,
+				extinguishTorchesTrackIntervalMax
 			),
 			TimeUnit.SECONDS
 		);
 	}
 
 	public static void startTrackingTorches(final PlayerEntity player) {
-		if (!player.isRemoved()) {
+		if (!player.isRemoved() && !torchPlacementMap.containsKey(player.getUuid())) {
 			torchPlacementMap.put(player.getUuid(), new AbstractMap.SimpleEntry<>(player.getWorld().getDimension(), new Stack<>()));
 			scheduleExtinguish(player);
 		}
@@ -47,7 +68,7 @@ public class ExtinguishTorches {
 			} else if (!player.isRemoved()) {
 				scheduleTracking(player);
 			}
-		}, Presence.config.extinguishTorchesExtinguishTryInterval, TimeUnit.SECONDS);
+		}, extinguishTorchesExtinguishTryInterval, TimeUnit.SECONDS);
 	}
 
 	public static boolean extinguishTrackedTorches(final PlayerEntity player) {
@@ -67,7 +88,7 @@ public class ExtinguishTorches {
 			}
 			if (
 				torchStack.empty() ||						// Player must have tracked torches
-				(world.getLightLevel(LightType.SKY, player.getBlockPos()) <= 0)	// Player must be above ground
+				world.getLightLevel(LightType.SKY, player.getBlockPos()) <= 0	// Player must be above ground
 			) return false; // Wait until next attempt
 
 			Block block;
@@ -75,7 +96,7 @@ public class ExtinguishTorches {
 				block = world.getBlockState(torchPos).getBlock();
 				if (
 					((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) &&	// Block must still be a torch
-					!blockCanBeSeen(world.getPlayers(), torchPos)			// Player cannot see the torch being removed
+					!Algorithms.blockCanBeSeen(world.getPlayers(), torchPos)	// Player cannot see the torch being removed
 				) {
 					// Remove the torch
 					world.removeBlock(torchPos, false);
@@ -86,18 +107,5 @@ public class ExtinguishTorches {
 		}
 		torchPlacementMap.remove(player.getUuid());
 		return true;
-	}
-
-	public static boolean blockCanBeSeen(final List<? extends PlayerEntity> players, final BlockPos blockPos) {
-		for (PlayerEntity player : players) {
-			Vec3d vec3d = new Vec3d(player.getX(), player.getEyeY(), player.getZ());
-			Vec3d vec3d2 = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-			if (vec3d2.distanceTo(vec3d) > 128.0) continue;
-			if (player.getWorld().raycast(
-					new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, player)
-				).getType() != HitResult.Type.BLOCK
-			) return true;
-		}
-		return false;
 	}
 }

@@ -1,4 +1,4 @@
-package com.sylvan;
+package com.sylvan.presence;
 
 import net.fabricmc.api.ClientModInitializer;
 

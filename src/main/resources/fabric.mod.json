@@ -14,10 +14,10 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.sylvan.Presence"
+			"com.sylvan.presence.Presence"
 		],
 		"client": [
-			"com.sylvan.PresenceClient"
+			"com.sylvan.presence.PresenceClient"
 		]
 	},
 	"mixins": [

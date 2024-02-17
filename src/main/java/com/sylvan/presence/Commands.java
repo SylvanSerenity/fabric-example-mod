@@ -1,4 +1,4 @@
-package com.sylvan;
+package com.sylvan.presence;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,10 +9,10 @@ import static net.minecraft.server.command.CommandManager.*;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.sylvan.event.AmbientSounds;
-import com.sylvan.event.ExtinguishTorches;
-import com.sylvan.event.Footsteps;
-import com.sylvan.event.NearbySounds;
+import com.sylvan.presence.event.AmbientSounds;
+import com.sylvan.presence.event.ExtinguishTorches;
+import com.sylvan.presence.event.Footsteps;
+import com.sylvan.presence.event.NearbySounds;
 
 public class Commands {
 	public static void registerCommands() {

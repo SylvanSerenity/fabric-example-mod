@@ -1,6 +1,6 @@
 {
 	"required": true,
-	"package": "com.sylvan.mixin",
+	"package": "com.sylvan.presence.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
 		"PresenceMixin"
