@@ -49,21 +49,42 @@ public class Footsteps {
 		}
 	}
 
-	public static void playFootstep(final PlayerEntity player, final BlockPos blockPos) {
+	public static void playFootstep(final PlayerEntity player, BlockPos soundPos) {
 		final World world = player.getWorld();
+		final BlockPos playerPos = player.getBlockPos();
 		// Test if a player could stand on source block
+		while (
+			(
+				world.getBlockState(soundPos).isAir() ||
+				!world.getBlockState(soundPos.up()).isAir() ||
+				!world.getBlockState(soundPos.up(2)).isAir()
+			) &&
+			soundPos.getY() > (playerPos.getY() - Presence.config.footstepsStepsMax)
+		) {
+			soundPos = soundPos.down();
+		}
+		while (
+			(
+				world.getBlockState(soundPos).isAir() ||
+				!world.getBlockState(soundPos.up()).isAir() ||
+				!world.getBlockState(soundPos.up(2)).isAir()
+			) &&
+			soundPos.getY() < (playerPos.getY() + Presence.config.footstepsStepsMax)
+		) {
+			soundPos = soundPos.up();
+		}
 		if (
-			world.getBlockState(blockPos).isAir() ||
-			!world.getBlockState(blockPos.up()).isAir() ||
-			!world.getBlockState(blockPos.up(2)).isAir()
+			world.getBlockState(soundPos).isAir() ||
+			!world.getBlockState(soundPos.up()).isAir() ||
+			!world.getBlockState(soundPos.up(2)).isAir()
 		) return;
 
 		// Play the sound of the block distance blocks behind the player
-		final SoundEvent stepSound = world.getBlockState(blockPos).getSoundGroup().getStepSound();
+		final SoundEvent stepSound = world.getBlockState(soundPos).getSoundGroup().getStepSound();
 
 		world.playSound(
 			null,
-			blockPos,
+			soundPos,
 			stepSound,
 			SoundCategory.BLOCKS
 		);
