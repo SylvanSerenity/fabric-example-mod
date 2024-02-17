@@ -8,7 +8,6 @@ import com.sylvan.Presence;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -21,7 +20,8 @@ public class ExtinguishTorches {
 	public static Map<UUID, Map.Entry<DimensionType, Stack<BlockPos>>> torchPlacementMap = new HashMap<>();
 
 	public static void scheduleTracking(final PlayerEntity player) {
-		Events.scheduler.schedule(() -> {
+		Events.scheduler.schedule(
+			() -> {
 				ExtinguishTorches.startTrackingTorches(player);
 			},
 			Presence.RANDOM.nextBetween(
@@ -60,22 +60,26 @@ public class ExtinguishTorches {
 			final World world = player.getWorld();
 			// Player must be in same dimension
 			if (entry.getKey() != world.getDimension()) {
+				// Quit tracking if dimensions do not match
 				torchStack.clear();
 				torchPlacementMap.remove(player.getUuid());
 				return false;
 			}
-			if (torchStack.empty()) return false;
+			if (
+				torchStack.empty() ||						// Player must have tracked torches
+				(world.getLightLevel(LightType.SKY, player.getBlockPos()) <= 0)	// Player must be above ground
+			) return false; // Wait until next attempt
 
 			Block block;
 			for (BlockPos torchPos : torchStack) {
 				block = world.getBlockState(torchPos).getBlock();
 				if (
-					((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) &&		// The block is a torch
-					(world.getLightLevel(LightType.SKY, player.getBlockPos()) > 0) &&	// Player is above ground
-					!blockCanBeSeen(world.getPlayers(), torchPos)				// Player cannot see the torches being removed
+					((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) &&	// Block must still be a torch
+					!blockCanBeSeen(world.getPlayers(), torchPos)			// Player cannot see the torch being removed
 				) {
+					// Remove the torch
 					world.removeBlock(torchPos, false);
-				}
+				} // Otherwise skip torch
 			}
 
 			torchStack.clear();

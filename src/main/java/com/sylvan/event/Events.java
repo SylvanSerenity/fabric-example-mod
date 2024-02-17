@@ -8,6 +8,7 @@ import com.sylvan.Presence;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -18,6 +19,8 @@ public class Events {
 	public static ScheduledExecutorService scheduler;
 
 	public static void registerEvents() {
+		NearbySounds.initEvent();
+
 		// Start/stop scheduler with server
 		ServerLifecycleEvents.SERVER_STARTING.register((serverStarting) -> {
 			scheduler = Executors.newScheduledThreadPool(8);
@@ -35,8 +38,10 @@ public class Events {
 		if (Presence.config.footstepsEnabled) {
 			// Schedule footstep event on player join
 			ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
-				Footsteps.scheduleEvent(serverPlayNetworkHandler.getPlayer());
-				ExtinguishTorches.scheduleTracking(serverPlayNetworkHandler.getPlayer());
+				final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
+				Footsteps.scheduleEvent(player);
+				ExtinguishTorches.scheduleTracking(player);
+				NearbySounds.scheduleEvent(player);
 			});
 		}
 
@@ -50,9 +55,9 @@ public class Events {
 			UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
 				final BlockPos torchPos = hitResult.getBlockPos().offset(hitResult.getSide()); // Offset by 1 block in the direction of torch placement
 				if (
-					world.isClient() ||												// World is not server-side
-					(player.getMainHandStack().getItem() != Items.TORCH && player.getOffHandStack().getItem() != Items.TORCH) ||	// Player isn't holding a torch
-					world.getLightLevel(LightType.SKY, torchPos) > 5								// Torch is above ground
+					world.isClient() ||												// World must be server-side
+					(player.getMainHandStack().getItem() != Items.TORCH && player.getOffHandStack().getItem() != Items.TORCH) ||	// Player must be holding a torch
+					world.getLightLevel(LightType.SKY, torchPos) > 5								// Torch must be underground
 				) return ActionResult.PASS;
 
 				if (ExtinguishTorches.torchPlacementMap.containsKey(player.getUuid())) {
@@ -68,7 +73,7 @@ public class Events {
 						!torches.empty() &&
 						!torches.peek().isWithinDistance(torchPos, Presence.config.extinguishTorchesTorchDistanceMax)
 					) {
-						// Torch isn't within extinguishTorchesTorchDistanceMax blocks from last torch
+						// Torch must be within extinguishTorchesTorchDistanceMax blocks from last torch
 						return ActionResult.PASS;
 					}
 

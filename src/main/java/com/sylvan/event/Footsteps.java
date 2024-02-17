@@ -13,7 +13,8 @@ import net.minecraft.world.World;
 
 public class Footsteps {
 	public static void scheduleEvent(final PlayerEntity player) {
-		Events.scheduler.schedule(() -> {
+		Events.scheduler.schedule(
+			() -> {
 				generateFootsteps(player, Presence.RANDOM.nextBetween(Presence.config.footstepsStepsMin, Presence.config.footstepsStepsMax));
 				scheduleEvent(player);
 			},

@@ -11,6 +11,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.sylvan.event.ExtinguishTorches;
 import com.sylvan.event.Footsteps;
+import com.sylvan.event.NearbySounds;
 
 public class Commands {
 	public static void registerCommands() {
@@ -19,46 +20,6 @@ public class Commands {
 			.requires(source -> source.hasPermissionLevel(2))
 			.then(
 				literal("event")
-				.then(
-					literal("footsteps")
-					.executes(context -> {
-						if (context.getSource().isExecutedByPlayer()) {
-							context.getSource().sendFeedback(() -> Text.literal("Executing footsteps event.").withColor(Formatting.BLUE.getColorValue()), false);
-							Footsteps.generateFootsteps(context.getSource().getPlayer(), 3);
-						} else {
-							context.getSource().sendFeedback(() -> Text.literal("Cannot execute footsteps event on server. Please specify a player.").withColor(Formatting.RED.getColorValue()), false);
-						}
-						return 1;
-					})
-					.then(
-						argument("footstepCount", IntegerArgumentType.integer())
-						.executes(context -> {
-							if (context.getSource().isExecutedByPlayer()) {
-								final int footstepCount = IntegerArgumentType.getInteger(context, "footstepCount");
-								context.getSource().sendFeedback(() -> Text.literal("Executing footsteps event.").withColor(Formatting.BLUE.getColorValue()), false);
-								Footsteps.generateFootsteps(context.getSource().getPlayer(), footstepCount);
-							} else {
-								context.getSource().sendFeedback(() -> Text.literal("Cannot execute footsteps event on server. Please specify a player.").withColor(Formatting.RED.getColorValue()), false);
-							}
-							return 1;
-						})
-						.then(
-							argument("player", StringArgumentType.word())
-							.executes(context -> {
-								final String playerName = StringArgumentType.getString(context, "player");
-								final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
-								if (player == null) {
-									context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.RED.getColorValue()), false);
-								} else {
-									final int footstepCount = IntegerArgumentType.getInteger(context, "footstepCount");
-									context.getSource().sendFeedback(() -> Text.literal("Executing footsteps event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-									Footsteps.generateFootsteps(player, footstepCount);
-								}
-								return 1;
-							})
-						)
-					)
-				)
 				.then(
 					literal("extinguishTorches")
 					.executes(context -> {
@@ -145,6 +106,72 @@ public class Commands {
 								return 1;
 							})
 						)
+					)
+				)
+				.then(
+					literal("footsteps")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							context.getSource().sendFeedback(() -> Text.literal("Executing footsteps event.").withColor(Formatting.BLUE.getColorValue()), false);
+							Footsteps.generateFootsteps(context.getSource().getPlayer(), 3);
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot execute footsteps event on server. Please specify a player.").withColor(Formatting.RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("footstepCount", IntegerArgumentType.integer())
+						.executes(context -> {
+							if (context.getSource().isExecutedByPlayer()) {
+								final int footstepCount = IntegerArgumentType.getInteger(context, "footstepCount");
+								context.getSource().sendFeedback(() -> Text.literal("Executing footsteps event.").withColor(Formatting.BLUE.getColorValue()), false);
+								Footsteps.generateFootsteps(context.getSource().getPlayer(), footstepCount);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Cannot execute footsteps event on server. Please specify a player.").withColor(Formatting.RED.getColorValue()), false);
+							}
+							return 1;
+						})
+						.then(
+							argument("player", StringArgumentType.word())
+							.executes(context -> {
+								final String playerName = StringArgumentType.getString(context, "player");
+								final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+								if (player == null) {
+									context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.RED.getColorValue()), false);
+								} else {
+									final int footstepCount = IntegerArgumentType.getInteger(context, "footstepCount");
+									context.getSource().sendFeedback(() -> Text.literal("Executing footsteps event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+									Footsteps.generateFootsteps(player, footstepCount);
+								}
+								return 1;
+							})
+						)
+					)
+				)
+				.then(
+					literal("nearbySounds")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							context.getSource().sendFeedback(() -> Text.literal("Executing nearby sounds event.").withColor(Formatting.BLUE.getColorValue()), false);
+							NearbySounds.playNearbySound(context.getSource().getPlayer());
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot execute nearby sounds event on server. Please specify a player.").withColor(Formatting.RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("player", StringArgumentType.word())
+						.executes(context -> {
+							final String playerName = StringArgumentType.getString(context, "player");
+							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+							if (player == null) {
+								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.RED.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Executing nearby sounds event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+								NearbySounds.playNearbySound(player);
+							}
+							return 1;
+						})
 					)
 				)
 			)
