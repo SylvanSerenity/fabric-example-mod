@@ -13,6 +13,7 @@ import com.sylvan.presence.util.Algorithms;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.ActionResult;
@@ -89,10 +90,12 @@ public class Events {
 		if (ExtinguishTorches.extinguishTorchesEnabled) {
 			UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
 				final BlockPos torchPos = hitResult.getBlockPos().offset(hitResult.getSide()); // Offset by 1 block in the direction of torch placement
+				final BlockState hitBlockState = world.getBlockState(hitResult.getBlockPos());
 				if (
 					world.isClient() ||												// World must be server-side
 					(player.getMainHandStack().getItem() != Items.TORCH && player.getOffHandStack().getItem() != Items.TORCH) ||	// Player must be holding a torch
-					world.getLightLevel(LightType.SKY, torchPos) > 5								// Torch must be underground
+					world.getLightLevel(LightType.SKY, torchPos) > ExtinguishTorches.extinguishTorchesSkyLightLevelMax ||		// Torch must be underground
+					hitBlockState.getBlock().getDefaultState() != hitBlockState							// Must be placed on a chunk-generated block (not in an underground base)
 				) return ActionResult.PASS;
 
 				if (ExtinguishTorches.torchPlacementMap.containsKey(player.getUuid())) {
