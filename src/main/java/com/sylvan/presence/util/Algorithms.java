@@ -64,11 +64,37 @@ public class Algorithms {
 		return blockPos;
 	}
 
+	public static BlockPos getNearestStandableBlockPosTowardsPlayer(final PlayerEntity player, BlockPos blockPos, final int minY, final int maxY) {
+		final World world = player.getWorld();
+		final BlockPos playerPos = player.getBlockPos();
+		if (blockPos.getY() > playerPos.getY()) {
+			// Above player, try moving down
+			while (!canPlayerStandOnBlock(world, blockPos) && (blockPos.getY() > minY)) {
+				blockPos = blockPos.down();
+			}
+		} else {
+			// Below player, try moving up
+			while (!canPlayerStandOnBlock(world, blockPos) && (blockPos.getY() < maxY)) {
+				blockPos = blockPos.up();
+			}
+		}
+		return blockPos;
+	}
+
 	public static Vec3d getRandomDirection() {
 		return new Vec3d(
 			RANDOM.nextDouble() * 2 - 1,
 			RANDOM.nextDouble() * 2 - 1,
 			RANDOM.nextDouble() * 2 - 1
+		).normalize();
+	}
+
+	public static Vec3d getDirectionFromPlayer(final BlockPos blockPos, final PlayerEntity player) {
+		final Vec3d playerPos = player.getPos();
+		return new Vec3d(
+			blockPos.getX() - playerPos.getX(),
+			blockPos.getY() - playerPos.getY(),
+			blockPos.getZ() - playerPos.getZ()
 		).normalize();
 	}
 
@@ -84,5 +110,48 @@ public class Algorithms {
 			(int) Math.floor(randomOffset.getY()),
 			(int) Math.floor(randomOffset.getZ())
 		);
+	}
+
+	public static BlockPos getRandomStandableBlockNearPlayer(final PlayerEntity player, final int distanceMin, final int distanceMax) {
+		final BlockPos playerPos = player.getBlockPos();
+		final int moveDistance = distanceMax - distanceMin;
+		final int maxDistanceDown = playerPos.getY() - moveDistance;
+		final int maxDistanceUp = playerPos.getY() + moveDistance;
+
+		// Start with random block
+		BlockPos blockPos = getRandomBlockNearPlayer(player, distanceMin, distanceMax);
+		// Move to nearest standable block
+		blockPos = getNearestStandableBlockPosTowardsPlayer(player, blockPos, maxDistanceDown, maxDistanceUp);
+
+		// Check if out of range
+		final Vec3d direction = getDirectionFromPlayer(blockPos, player);
+		if (blockPos.isWithinDistance(playerPos, distanceMin)) {
+			// Move farther
+			blockPos = blockPos.add(
+				(int) (direction.getX() * moveDistance),
+				(int) (direction.getY() * moveDistance),
+				(int) (direction.getZ() * moveDistance)
+			);
+			blockPos = getNearestStandableBlockPosTowardsPlayer(
+				player,
+				blockPos,
+				maxDistanceDown,
+				maxDistanceUp
+			);
+		} else if (!blockPos.isWithinDistance(playerPos, distanceMax)) {
+			// Move closer
+			blockPos = blockPos.add(
+				(int) (-direction.getX() * moveDistance),
+				(int) (-direction.getY() * moveDistance),
+				(int) (-direction.getZ() * moveDistance)
+			);
+			blockPos = getNearestStandableBlockPosTowardsPlayer(
+				player,
+				blockPos,
+				maxDistanceDown,
+				maxDistanceUp
+			);
+		}
+		return blockPos;
 	}
 }
