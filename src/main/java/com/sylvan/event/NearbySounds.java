@@ -10,6 +10,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
@@ -81,14 +82,11 @@ public class NearbySounds {
 
 		// Find the top solid block
 		BlockPos soundPos = new BlockPos(randomNearbyPos);
-		if (soundPos.getY() > player.getY()) {
-			while (soundPos.getY() > world.getBottomY() && world.getBlockState(soundPos).isAir()) {
-				soundPos = soundPos.down();
-			}
-		} else {
-			while (soundPos.getY() < world.getTopY() && world.getBlockState(soundPos).isAir()) {
-				soundPos = soundPos.up();
-			}
+		while (world.getBlockState(soundPos).isAir() && soundPos.getY() > (playerPos.getY() - Presence.config.nearbySoundsDistanceMax)) {
+			soundPos = soundPos.down();
+		}
+		while (world.getBlockState(soundPos).isAir() && soundPos.getY() < (playerPos.getY() + Presence.config.nearbySoundsDistanceMax)) {
+			soundPos = soundPos.up();
 		}
 
 		return soundPos;
