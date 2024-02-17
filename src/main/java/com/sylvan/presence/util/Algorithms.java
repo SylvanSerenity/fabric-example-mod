@@ -33,7 +33,7 @@ public class Algorithms {
 		return keyWeightMap.get(0).getKey();
 	}
 
-	public static boolean blockCanBeSeen(final List<? extends PlayerEntity> players, final BlockPos blockPos) {
+	public static boolean canBlockBeSeen(final List<? extends PlayerEntity> players, final BlockPos blockPos) {
 		for (PlayerEntity player : players) {
 			Vec3d vec3d = new Vec3d(player.getX(), player.getEyeY(), player.getZ());
 			Vec3d vec3d2 = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());

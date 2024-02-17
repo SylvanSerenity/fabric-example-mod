@@ -94,17 +94,15 @@ public class ExtinguishTorches {
 				torchPlacementMap.remove(player.getUuid());
 				return false;
 			}
-			if (
-				torchStack.empty() ||						// Player must have tracked torches
-				world.getLightLevel(LightType.SKY, player.getBlockPos()) <= 0	// Player must be above ground
-			) return false; // Wait until next attempt
+			// Player must have tracked torches
+			if (torchStack.empty()) return false; // Wait until next attempt
 
 			Block block;
 			for (BlockPos torchPos : torchStack) {
 				block = world.getBlockState(torchPos).getBlock();
 				if (
 					((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) &&	// Block must still be a torch
-					!Algorithms.blockCanBeSeen(world.getPlayers(), torchPos)	// Player cannot see the torch being removed
+					!Algorithms.canBlockBeSeen(world.getPlayers(), torchPos)	// Player cannot see the torch being removed
 				) {
 					// Remove the torch
 					world.removeBlock(torchPos, false);
