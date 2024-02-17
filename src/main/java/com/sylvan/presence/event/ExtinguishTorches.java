@@ -49,7 +49,7 @@ public class ExtinguishTorches {
 	public static void scheduleTracking(final PlayerEntity player) {
 		Events.scheduler.schedule(
 			() -> {
-				ExtinguishTorches.startTrackingTorches(player);
+				if (!player.isRemoved()) ExtinguishTorches.startTrackingTorches(player);
 			},
 			Algorithms.RANDOM.nextBetween(
 				extinguishTorchesTrackIntervalMin,
@@ -111,7 +111,7 @@ public class ExtinguishTorches {
 
 			torchStack.clear();
 		}
-		torchPlacementMap.remove(player.getUuid());
+		if (torchPlacementMap.containsKey(player.getUuid())) torchPlacementMap.remove(player.getUuid());
 		return true;
 	}
 }

@@ -63,7 +63,7 @@ public class NearbySounds {
 		Events.scheduler.schedule(
 			() -> {
 				playNearbySound(player);
-				scheduleEvent(player);
+				if (!player.isRemoved()) scheduleEvent(player);
 			},
 			Algorithms.RANDOM.nextBetween(
 				nearbySoundsDelayMin,
@@ -73,18 +73,18 @@ public class NearbySounds {
 	}
 
 	public static void playNearbySound(final PlayerEntity player) {
-		if (!player.isRemoved()) {
-			final World world = player.getWorld();
-			final BlockPos playerPos = player.getBlockPos();
-			BlockPos soundPos = Algorithms.getRandomBlockNearPlayer(player, nearbySoundsDistanceMin, nearbySoundsDistanceMax);
-			soundPos = Algorithms.getNearestStandableBlockPos(
-				world,
-				soundPos,
-				playerPos.getY() - nearbySoundsDistanceMax,
-				playerPos.getY() + nearbySoundsDistanceMax
-			);
-			final SoundEvent sound = Algorithms.randomKeyFromWeightMap(nearbySounds);
-			world.playSound(null, soundPos, sound, SoundCategory.PLAYERS);
-		}
+		if (player.isRemoved()) return;
+
+		final World world = player.getWorld();
+		final BlockPos playerPos = player.getBlockPos();
+		BlockPos soundPos = Algorithms.getRandomBlockNearPlayer(player, nearbySoundsDistanceMin, nearbySoundsDistanceMax);
+		soundPos = Algorithms.getNearestStandableBlockPos(
+			world,
+			soundPos,
+			playerPos.getY() - nearbySoundsDistanceMax,
+			playerPos.getY() + nearbySoundsDistanceMax
+		);
+		final SoundEvent sound = Algorithms.randomKeyFromWeightMap(nearbySounds);
+		world.playSound(null, soundPos, sound, SoundCategory.PLAYERS);
 	}
 }

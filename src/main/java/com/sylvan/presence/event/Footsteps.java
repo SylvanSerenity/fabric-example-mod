@@ -48,7 +48,7 @@ public class Footsteps {
 		Events.scheduler.schedule(
 			() -> {
 				generateFootsteps(player, Algorithms.RANDOM.nextBetween(footstepsStepsMin, footstepsStepsMax));
-				scheduleEvent(player);
+				if (!player.isRemoved()) scheduleEvent(player);
 			},
 			Algorithms.RANDOM.nextBetween(
 				footstepsDelayMin,
