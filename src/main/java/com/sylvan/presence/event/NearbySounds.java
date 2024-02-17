@@ -78,7 +78,7 @@ public class NearbySounds {
 		if (player.isRemoved()) return;
 
 		final World world = player.getWorld();
-		final BlockPos soundPos = Algorithms.getRandomStandableBlockNearPlayer(player, nearbySoundsDistanceMin, nearbySoundsDistanceMax);
+		final BlockPos soundPos = Algorithms.getRandomStandableBlockNearPlayer(player, nearbySoundsDistanceMin, nearbySoundsDistanceMax, 50);
 		final SoundEvent sound = Algorithms.randomKeyFromWeightMap(nearbySounds);
 		world.playSound(null, soundPos, sound, SoundCategory.PLAYERS);
 	}

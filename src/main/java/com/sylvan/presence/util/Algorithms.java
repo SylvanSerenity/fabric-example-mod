@@ -112,47 +112,24 @@ public class Algorithms {
 		);
 	}
 
-	public static BlockPos getRandomStandableBlockNearPlayer(final PlayerEntity player, final int distanceMin, final int distanceMax) {
+	public static BlockPos getRandomStandableBlockNearPlayer(final PlayerEntity player, final int distanceMin, final int distanceMax, final int maxAttempts) {
 		final BlockPos playerPos = player.getBlockPos();
 		final int moveDistance = Math.max(distanceMin, distanceMax - distanceMin);
 		final int maxDistanceDown = playerPos.getY() - moveDistance;
 		final int maxDistanceUp = playerPos.getY() + moveDistance;
 
-		// Start with random block
+		// Start with random block and check maxAttempt times
 		BlockPos blockPos = getRandomBlockNearPlayer(player, distanceMin, distanceMax);
-		// Move to nearest standable block
-		blockPos = getNearestStandableBlockPosTowardsPlayer(player, blockPos, maxDistanceDown, maxDistanceUp);
-
-		final Vec3d direction = getDirectionFromPlayer(blockPos, player);
-		final int moveDistanceX = (int) (direction.getX() * moveDistance);
-		final int moveDistanceY = (int) (direction.getY() * moveDistance);
-		final int moveDistanceZ = (int) (direction.getZ() * moveDistance);
-		// Check if out of range
-		if (blockPos.isWithinDistance(playerPos, distanceMin)) {
-			// Move farther
-			blockPos = blockPos.add(moveDistanceX, moveDistanceY, moveDistanceZ);
-			blockPos = getNearestStandableBlockPosTowardsPlayer(
-				player,
-				blockPos,
-				maxDistanceDown,
-				maxDistanceUp
-			);
-		} else if (!blockPos.isWithinDistance(playerPos, distanceMax)) {
-			// Move closer
-			blockPos = blockPos.add(-moveDistanceX, -moveDistanceY, -moveDistanceZ);
-			blockPos = getNearestStandableBlockPosTowardsPlayer(
-				player,
-				blockPos,
-				maxDistanceDown,
-				maxDistanceUp
-			);
-		}
-
-		// Prefer distant over close sounds (in case previous move was too close)
-		if (blockPos.isWithinDistance(playerPos, distanceMin)) {
-			// Random again, even if it's in a wall
+		for (int i = 0; i < maxAttempts; ++i) {
+			// Move to nearest standable block
+			blockPos = getNearestStandableBlockPosTowardsPlayer(player, blockPos, maxDistanceDown, maxDistanceUp);
+			// Return if blockPos is within constraints
+			if (!blockPos.isWithinDistance(playerPos, distanceMin) && blockPos.isWithinDistance(playerPos, distanceMax)) return blockPos;
+			// Try again
 			blockPos = getRandomBlockNearPlayer(player, distanceMin, distanceMax);
 		}
+
+		// If nothing is found in 50 attempts, just select a block in the wall
 		return blockPos;
 	}
 }
