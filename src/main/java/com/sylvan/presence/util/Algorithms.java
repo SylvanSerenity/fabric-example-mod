@@ -114,7 +114,7 @@ public class Algorithms {
 
 	public static BlockPos getRandomStandableBlockNearPlayer(final PlayerEntity player, final int distanceMin, final int distanceMax) {
 		final BlockPos playerPos = player.getBlockPos();
-		final int moveDistance = distanceMax - distanceMin;
+		final int moveDistance = Math.max(distanceMin, distanceMax - distanceMin);
 		final int maxDistanceDown = playerPos.getY() - moveDistance;
 		final int maxDistanceUp = playerPos.getY() + moveDistance;
 
