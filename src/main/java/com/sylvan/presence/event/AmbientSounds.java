@@ -79,7 +79,7 @@ public class AmbientSounds {
 	}
 
 	public static void scheduleEvent(final PlayerEntity player) {
-		final float hauntLevel = PlayerData.getPlayerData(player.getUuid()).getHauntLevel();
+		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
 		Events.scheduler.schedule(
 			() -> {
 				playAmbientSound(player);

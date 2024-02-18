@@ -30,13 +30,15 @@ public class PlayerData {
 	private static float hauntChanceMaxBeforeDecrease = 0.75f;	// The maximum haunt chance before haunted players start getting their haunt chance reduced based on play time
 	private static int minutesToFullyReduceHauntChance = 600;	// The number of minutes that would reduce haunt chance by 100%
 
-	public static void addPlayerData(final UUID uuid) {
-		playerDataMap.put(uuid, new PlayerData(uuid));
+	public static PlayerData addPlayerData(final PlayerEntity player) {
+		final PlayerData playerData = new PlayerData(player);
+		playerDataMap.put(player.getUuid(), playerData);
+		return playerData;
 	}
 
-	public static PlayerData getPlayerData(final UUID uuid) {
-		if (playerDataMap.containsKey(uuid)) return playerDataMap.get(uuid);
-		else return new PlayerData(uuid);
+	public static PlayerData getPlayerData(final PlayerEntity player) {
+		if (playerDataMap.containsKey(player.getUuid())) return playerDataMap.get(player.getUuid());
+		else return new PlayerData(player);
 	}
 
 	public static void loadConfig() {
@@ -56,8 +58,13 @@ public class PlayerData {
 		playerDataDirectory = server.getSavePath(WorldSavePath.ROOT).toString() + "/presence/playerdata/";
 	}
 
+	public static boolean hasInstance() {
+		return server != null && server.isRunning();
+	}
+
 	// Instance
 	private UUID uuid;
+	private PlayerEntity player;
 	private String playerDataPath;
 	private LocalDateTime joinTime;
 	private boolean isHaunted = false;
@@ -67,13 +74,17 @@ public class PlayerData {
 	private float hauntLevel = defaultHauntLevel;	// Divides delay minima and maxima by hauntLevel, such that events happen more often as time goes on. 1.0 has no effect, and larger numbers increase events
 	private long playTime = 0;			// Time in minutes that the player has played
 
-	private PlayerData(final UUID uuid) {
-		this.uuid = uuid;
+	private PlayerData(final PlayerEntity playerEntity) {
+		player = playerEntity;
+		uuid = playerEntity.getUuid();
 		playerDataPath = playerDataDirectory + uuid.toString();
 		joinTime = LocalDateTime.now();
 		load();
+		rollHauntChance();
+	}
 
-		if (rollHauntChance()) {
+	public void startEvents() {
+		if (isHaunted) {
 			scheduleEvents();
 		}
 	}
@@ -87,7 +98,8 @@ public class PlayerData {
 	}
 
 	public PlayerEntity getPlayer() {
-		return server.getPlayerManager().getPlayer(uuid);
+		if (player == null) player = server.getPlayerManager().getPlayer(uuid);
+		return player;
 	}
 
 	public boolean isHaunted() {

@@ -47,7 +47,7 @@ public class ExtinguishTorches {
 	}
 
 	public static void scheduleTracking(final PlayerEntity player) {
-		final float hauntLevel = PlayerData.getPlayerData(player.getUuid()).getHauntLevel();
+		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
 		Events.scheduler.schedule(
 			() -> {
 				if (!player.isRemoved()) ExtinguishTorches.startTrackingTorches(player);

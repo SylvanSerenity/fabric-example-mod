@@ -44,7 +44,7 @@ public class Footsteps {
 	}
 
 	public static void scheduleEvent(final PlayerEntity player) {
-		final float hauntLevel = PlayerData.getPlayerData(player.getUuid()).getHauntLevel();
+		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
 		Events.scheduler.schedule(
 			() -> {
 				generateFootsteps(player, Math.max(1, Algorithms.RANDOM.nextBetween(footstepsStepsMin, footstepsStepsMax)));

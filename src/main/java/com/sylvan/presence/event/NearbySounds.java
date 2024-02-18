@@ -74,7 +74,7 @@ public class NearbySounds {
 	}
 
 	public static void scheduleEvent(final PlayerEntity player) {
-		final float hauntLevel = PlayerData.getPlayerData(player.getUuid()).getHauntLevel();
+		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
 		Events.scheduler.schedule(
 			() -> {
 				playNearbySound(player);

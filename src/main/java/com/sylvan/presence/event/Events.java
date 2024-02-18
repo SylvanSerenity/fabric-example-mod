@@ -52,15 +52,14 @@ public class Events {
 
 		// Schedule player join events
 		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
-			final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
-			PlayerData.addPlayerData(player.getUuid());
+			PlayerData.addPlayerData(serverPlayNetworkHandler.getPlayer()).startEvents();
 		});
 
 		// Attempt to remove torches when player disconnects
 		ServerPlayConnectionEvents.DISCONNECT.register((serverPlayNetworkHandler, server) -> {
 			final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
 			if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.extinguishTrackedTorches(player);
-			PlayerData.getPlayerData(player.getUuid()).remove();
+			PlayerData.getPlayerData(player).remove();
 		});
 
 		// Add torch tracker for extinguish torches event
