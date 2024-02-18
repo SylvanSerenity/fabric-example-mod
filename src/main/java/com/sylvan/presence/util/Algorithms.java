@@ -23,7 +23,7 @@ public class Algorithms {
 	public static final Random RANDOM = Random.create();
 
 	private static int algorithmsCaveDetectionRays = 30;				// The amount of rays to shoot in random directions to determine whether an entity is in a cave
-	private static float algorithmsCaveDetectionMaxNonCaveaveBlockPercent = 0.1f;	// The percent of blocks a cave detection ray can collide with that are not usually found in a cave before assuming player is in a base
+	private static float algorithmsCaveDetectionMaxNonCaveaveBlockPercent = 0.0f;	// The percent of blocks a cave detection ray can collide with that are not usually found in a cave before assuming player is in a base
 
 	public static void loadConfig() {
 		try {
