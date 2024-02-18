@@ -62,6 +62,7 @@ public class AmbientSounds {
 					Presence.LOGGER.warn("Could not find sound \"" + key + "\" in AmbientSounds.java.");
 					continue;
 				}
+				ambientSounds.put(sound, entry.getValue().getAsFloat());
 			}
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default default.", e);

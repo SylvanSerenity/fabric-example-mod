@@ -62,6 +62,7 @@ public class NearbySounds {
 					Presence.LOGGER.warn("Could not find sound \"" + key + "\" in NearbySounds.java.");
 					continue;
 				}
+				nearbySounds.put(sound, entry.getValue().getAsFloat());
 			}
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default default.", e);
