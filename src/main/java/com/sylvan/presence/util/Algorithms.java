@@ -9,8 +9,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LightType;
@@ -159,13 +161,18 @@ public class Algorithms {
 		).normalize();
 	}
 
-	public static Vec3d getBlockDirectionFromEntity(final BlockPos blockPos, final Entity entity) {
+	public static Direction getBlockDirectionFromEntity(final Entity entity, final BlockPos blockPos) {
 		final Vec3d entityPos = entity.getPos();
-		return new Vec3d(
+		final Vec3d direction = new Vec3d(
 			blockPos.getX() - entityPos.getX(),
 			blockPos.getY() - entityPos.getY(),
 			blockPos.getZ() - entityPos.getZ()
 		).normalize();
+		return Direction.fromVector(
+			(int) direction.getX(),
+			(int) direction.getY(),
+			(int) direction.getZ()
+		);
 	}
 
 	public static BlockPos getRandomBlockNearEntity(final Entity entity, final int distanceMin, final int distanceMax) {
@@ -218,38 +225,38 @@ public class Algorithms {
 
 		// Raycast in cardinal directions
 		int nonCaveBlockCount = 0;
-		HitResult up = castRayFromEyeToBlock(entity, entityPos.up(128));
-		if ((up.getType() == HitResult.Type.MISS)) return false;
-		if (!isCaveBlockSound(world.getBlockState(getBlockPosFromVec3d(up.getPos())).getSoundGroup())) ++nonCaveBlockCount;
-		HitResult down = castRayFromEyeToBlock(entity, entityPos.down(128));
-		if ((down.getType() == HitResult.Type.MISS)) return false;
-		if (!isCaveBlockSound(world.getBlockState(getBlockPosFromVec3d(down.getPos())).getSoundGroup())) ++nonCaveBlockCount;
-		HitResult north = castRayFromEyeToBlock(entity, entityPos.north(128));
-		if ((north.getType() == HitResult.Type.MISS)) return false;
-		if (!isCaveBlockSound(world.getBlockState(getBlockPosFromVec3d(north.getPos())).getSoundGroup())) ++nonCaveBlockCount;
-		HitResult south = castRayFromEyeToBlock(entity, entityPos.south(128));
-		if ((south.getType() == HitResult.Type.MISS)) return false;
-		if (!isCaveBlockSound(world.getBlockState(getBlockPosFromVec3d(south.getPos())).getSoundGroup())) ++nonCaveBlockCount;
-		HitResult east = castRayFromEyeToBlock(entity, entityPos.east(128));
-		if ((east.getType() == HitResult.Type.MISS)) return false;
-		if (!isCaveBlockSound(world.getBlockState(getBlockPosFromVec3d(east.getPos())).getSoundGroup())) ++nonCaveBlockCount;
-		HitResult west = castRayFromEyeToBlock(entity, entityPos.west(128));
-		if ((west.getType() == HitResult.Type.MISS)) return false;
-		if (!isCaveBlockSound(world.getBlockState(getBlockPosFromVec3d(west.getPos())).getSoundGroup())) ++nonCaveBlockCount;
+		final HitResult up = castRayFromEyeToBlock(entity, entityPos.up(128));
+		final BlockPos upPos = ((BlockHitResult) up).getBlockPos();
+		if ((up.getType() != HitResult.Type.BLOCK)) return false;
+		if (!isCaveBlockSound(world.getBlockState(upPos).getSoundGroup())) ++nonCaveBlockCount;
+		final HitResult down = castRayFromEyeToBlock(entity, entityPos.down(128));
+		final BlockPos downPos = ((BlockHitResult) down).getBlockPos();
+		if ((down.getType() != HitResult.Type.BLOCK)) return false;
+		if (!isCaveBlockSound(world.getBlockState(downPos).getSoundGroup())) ++nonCaveBlockCount;
+		final HitResult north = castRayFromEyeToBlock(entity, entityPos.north(128));
+		final BlockPos northPos = ((BlockHitResult) north).getBlockPos();
+		if ((north.getType() != HitResult.Type.BLOCK)) return false;
+		if (!isCaveBlockSound(world.getBlockState(northPos).getSoundGroup())) ++nonCaveBlockCount;
+		final HitResult south = castRayFromEyeToBlock(entity, entityPos.south(128));
+		final BlockPos southPos = ((BlockHitResult) south).getBlockPos();
+		if ((south.getType() != HitResult.Type.BLOCK)) return false;
+		if (!isCaveBlockSound(world.getBlockState(southPos).getSoundGroup())) ++nonCaveBlockCount;
+		final HitResult east = castRayFromEyeToBlock(entity, entityPos.east(128));
+		final BlockPos eastPos = ((BlockHitResult) east).getBlockPos();
+		if ((east.getType() != HitResult.Type.BLOCK)) return false;
+		if (!isCaveBlockSound(world.getBlockState(eastPos).getSoundGroup())) ++nonCaveBlockCount;
+		final HitResult west = castRayFromEyeToBlock(entity, entityPos.west(128));
+		final BlockPos westPos = ((BlockHitResult) west).getBlockPos();
+		if ((west.getType() != HitResult.Type.BLOCK)) return false;
+		if (!isCaveBlockSound(world.getBlockState(westPos).getSoundGroup())) ++nonCaveBlockCount;
 
 		// Cast rays in random directions. If they all hit, the sky cannot be seen.
 		HitResult hit;
 		BlockSoundGroup hitBlockSound;
 		for (int i = 0; i < algorithmsCaveDetectionRays; ++i) {
 			hit = castRayFromEyeToBlock(entity, getRandomBlockNearEntity(entity, 128, 128));
-			if (hit.getType() == HitResult.Type.MISS) return false;
-			hitBlockSound = world.getBlockState(
-				new BlockPos(
-					(int) hit.getPos().getX(),
-					(int) hit.getPos().getY(),
-					(int) hit.getPos().getZ()
-				)
-			).getSoundGroup();
+			if (hit.getType() != HitResult.Type.BLOCK) return false;
+			hitBlockSound = world.getBlockState(((BlockHitResult) hit).getBlockPos()).getSoundGroup();
 			if (!isCaveBlockSound(hitBlockSound)) ++nonCaveBlockCount;
 		}
 
