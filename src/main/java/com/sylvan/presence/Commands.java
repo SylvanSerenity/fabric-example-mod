@@ -2,6 +2,7 @@ package com.sylvan.presence;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -22,6 +23,8 @@ import com.sylvan.presence.event.NearbySounds;
 import com.sylvan.presence.util.Algorithms;
 
 public class Commands {
+	private static HerobrineEntity herobrineEntity;
+
 	public static void registerCommands() {
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(
 			literal("presence")
@@ -299,15 +302,19 @@ public class Commands {
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
 							final PlayerEntity player = context.getSource().getPlayer();
-							final World world = player.getWorld();
 							context.getSource().sendFeedback(() -> Text.literal("Summoned fake Herobrine.").withColor(Formatting.BLUE.getColorValue()), false);
-
-							HerobrineEntity entity = new HerobrineEntity(EntityType.ARMOR_STAND, world);
-							entity.refreshPositionAndAngles(player.getBlockPos(), player.getYaw(), player.getPitch());
-							world.spawnEntity(entity);
+							summonFakeHerobrine(player);
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot summon fake Herobrine by server.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
+						return 1;
+					})
+				)
+				.then(
+					literal("destroy")
+					.executes(context -> {
+						context.getSource().sendFeedback(() -> Text.literal("Destroyed fake Herobrine.").withColor(Formatting.BLUE.getColorValue()), false);
+						destroyFakeHerobrine();
 						return 1;
 					})
 				)
@@ -476,5 +483,17 @@ public class Commands {
 				)
 			)
 		));
+	}
+
+	private static void summonFakeHerobrine(final PlayerEntity player) {
+		destroyFakeHerobrine();
+		final World world = player.getWorld();
+		herobrineEntity = new HerobrineEntity(EntityType.ARMOR_STAND, world);
+		herobrineEntity.refreshPositionAndAngles(player.getBlockPos(), player.getYaw(), player.getPitch());
+		world.spawnEntity(herobrineEntity);
+	}
+
+	private static void destroyFakeHerobrine() {
+		if (herobrineEntity != null) herobrineEntity.remove(RemovalReason.DISCARDED);
 	}
 }
