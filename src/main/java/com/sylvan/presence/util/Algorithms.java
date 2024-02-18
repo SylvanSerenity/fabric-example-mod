@@ -7,6 +7,7 @@ import com.sylvan.presence.Presence;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -17,6 +18,20 @@ import net.minecraft.world.World;
 
 public class Algorithms {
 	public static final Random RANDOM = Random.create();
+
+	private static int algorithmsCaveDetectionRays = 50;				// The amount of rays to shoot in random directions to determine whether an entity is in a cave
+	private static float algorithmsCaveDetectionMaxNonCaveaveBlockPercent = 0.05f;	// The percent of blocks a cave detection ray can collide with that are not usually found in a cave before assuming player is in a base
+
+	public static void loadConfig() {
+		try {
+			algorithmsCaveDetectionRays = Presence.config.getOrSetValue("algorithmsCaveDetectionRays", algorithmsCaveDetectionRays).getAsInt();
+			algorithmsCaveDetectionMaxNonCaveaveBlockPercent = Presence.config.getOrSetValue("algorithmsCaveDetectionMaxNonCaveaveBlockPercent", algorithmsCaveDetectionMaxNonCaveaveBlockPercent).getAsFloat();
+		} catch (UnsupportedOperationException e) {
+			Presence.LOGGER.error("Configuration issue for Algorithms.java. Wiping and using default.", e);
+			Presence.config.wipe();
+			Presence.initConfig();
+		}
+	}
 
 	public static float randomBetween(final float min, final float max) {
 		return min + RANDOM.nextFloat() * (max - min);
@@ -57,7 +72,7 @@ public class Algorithms {
 		return new Identifier(namespace, name);
 	}
 
-	public static HitResult.Type castRayFromEyeToBlock(final Entity entity, final BlockPos blockPos) {
+	public static HitResult castRayFromEyeToBlock(final Entity entity, final BlockPos blockPos) {
 		return entity.getWorld().raycast(
 			new RaycastContext(
 				entity.getEyePos(),
@@ -66,7 +81,7 @@ public class Algorithms {
 				RaycastContext.FluidHandling.NONE,
 				entity
 			)
-		).getType();
+		);
 	}
 
 	public static HitResult.Type castRayFromEyeToEye(final Entity entity1, final Entity entity2) {
@@ -87,7 +102,7 @@ public class Algorithms {
 	public static boolean canBlockBeSeenByPlayers(final List<? extends PlayerEntity> players, final BlockPos blockPos) {
 		for (PlayerEntity player : players) {
 			if (!player.getBlockPos().isWithinDistance(blockPos, 128.0)) continue;
-			if (castRayFromEyeToBlock(player, blockPos) == HitResult.Type.MISS) return true;
+			if (castRayFromEyeToBlock(player, blockPos).getType() == HitResult.Type.MISS) return true;
 		}
 		return false;
 	}
@@ -180,11 +195,36 @@ public class Algorithms {
 	}
 
 	public static boolean isEntityInCave(final Entity entity) {
-		if (entity.getWorld().isSkyVisible(entity.getBlockPos())) return false;
-		// Cast rays in random directions. If they all hit, the sky cannot be seen
-		for (int i = 0; i < 50; ++i) {
-			if (castRayFromEyeToBlock(entity, getRandomBlockNearEntity(entity, 128, 128)) == HitResult.Type.MISS) return false;
+		final World world = entity.getEntityWorld();
+		if (world.isSkyVisible(entity.getBlockPos())) return false;
+
+		// Cast rays in random directions. If they all hit, the sky cannot be seen.
+		int nonCaveBlockCount = 0;
+		HitResult hit;
+		BlockSoundGroup hitBlockSound;
+		for (int i = 0; i < algorithmsCaveDetectionRays; ++i) {
+			hit = castRayFromEyeToBlock(entity, getRandomBlockNearEntity(entity, 128, 128));
+			if (hit.getType() == HitResult.Type.MISS) return false;
+			hitBlockSound = world.getBlockState(
+				new BlockPos(
+					(int) hit.getPos().getX(),
+					(int) hit.getPos().getY(),
+					(int) hit.getPos().getZ()
+				)
+			).getSoundGroup();
+			if (
+				hitBlockSound != BlockSoundGroup.STONE &&
+				hitBlockSound != BlockSoundGroup.DEEPSLATE &&
+				hitBlockSound != BlockSoundGroup.GRAVEL &&
+				hitBlockSound != BlockSoundGroup.DRIPSTONE_BLOCK &&
+				hitBlockSound != BlockSoundGroup.POINTED_DRIPSTONE &&
+				hitBlockSound != BlockSoundGroup.ROOTED_DIRT &&
+				hitBlockSound != BlockSoundGroup.TUFF
+			) ++nonCaveBlockCount;
 		}
+
+		// If over 5% of hit blocks are not normally found in a cave, assume player is in a base
+		if (((float) nonCaveBlockCount / (float) algorithmsCaveDetectionRays) > algorithmsCaveDetectionMaxNonCaveaveBlockPercent) return false;
 		return true;
 	}
 }

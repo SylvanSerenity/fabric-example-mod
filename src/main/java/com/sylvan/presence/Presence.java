@@ -12,6 +12,7 @@ import com.sylvan.presence.event.Events;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
+import com.sylvan.presence.util.Algorithms;
 import com.sylvan.presence.util.JsonFile;
 
 public class Presence implements ModInitializer {
@@ -42,6 +43,7 @@ public class Presence implements ModInitializer {
 
 		// Load config variables
 		PlayerData.loadConfig();
+		Algorithms.loadConfig();
 		AmbientSounds.loadConfig();
 		ExtinguishTorches.loadConfig();
 		Footsteps.loadConfig();
