@@ -20,8 +20,8 @@ public class Footsteps {
 	private static int footstepsDelayMax = 60 * 60 * 4;	// The maximum delay between footstep events
 	private static int footstepsReflexMs = 500;		// The maximum time the footstep event can take (so that the player turns around right after they stop)
 	private static int footstepsMaxReflexVariance = 150;	// The maximum addition to the reflex time (to add randomness to the footstep speed)
-	private static int footstepsStepsMin = 1;		// The minimum number of footsteps to play
-	private static int footstepsStepsMax = 5;		// The maximum number of footsteps to play
+	public static int footstepsStepsMin = 1;		// The minimum number of footsteps to play
+	public static int footstepsStepsMax = 5;		// The maximum number of footsteps to play
 	private static int footstepsMsPerStepMax = 300;		// The maximum amount of time of each step in milliseconds (so that it doesn't sound like walking with less footsteps)
 	private static int footstepsStepVarianceMax = 25;	// The maximum amount of time to add between each footstep (so the step cadence has randomness)
 

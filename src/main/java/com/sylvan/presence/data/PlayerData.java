@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.gson.JsonObject;
 import com.sylvan.presence.Presence;
 import com.sylvan.presence.event.AmbientSounds;
+import com.sylvan.presence.event.Attack;
 import com.sylvan.presence.event.Events;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
@@ -162,6 +163,13 @@ public class PlayerData {
 			Algorithms.RANDOM.nextBetween(
 				Algorithms.divideByFloat(AmbientSounds.ambientSoundsDelayMin, hauntLevel),
 				Algorithms.divideByFloat(AmbientSounds.ambientSoundsDelayMax, hauntLevel)
+			)
+		);
+		if (Attack.attackEnabled) Attack.scheduleEvent(
+			player,
+			Algorithms.RANDOM.nextBetween(
+				Algorithms.divideByFloat(Attack.attackDelayMin, hauntLevel),
+				Algorithms.divideByFloat(Attack.attackDelayMax, hauntLevel)
 			)
 		);
 		if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);

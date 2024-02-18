@@ -9,11 +9,13 @@ import net.minecraft.world.World;
 
 import static net.minecraft.server.command.CommandManager.*;
 
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.sylvan.presence.data.PlayerData;
 import com.sylvan.presence.entity.HerobrineEntity;
 import com.sylvan.presence.event.AmbientSounds;
+import com.sylvan.presence.event.Attack;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
@@ -57,6 +59,53 @@ public class Commands {
 							}
 							return 1;
 						})
+					)
+				)
+				.then(
+					literal("attack")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							context.getSource().sendFeedback(() -> Text.literal("Executing attack event.").withColor(Formatting.BLUE.getColorValue()), false);
+							Attack.attack(context.getSource().getPlayer(), Algorithms.randomBetween(Attack.attackDamageMin, Attack.attackDamageMax));
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot execute attack event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("damage", FloatArgumentType.floatArg())
+						.executes(context -> {
+							if (context.getSource().isExecutedByPlayer()) {
+								final float damage = FloatArgumentType.getFloat(context, "damage");
+								context.getSource().sendFeedback(() -> Text.literal("Executing attack event.").withColor(Formatting.BLUE.getColorValue()), false);
+								Attack.attack(context.getSource().getPlayer(), damage);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Cannot execute attack event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							}
+							return 1;
+						})
+						.then(
+							argument("player", StringArgumentType.word())
+							.suggests((context, builder) -> {
+								final Iterable<String> playerNames = context.getSource().getPlayerNames();
+								for (final String playerName : playerNames) {
+									builder.suggest(playerName);
+								}
+								return builder.buildFuture();
+							})
+							.executes(context -> {
+								final String playerName = StringArgumentType.getString(context, "player");
+								final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+								if (player == null) {
+									context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								} else {
+									final float damage = FloatArgumentType.getFloat(context, "damage");
+									context.getSource().sendFeedback(() -> Text.literal("Executing attack event for player " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+									Attack.attack(player, damage);
+								}
+								return 1;
+							})
+						)
 					)
 				)
 				.then(
@@ -167,7 +216,7 @@ public class Commands {
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
 							context.getSource().sendFeedback(() -> Text.literal("Executing footsteps event.").withColor(Formatting.BLUE.getColorValue()), false);
-							Footsteps.generateFootsteps(context.getSource().getPlayer(), 3);
+							Footsteps.generateFootsteps(context.getSource().getPlayer(), Algorithms.RANDOM.nextBetween(Footsteps.footstepsStepsMin, Footsteps.footstepsStepsMax));
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute footsteps event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}

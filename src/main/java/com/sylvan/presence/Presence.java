@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.sylvan.presence.data.PlayerData;
 import com.sylvan.presence.event.AmbientSounds;
+import com.sylvan.presence.event.Attack;
 import com.sylvan.presence.event.Events;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
@@ -45,6 +46,7 @@ public class Presence implements ModInitializer {
 		PlayerData.loadConfig();
 		Algorithms.loadConfig();
 		AmbientSounds.loadConfig();
+		Attack.loadConfig();
 		ExtinguishTorches.loadConfig();
 		Footsteps.loadConfig();
 		NearbySounds.loadConfig();
