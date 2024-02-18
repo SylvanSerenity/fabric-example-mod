@@ -25,7 +25,7 @@ public class Events {
 	public static List<UUID> hauntedPlayers = new ArrayList<>();
 
 	// Config
-	private static float hauntChance = 1.0f;
+	private static float hauntChance = 0.5f;
 
 	private static void loadConfig() {
 		try {
@@ -69,7 +69,9 @@ public class Events {
 		// Schedule player join events
 		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
 			final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
+			// Give player a random haunt chance when they join
 			if (Algorithms.RANDOM.nextFloat() <= hauntChance) {
+				// If player is haunted, schedule all events per the configuration file
 				hauntedPlayers.add(player.getUuid());
 				if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
 				if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);

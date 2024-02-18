@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 public class Footsteps {
 	// Config
 	protected static boolean footstepsEnabled = true;
-	private static int footstepsDelayMin = 60 * 60;
+	private static int footstepsDelayMin = 60 * 5;
 	private static int footstepsDelayMax = 60 * 60 * 4;
 	private static int footstepsReflexMs = 500;
 	private static int footstepsMaxReflexVariance = 150;

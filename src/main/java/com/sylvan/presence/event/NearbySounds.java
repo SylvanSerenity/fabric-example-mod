@@ -21,9 +21,9 @@ public class NearbySounds {
 
 	// Config
 	protected static boolean nearbySoundsEnabled = true;
-	private static int nearbySoundsDelayMin = 60 * 45;
-	private static int nearbySoundsDelayMax = 60 * 60 * 2;
-	private static int nearbySoundsDistanceMin = 12;
+	private static int nearbySoundsDelayMin = 60 * 15;
+	private static int nearbySoundsDelayMax = 60 * 60 * 3;
+	private static int nearbySoundsDistanceMin = 12; // 12 gives a distant-feeling sond to where it is often barely noticeable
 	private static int nearbySoundsDistanceMax = 16; // 16 is maximum distance to hear sounds
 	private static float nearbySoundsItemPickupWeight = 45.0f;
 	private static float nearbySoundsBigFallWeight = 15.0f;

@@ -19,7 +19,7 @@ public class AmbientSounds {
 
 	// Config
 	protected static boolean ambientSoundsEnabled = true;
-	private static int ambientSoundsDelayMin = 60 * 45;
+	private static int ambientSoundsDelayMin = 60 * 30;
 	private static int ambientSoundsDelayMax = 60 * 60 * 2;
 	private static int ambientSoundsRetryDelay = 60;
 	private static int ambientSoundsLightLevelMax = 7;
