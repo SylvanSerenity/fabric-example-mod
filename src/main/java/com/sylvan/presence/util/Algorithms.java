@@ -3,7 +3,10 @@ package com.sylvan.presence.util;
 import java.util.List;
 import java.util.Map;
 
+import com.sylvan.presence.Presence;
+
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -22,19 +25,35 @@ public class Algorithms {
 		return (int) (((float) dividend) / divisor);
 	}
 
-	public static <K> K randomKeyFromWeightMap(final List<Map.Entry<K, Float>> keyWeightMap) {
-		final float totalWeight = keyWeightMap.stream().map(entry -> entry.getValue()).reduce(0.0f, Float::sum);
+	public static <K> K randomKeyFromWeightMap(final Map<K, Float> keyWeightMap) {
+		final float totalWeight = keyWeightMap.values().stream().reduce(0.0f, Float::sum);
 		float randomValue = RANDOM.nextFloat() * totalWeight;
 
-		for (int i = 0; i < keyWeightMap.size(); ++i) {
-			randomValue -= keyWeightMap.get(i).getValue();
+		for (final K key : keyWeightMap.keySet()) {
+			randomValue -= keyWeightMap.get(key);
 			if (randomValue <= 0.0f) {
-				return keyWeightMap.get(i).getKey();
+				return key;
 			}
 		}
 
 		// This should not happen unless the list is empty or total weight is 0
-		return keyWeightMap.get(0).getKey();
+		return keyWeightMap.keySet().iterator().next();
+	}
+
+	public static Identifier getIdentifierFromString(final String identifier) {
+		String namespace, name;
+		String[] parts = identifier.split(":", 2);
+		if (parts.length == 2) {
+			namespace = parts[0];
+			name = parts[1];
+		} else if (parts.length == 1) {
+			namespace = "minecraft";
+			name = parts[0];
+		} else {
+			Presence.LOGGER.warn("Invalid sound key \"" + identifier + "\".");
+			return null;
+		}
+		return new Identifier(namespace, name);
 	}
 
 	public static boolean canBlockBeSeen(final List<? extends PlayerEntity> players, final BlockPos blockPos) {

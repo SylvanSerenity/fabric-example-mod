@@ -39,7 +39,7 @@ public class Footsteps {
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for Footsteps.java. Wiping and using default default.", e);
 			Presence.config.clearConfig();
-			Events.initEvents();
+			Presence.initConfig();
 		}
 	}
 

@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import com.sylvan.presence.Presence;
 import com.sylvan.presence.event.AmbientSounds;
-import com.sylvan.presence.event.Events;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
@@ -43,7 +42,7 @@ public class PlayerData {
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for PlayerData.java. Wiping and using default.", e);
 			Presence.config.clearConfig();
-			Events.initEvents();
+			Presence.initConfig();
 		}
 	}
 

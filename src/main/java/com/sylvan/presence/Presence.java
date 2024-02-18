@@ -35,7 +35,7 @@ public class Presence implements ModInitializer {
 		LOGGER.info("Presence loaded.");
 	}
 
-	private void initConfig() {
+	public static void initConfig() {
 		// Load/create config file
 		config = new Config(MOD_ID);
 

@@ -1,22 +1,24 @@
 package com.sylvan.presence.event;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.sylvan.presence.Presence;
 import com.sylvan.presence.data.PlayerData;
 import com.sylvan.presence.util.Algorithms;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 
 public class AmbientSounds {
-	private static final List<Map.Entry<SoundEvent, Float>> ambientSounds = new ArrayList<>();
+	private static final Map<SoundEvent, Float> ambientSounds = new HashMap<>();
 
 	// Config
 	public static boolean ambientSoundsEnabled = true;			// Whether the ambient sounds event is active
@@ -24,37 +26,49 @@ public class AmbientSounds {
 	private static int ambientSoundsDelayMax = 60 * 60 * 2;			// The maximum delay between ambient sounds
 	private static int ambientSoundsRetryDelay = 60;			// The delay between tries to play ambient sound
 	private static int ambientSoundsLightLevelMax = 7;			// The maximum light level to play ambient sound (so that it is dark)
-	private static float ambientSoundsCaveWeight = 95.0f;			// The weight of the cave sound
-	private static float ambientSoundsUnderwaterRareWeight = 4.5f;		// The weight of the underwater beast sound
-	private static float ambientSoundsUnderwaterUltraRareWeight = 0.5f;	// The weight of the underwater leviathan sound
 	private static float ambientSoundsPitchMin = 0.5f;			// The minimum sound pitch (so that it is slow and darker sounding)
 	private static float ambientSoundsPitchMax = 1.0f;			// The maximum sound pitch
+	private static JsonObject ambientSoundsSoundWeights = new JsonObject();	// A set of sound ID keys with weight values to play during the event
 
 	public static void loadConfig() {
+		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_CAVE.value().getId().toString(), 95.0f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_RARE.getId().toString(), 4.5f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE.getId().toString(), 0.5f);
+
 		try {
 			ambientSoundsEnabled = Presence.config.getOrSetValue("ambientSoundsEnabled", ambientSoundsEnabled).getAsBoolean();
 			ambientSoundsDelayMin = Presence.config.getOrSetValue("ambientSoundsDelayMin", ambientSoundsDelayMin).getAsInt();
 			ambientSoundsDelayMax = Presence.config.getOrSetValue("ambientSoundsDelayMax", ambientSoundsDelayMax).getAsInt();
 			ambientSoundsRetryDelay = Presence.config.getOrSetValue("ambientSoundsRetryDelay", ambientSoundsRetryDelay).getAsInt();
 			ambientSoundsLightLevelMax = Presence.config.getOrSetValue("ambientSoundsLightLevelMax", ambientSoundsLightLevelMax).getAsInt();
-			ambientSoundsCaveWeight = Presence.config.getOrSetValue("ambientSoundsCaveWeight", ambientSoundsCaveWeight).getAsFloat();
-			ambientSoundsUnderwaterRareWeight = Presence.config.getOrSetValue("ambientSoundsUnderwaterRareWeight", ambientSoundsUnderwaterRareWeight).getAsFloat();
-			ambientSoundsUnderwaterUltraRareWeight = Presence.config.getOrSetValue("ambientSoundsUnderwaterUltraRareWeight", ambientSoundsUnderwaterUltraRareWeight).getAsFloat();
 			ambientSoundsPitchMin = Presence.config.getOrSetValue("ambientSoundsPitchMin", ambientSoundsPitchMin).getAsFloat();
 			ambientSoundsPitchMax = Presence.config.getOrSetValue("ambientSoundsPitchMax", ambientSoundsPitchMax).getAsFloat();
+			ambientSoundsSoundWeights = Presence.config.getOrSetValue("ambientSoundWeights", ambientSoundsSoundWeights).getAsJsonObject();
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default default.", e);
 			Presence.config.clearConfig();
-			Events.initEvents();
+			Presence.initConfig();
 		}
 	}
 
 	public static void initEvent() {
-		ambientSounds.addAll(List.of(
-			new AbstractMap.SimpleEntry<>(SoundEvents.AMBIENT_CAVE.value(), ambientSoundsCaveWeight),
-			new AbstractMap.SimpleEntry<>(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_RARE, ambientSoundsUnderwaterRareWeight),
-			new AbstractMap.SimpleEntry<>(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE, ambientSoundsUnderwaterUltraRareWeight)
-		));
+		try {
+			String key;
+			for (Map.Entry<String, JsonElement> entry : ambientSoundsSoundWeights.entrySet()) {
+				key = entry.getKey();
+				final Identifier soundId = Algorithms.getIdentifierFromString(key);
+				final SoundEvent sound = Registries.SOUND_EVENT.get(soundId);
+				if (sound == null) {
+					Presence.LOGGER.warn("Could not find sound \"" + key + "\" in AmbientSounds.java.");
+					continue;
+				}
+			}
+		} catch (UnsupportedOperationException e) {
+			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default default.", e);
+			Presence.config.clearConfig();
+			Presence.initConfig();
+			Events.initEvents();
+		}
 	}
 
 	public static void scheduleEvent(final PlayerEntity player) {

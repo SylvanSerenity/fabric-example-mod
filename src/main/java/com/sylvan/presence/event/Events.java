@@ -41,7 +41,7 @@ public class Events {
 
 			if (!Presence.config.exists()) {
 				Presence.config.clearConfig();
-				initEvents();
+				Presence.initConfig();
 			}
 
 			try {
