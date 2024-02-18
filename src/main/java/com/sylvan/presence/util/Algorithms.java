@@ -214,7 +214,11 @@ public class Algorithms {
 			sound == BlockSoundGroup.DRIPSTONE_BLOCK ||
 			sound == BlockSoundGroup.POINTED_DRIPSTONE ||
 			sound == BlockSoundGroup.ROOTED_DIRT ||
-			sound == BlockSoundGroup.TUFF
+			sound == BlockSoundGroup.TUFF ||
+			sound == BlockSoundGroup.SCULK ||
+			sound == BlockSoundGroup.SCULK_CATALYST ||
+			sound == BlockSoundGroup.SCULK_SHRIEKER ||
+			sound == BlockSoundGroup.SCULK_SENSOR
 		);
 	}
 
