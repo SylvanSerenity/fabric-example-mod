@@ -57,6 +57,14 @@ public class Algorithms {
 		return keyWeightMap.keySet().iterator().next();
 	}
 
+	public static BlockPos getBlockPosFromVec3d(final Vec3d vec3d) {
+		return new BlockPos(
+			(int) vec3d.getX(),
+			(int) vec3d.getY(),
+			(int) vec3d.getZ()
+		);
+	}
+
 	public static Identifier getIdentifierFromString(final String identifier) {
 		String namespace, name;
 		String[] parts = identifier.split(":", 2);
@@ -167,11 +175,7 @@ public class Algorithms {
 		// Scale the direction vector by the random distance
 		final Vec3d randomOffset = randomDirection.multiply(distance);
 		final BlockPos entityPos = entity.getBlockPos();
-		return entityPos.add(
-			(int) Math.floor(randomOffset.getX()),
-			(int) Math.floor(randomOffset.getY()),
-			(int) Math.floor(randomOffset.getZ())
-		);
+		return entityPos.add(getBlockPosFromVec3d(randomOffset));
 	}
 
 	public static BlockPos getRandomStandableBlockNearEntity(final Entity entity, final int distanceMin, final int distanceMax, final int maxAttempts) {
@@ -195,12 +199,45 @@ public class Algorithms {
 		return blockPos;
 	}
 
+	public static boolean isCaveBlockSound(final BlockSoundGroup sound) {
+		return (
+			sound == BlockSoundGroup.STONE ||
+			sound == BlockSoundGroup.DEEPSLATE ||
+			sound == BlockSoundGroup.GRAVEL ||
+			sound == BlockSoundGroup.DRIPSTONE_BLOCK ||
+			sound == BlockSoundGroup.POINTED_DRIPSTONE ||
+			sound == BlockSoundGroup.ROOTED_DIRT ||
+			sound == BlockSoundGroup.TUFF
+		);
+	}
+
 	public static boolean isEntityInCave(final Entity entity) {
 		final World world = entity.getEntityWorld();
-		if (world.getLightLevel(LightType.SKY, entity.getBlockPos()) > 0) return false;
+		final BlockPos entityPos = entity.getBlockPos();
+		if (world.getLightLevel(LightType.SKY, entityPos) > 0) return false;
+
+		// Raycast in cardinal directions
+		int nonCaveBlockCount = 0;
+		HitResult up = castRayFromEyeToBlock(entity, entityPos.up(128));
+		if ((up.getType() == HitResult.Type.MISS)) return false;
+		if (!isCaveBlockSound(world.getBlockState(getBlockPosFromVec3d(up.getPos())).getSoundGroup())) ++nonCaveBlockCount;
+		HitResult down = castRayFromEyeToBlock(entity, entityPos.down(128));
+		if ((down.getType() == HitResult.Type.MISS)) return false;
+		if (!isCaveBlockSound(world.getBlockState(getBlockPosFromVec3d(down.getPos())).getSoundGroup())) ++nonCaveBlockCount;
+		HitResult north = castRayFromEyeToBlock(entity, entityPos.north(128));
+		if ((north.getType() == HitResult.Type.MISS)) return false;
+		if (!isCaveBlockSound(world.getBlockState(getBlockPosFromVec3d(north.getPos())).getSoundGroup())) ++nonCaveBlockCount;
+		HitResult south = castRayFromEyeToBlock(entity, entityPos.south(128));
+		if ((south.getType() == HitResult.Type.MISS)) return false;
+		if (!isCaveBlockSound(world.getBlockState(getBlockPosFromVec3d(south.getPos())).getSoundGroup())) ++nonCaveBlockCount;
+		HitResult east = castRayFromEyeToBlock(entity, entityPos.east(128));
+		if ((east.getType() == HitResult.Type.MISS)) return false;
+		if (!isCaveBlockSound(world.getBlockState(getBlockPosFromVec3d(east.getPos())).getSoundGroup())) ++nonCaveBlockCount;
+		HitResult west = castRayFromEyeToBlock(entity, entityPos.west(128));
+		if ((west.getType() == HitResult.Type.MISS)) return false;
+		if (!isCaveBlockSound(world.getBlockState(getBlockPosFromVec3d(west.getPos())).getSoundGroup())) ++nonCaveBlockCount;
 
 		// Cast rays in random directions. If they all hit, the sky cannot be seen.
-		int nonCaveBlockCount = 0;
 		HitResult hit;
 		BlockSoundGroup hitBlockSound;
 		for (int i = 0; i < algorithmsCaveDetectionRays; ++i) {
@@ -213,19 +250,11 @@ public class Algorithms {
 					(int) hit.getPos().getZ()
 				)
 			).getSoundGroup();
-			if (
-				hitBlockSound != BlockSoundGroup.STONE &&
-				hitBlockSound != BlockSoundGroup.DEEPSLATE &&
-				hitBlockSound != BlockSoundGroup.GRAVEL &&
-				hitBlockSound != BlockSoundGroup.DRIPSTONE_BLOCK &&
-				hitBlockSound != BlockSoundGroup.POINTED_DRIPSTONE &&
-				hitBlockSound != BlockSoundGroup.ROOTED_DIRT &&
-				hitBlockSound != BlockSoundGroup.TUFF
-			) ++nonCaveBlockCount;
+			if (!isCaveBlockSound(hitBlockSound)) ++nonCaveBlockCount;
 		}
 
 		// If over 5% of hit blocks are not normally found in a cave, assume player is in a base
-		if (((float) nonCaveBlockCount / (float) Math.max(1, algorithmsCaveDetectionRays)) > algorithmsCaveDetectionMaxNonCaveaveBlockPercent) return false;
+		if (((float) nonCaveBlockCount / (float) Math.max(1, algorithmsCaveDetectionRays + 6)) > algorithmsCaveDetectionMaxNonCaveaveBlockPercent) return false;
 		return true;
 	}
 }
