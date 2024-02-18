@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.sylvan.presence.data.PlayerData;
+import com.sylvan.presence.entity.Entities;
 import com.sylvan.presence.event.AmbientSounds;
 import com.sylvan.presence.event.Events;
 import com.sylvan.presence.event.ExtinguishTorches;
@@ -33,6 +34,7 @@ public class Presence implements ModInitializer {
 		initConfig();
 		Events.registerEvents();
 		Commands.registerCommands();
+		Entities.registerEntities();
 
 		LOGGER.info("Presence loaded.");
 	}
