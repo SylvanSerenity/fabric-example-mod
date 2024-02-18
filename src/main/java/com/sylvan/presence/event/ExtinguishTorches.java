@@ -101,7 +101,7 @@ public class ExtinguishTorches {
 				block = world.getBlockState(torchPos).getBlock();
 				if (
 					((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) &&	// Block must still be a torch
-					!Algorithms.canBlockBeSeen(world.getPlayers(), torchPos)	// Player cannot see the torch being removed
+					!Algorithms.canBlockBeSeenByPlayers(world.getPlayers(), torchPos)	// Player cannot see the torch being removed
 				) {
 					// Remove the torch
 					world.removeBlock(torchPos, false);

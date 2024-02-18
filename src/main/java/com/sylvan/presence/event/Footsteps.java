@@ -87,7 +87,7 @@ public class Footsteps {
 		final BlockPos playerPos = player.getBlockPos();
 
 		// Player must be able to stand on source block
-		soundPos = Algorithms.getNearestStandableBlockPosTowardsPlayer(
+		soundPos = Algorithms.getNearestStandableBlockPosTowardsEntity(
 			player,
 			soundPos,
 			playerPos.getY() - footstepsStepsMax,

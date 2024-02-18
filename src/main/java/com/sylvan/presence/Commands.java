@@ -13,6 +13,7 @@ import com.sylvan.presence.event.AmbientSounds;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
+import com.sylvan.presence.util.Algorithms;
 
 public class Commands {
 	public static void registerCommands() {
@@ -129,6 +130,7 @@ public class Commands {
 									context.getSource().sendFeedback(() -> Text.literal("Player is already being tracked for torch placements.").withColor(Formatting.RED.getColorValue()), false);
 								} else {
 									context.getSource().sendFeedback(() -> Text.literal("Started tracking torches for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+									ExtinguishTorches.startTrackingTorches(player);
 								}
 								return 1;
 							})
@@ -158,7 +160,6 @@ public class Commands {
 									context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.RED.getColorValue()), false);
 								} else if (ExtinguishTorches.torchPlacementMap.containsKey(player.getUuid())) {
 									context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is being tracked for torch placements.").withColor(Formatting.BLUE.getColorValue()), false);
-									ExtinguishTorches.extinguishTrackedTorches(player);
 								} else {
 									context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is not being tracked for torch placements.").withColor(Formatting.RED.getColorValue()), false);
 								}
@@ -205,6 +206,37 @@ public class Commands {
 								return 1;
 							})
 						)
+					)
+				)
+				.then(
+					literal("isInCave")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							final PlayerEntity player = context.getSource().getPlayer();
+							if (Algorithms.isPlayerInCave(player)) {
+								context.getSource().sendFeedback(() -> Text.literal("You are in a cave.").withColor(Formatting.BLUE.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("You are not in a cave.").withColor(Formatting.RED.getColorValue()), false);
+							}
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot query cave status. Please specify a player.").withColor(Formatting.RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("player", StringArgumentType.word())
+						.executes(context -> {
+							final String playerName = StringArgumentType.getString(context, "player");
+							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+							if (player == null) {
+								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.RED.getColorValue()), false);
+							} else if (Algorithms.isPlayerInCave(player)) {
+								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is in a cave.").withColor(Formatting.BLUE.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is not in a cave.").withColor(Formatting.RED.getColorValue()), false);
+							}
+							return 1;
+						})
 					)
 				)
 				.then(

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.sylvan.presence.Presence;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.HitResult;
@@ -56,15 +57,37 @@ public class Algorithms {
 		return new Identifier(namespace, name);
 	}
 
-	public static boolean canBlockBeSeen(final List<? extends PlayerEntity> players, final BlockPos blockPos) {
+	public static HitResult.Type castRayFromEyeToBlock(final Entity entity, final BlockPos blockPos) {
+		return entity.getWorld().raycast(
+			new RaycastContext(
+				entity.getEyePos(),
+				blockPos.toCenterPos(),
+				RaycastContext.ShapeType.COLLIDER,
+				RaycastContext.FluidHandling.NONE,
+				entity
+			)
+		).getType();
+	}
+
+	public static HitResult.Type castRayFromEyeToEye(final Entity entity1, final Entity entity2) {
+		if (entity1.getEntityWorld().getDimension() != entity2.getEntityWorld().getDimension()) {
+			return HitResult.Type.MISS;
+		}
+		return entity1.getWorld().raycast(
+			new RaycastContext(
+				entity1.getEyePos(),
+				entity2.getEyePos(),
+				RaycastContext.ShapeType.COLLIDER,
+				RaycastContext.FluidHandling.NONE,
+				entity1
+			)
+		).getType();
+	}
+
+	public static boolean canBlockBeSeenByPlayers(final List<? extends PlayerEntity> players, final BlockPos blockPos) {
 		for (PlayerEntity player : players) {
-			Vec3d vec3d = new Vec3d(player.getX(), player.getEyeY(), player.getZ());
-			Vec3d vec3d2 = new Vec3d(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-			if (vec3d2.distanceTo(vec3d) > 128.0) continue;
-			if (player.getWorld().raycast(
-					new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, player)
-				).getType() != HitResult.Type.BLOCK
-			) return true;
+			if (!player.getBlockPos().isWithinDistance(blockPos, 128.0)) continue;
+			if (castRayFromEyeToBlock(player, blockPos) == HitResult.Type.MISS) return true;
 		}
 		return false;
 	}
@@ -87,10 +110,10 @@ public class Algorithms {
 		return blockPos;
 	}
 
-	public static BlockPos getNearestStandableBlockPosTowardsPlayer(final PlayerEntity player, BlockPos blockPos, final int minY, final int maxY) {
-		final World world = player.getWorld();
-		final BlockPos playerPos = player.getBlockPos();
-		if (blockPos.getY() > playerPos.getY()) {
+	public static BlockPos getNearestStandableBlockPosTowardsEntity(final Entity entity, BlockPos blockPos, final int minY, final int maxY) {
+		final World world = entity.getWorld();
+		final BlockPos entityPos = entity.getBlockPos();
+		if (blockPos.getY() > entityPos.getY()) {
 			// Above player, try moving down
 			while (!canPlayerStandOnBlock(world, blockPos) && (blockPos.getY() > minY)) {
 				blockPos = blockPos.down();
@@ -112,47 +135,56 @@ public class Algorithms {
 		).normalize();
 	}
 
-	public static Vec3d getDirectionFromPlayer(final BlockPos blockPos, final PlayerEntity player) {
-		final Vec3d playerPos = player.getPos();
+	public static Vec3d getBlockDirectionFromEntity(final BlockPos blockPos, final Entity entity) {
+		final Vec3d entityPos = entity.getPos();
 		return new Vec3d(
-			blockPos.getX() - playerPos.getX(),
-			blockPos.getY() - playerPos.getY(),
-			blockPos.getZ() - playerPos.getZ()
+			blockPos.getX() - entityPos.getX(),
+			blockPos.getY() - entityPos.getY(),
+			blockPos.getZ() - entityPos.getZ()
 		).normalize();
 	}
 
-	public static BlockPos getRandomBlockNearPlayer(final PlayerEntity player, final int distanceMin, final int distanceMax) {
+	public static BlockPos getRandomBlockNearEntity(final Entity entity, final int distanceMin, final int distanceMax) {
 		final Vec3d randomDirection = getRandomDirection();
 		final int distance = RANDOM.nextBetween(distanceMin, distanceMax);
 
 		// Scale the direction vector by the random distance
 		final Vec3d randomOffset = randomDirection.multiply(distance);
-		final BlockPos playerPos = player.getBlockPos();
-		return new BlockPos(playerPos.getX(), playerPos.getY(), playerPos.getZ()).add(
+		final BlockPos entityPos = entity.getBlockPos();
+		return entityPos.add(
 			(int) Math.floor(randomOffset.getX()),
 			(int) Math.floor(randomOffset.getY()),
 			(int) Math.floor(randomOffset.getZ())
 		);
 	}
 
-	public static BlockPos getRandomStandableBlockNearPlayer(final PlayerEntity player, final int distanceMin, final int distanceMax, final int maxAttempts) {
-		final BlockPos playerPos = player.getBlockPos();
+	public static BlockPos getRandomStandableBlockNearEntity(final Entity entity, final int distanceMin, final int distanceMax, final int maxAttempts) {
+		final BlockPos entityPos = entity.getBlockPos();
 		final int moveDistance = Math.max(distanceMin, distanceMax - distanceMin);
-		final int maxDistanceDown = playerPos.getY() - moveDistance;
-		final int maxDistanceUp = playerPos.getY() + moveDistance;
+		final int maxDistanceDown = entityPos.getY() - moveDistance;
+		final int maxDistanceUp = entityPos.getY() + moveDistance;
 
 		// Start with random block and check maxAttempt times
-		BlockPos blockPos = getRandomBlockNearPlayer(player, distanceMin, distanceMax);
+		BlockPos blockPos = getRandomBlockNearEntity(entity, distanceMin, distanceMax);
 		for (int i = 0; i < maxAttempts; ++i) {
 			// Move to nearest standable block
-			blockPos = getNearestStandableBlockPosTowardsPlayer(player, blockPos, maxDistanceDown, maxDistanceUp);
+			blockPos = getNearestStandableBlockPosTowardsEntity(entity, blockPos, maxDistanceDown, maxDistanceUp);
 			// Return if blockPos is within constraints
-			if (!blockPos.isWithinDistance(playerPos, distanceMin) && blockPos.isWithinDistance(playerPos, distanceMax)) return blockPos;
+			if (!blockPos.isWithinDistance(entityPos, distanceMin) && blockPos.isWithinDistance(entityPos, distanceMax)) return blockPos;
 			// Try again
-			blockPos = getRandomBlockNearPlayer(player, distanceMin, distanceMax);
+			blockPos = getRandomBlockNearEntity(entity, distanceMin, distanceMax);
 		}
 
 		// If nothing is found in 50 attempts, just select a block in the wall
 		return blockPos;
+	}
+
+	public static boolean isPlayerInCave(final PlayerEntity player) {
+		if (player.getWorld().isSkyVisible(player.getBlockPos())) return false;
+		// Cast rays in random directions. If they all hit, the sky cannot be seen
+		for (int i = 0; i < 20; ++i) {
+			if (castRayFromEyeToBlock(player, getRandomBlockNearEntity(player, 128, 128)) == HitResult.Type.MISS) return false;
+		}
+		return true;
 	}
 }

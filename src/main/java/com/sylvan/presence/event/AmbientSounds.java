@@ -95,8 +95,10 @@ public class AmbientSounds {
 	public static void playAmbientSound(final PlayerEntity player) {
 		if (player.isRemoved()) return;
 
-		// Player must be in darkness
-		if (player.getWorld().getLightLevel(player.getBlockPos()) > ambientSoundsLightLevelMax) {
+		if (
+			Algorithms.isPlayerInCave(player) &&							// Player must be in a cave
+			player.getWorld().getLightLevel(player.getBlockPos()) > ambientSoundsLightLevelMax	// Player must be in darkness
+		) {
 			// Retry if it is a bad time
 			Events.scheduler.schedule(
 				() -> {
