@@ -13,6 +13,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.LightType;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
@@ -20,7 +21,7 @@ public class Algorithms {
 	public static final Random RANDOM = Random.create();
 
 	private static int algorithmsCaveDetectionRays = 50;				// The amount of rays to shoot in random directions to determine whether an entity is in a cave
-	private static float algorithmsCaveDetectionMaxNonCaveaveBlockPercent = 0.05f;	// The percent of blocks a cave detection ray can collide with that are not usually found in a cave before assuming player is in a base
+	private static float algorithmsCaveDetectionMaxNonCaveaveBlockPercent = 0.1f;	// The percent of blocks a cave detection ray can collide with that are not usually found in a cave before assuming player is in a base
 
 	public static void loadConfig() {
 		try {
@@ -196,7 +197,7 @@ public class Algorithms {
 
 	public static boolean isEntityInCave(final Entity entity) {
 		final World world = entity.getEntityWorld();
-		if (world.isSkyVisible(entity.getBlockPos())) return false;
+		if (world.getLightLevel(LightType.SKY, entity.getBlockPos()) > 0) return false;
 
 		// Cast rays in random directions. If they all hit, the sky cannot be seen.
 		int nonCaveBlockCount = 0;
@@ -224,7 +225,7 @@ public class Algorithms {
 		}
 
 		// If over 5% of hit blocks are not normally found in a cave, assume player is in a base
-		if (((float) nonCaveBlockCount / (float) algorithmsCaveDetectionRays) > algorithmsCaveDetectionMaxNonCaveaveBlockPercent) return false;
+		if (((float) nonCaveBlockCount / (float) Math.max(1, algorithmsCaveDetectionRays)) > algorithmsCaveDetectionMaxNonCaveaveBlockPercent) return false;
 		return true;
 	}
 }
