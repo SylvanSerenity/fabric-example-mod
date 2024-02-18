@@ -32,9 +32,10 @@ public class NearbySounds {
 
 	public static void loadConfig() {
 		nearbySoundsSoundWeights.addProperty(SoundEvents.ENTITY_ITEM_PICKUP.getId().toString(), 45.0f);
-		nearbySoundsSoundWeights.addProperty(SoundEvents.ENTITY_PLAYER_SMALL_FALL.getId().toString(), 30.0f);
+		nearbySoundsSoundWeights.addProperty(SoundEvents.ENTITY_PLAYER_SMALL_FALL.getId().toString(), 25.0f);
 		nearbySoundsSoundWeights.addProperty(SoundEvents.ENTITY_PLAYER_BIG_FALL.getId().toString(), 15.0f);
-		nearbySoundsSoundWeights.addProperty(SoundEvents.ENTITY_GENERIC_EAT.getId().toString(), 9.5f);
+		nearbySoundsSoundWeights.addProperty(SoundEvents.ENTITY_PLAYER_HURT.getId().toString(), 8.0f);
+		nearbySoundsSoundWeights.addProperty(SoundEvents.ENTITY_GENERIC_EAT.getId().toString(), 6.5f);
 		nearbySoundsSoundWeights.addProperty(SoundEvents.ENTITY_PLAYER_BREATH.getId().toString(), 0.5f);
 
 		try {
