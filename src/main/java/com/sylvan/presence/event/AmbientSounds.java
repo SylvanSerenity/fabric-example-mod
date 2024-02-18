@@ -25,6 +25,8 @@ public class AmbientSounds {
 	private static int ambientSoundsDelayMin = 60 * 30;			// The minimum delay between ambient sounds
 	private static int ambientSoundsDelayMax = 60 * 60 * 2;			// The maximum delay between ambient sounds
 	private static int ambientSoundsRetryDelay = 60;			// The delay between tries to play ambient sound
+	private static boolean ambientSoundsCaveConstraint = true;		// Whether the player must be in a cave for the sound to play
+	private static boolean ambientSoundsDarknessConstraint = true;		// Whether the player must be in darkness for the sound to play
 	private static int ambientSoundsLightLevelMax = 7;			// The maximum light level to play ambient sound (so that it is dark)
 	private static float ambientSoundsPitchMin = 0.5f;			// The minimum sound pitch (so that it is slow and darker sounding)
 	private static float ambientSoundsPitchMax = 1.0f;			// The maximum sound pitch
@@ -46,10 +48,11 @@ public class AmbientSounds {
 			ambientSoundsDelayMin = Presence.config.getOrSetValue("ambientSoundsDelayMin", ambientSoundsDelayMin).getAsInt();
 			ambientSoundsDelayMax = Presence.config.getOrSetValue("ambientSoundsDelayMax", ambientSoundsDelayMax).getAsInt();
 			ambientSoundsRetryDelay = Presence.config.getOrSetValue("ambientSoundsRetryDelay", ambientSoundsRetryDelay).getAsInt();
+			ambientSoundsCaveConstraint = Presence.config.getOrSetValue("ambientSoundsCaveConstraint", ambientSoundsCaveConstraint).getAsBoolean();
+			ambientSoundsDarknessConstraint = Presence.config.getOrSetValue("ambientSoundsDarknessConstraint", ambientSoundsDarknessConstraint).getAsBoolean();
 			ambientSoundsLightLevelMax = Presence.config.getOrSetValue("ambientSoundsLightLevelMax", ambientSoundsLightLevelMax).getAsInt();
 			ambientSoundsPitchMin = Presence.config.getOrSetValue("ambientSoundsPitchMin", ambientSoundsPitchMin).getAsFloat();
 			ambientSoundsPitchMax = Presence.config.getOrSetValue("ambientSoundsPitchMax", ambientSoundsPitchMax).getAsFloat();
-			ambientSoundsSoundWeights = Presence.config.getOrSetValue("ambientSoundWeights", ambientSoundsSoundWeights).getAsJsonObject();
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default values.", e);
 			Presence.config.wipe();
@@ -96,8 +99,8 @@ public class AmbientSounds {
 		if (player.isRemoved()) return;
 
 		if (
-			Algorithms.isPlayerInCave(player) &&							// Player must be in a cave
-			player.getWorld().getLightLevel(player.getBlockPos()) > ambientSoundsLightLevelMax	// Player must be in darkness
+			(ambientSoundsCaveConstraint && !Algorithms.isEntityInCave(player)) ||							// Player must be in a cave
+			(ambientSoundsDarknessConstraint && player.getWorld().getLightLevel(player.getBlockPos()) > ambientSoundsLightLevelMax)	// Player must be in darkness
 		) {
 			// Retry if it is a bad time
 			Events.scheduler.schedule(

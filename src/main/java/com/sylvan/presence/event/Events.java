@@ -67,9 +67,12 @@ public class Events {
 			UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
 				final BlockPos torchPos = hitResult.getBlockPos().offset(hitResult.getSide()); // Offset by 1 block in the direction of torch placement
 				if (
-					world.isClient() ||												// World must be server-side
+					world.isClient() ||
 					(player.getMainHandStack().getItem() != Items.TORCH && player.getOffHandStack().getItem() != Items.TORCH) ||	// Player must be holding a torch
-					world.getLightLevel(LightType.SKY, torchPos) > ExtinguishTorches.extinguishTorchesSkyLightLevelMax		// Torch must be underground
+					(
+						ExtinguishTorches.extinguishTorchesMaxSkyLightLevelConstraint &&
+						world.getLightLevel(LightType.SKY, torchPos) > ExtinguishTorches.extinguishTorchesSkyLightLevelMax	// Torch must be underground
+					)
 				) return ActionResult.PASS;
 
 				if (ExtinguishTorches.torchPlacementMap.containsKey(player.getUuid())) {
@@ -83,6 +86,7 @@ public class Events {
 
 					final Stack<BlockPos> torches = entry.getValue();
 					if (
+						ExtinguishTorches.extinguishTorchesMaxDistanceConstraint &&
 						!torches.empty() &&
 						!torches.peek().isWithinDistance(torchPos, ExtinguishTorches.extinguishTorchesTorchDistanceMax)
 					) {

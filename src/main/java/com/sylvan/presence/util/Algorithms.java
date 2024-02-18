@@ -179,11 +179,11 @@ public class Algorithms {
 		return blockPos;
 	}
 
-	public static boolean isPlayerInCave(final PlayerEntity player) {
-		if (player.getWorld().isSkyVisible(player.getBlockPos())) return false;
+	public static boolean isEntityInCave(final Entity entity) {
+		if (entity.getWorld().isSkyVisible(entity.getBlockPos())) return false;
 		// Cast rays in random directions. If they all hit, the sky cannot be seen
-		for (int i = 0; i < 20; ++i) {
-			if (castRayFromEyeToBlock(player, getRandomBlockNearEntity(player, 128, 128)) == HitResult.Type.MISS) return false;
+		for (int i = 0; i < 50; ++i) {
+			if (castRayFromEyeToBlock(entity, getRandomBlockNearEntity(entity, 128, 128)) == HitResult.Type.MISS) return false;
 		}
 		return true;
 	}

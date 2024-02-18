@@ -213,7 +213,7 @@ public class Commands {
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
 							final PlayerEntity player = context.getSource().getPlayer();
-							if (Algorithms.isPlayerInCave(player)) {
+							if (Algorithms.isEntityInCave(player)) {
 								context.getSource().sendFeedback(() -> Text.literal("You are in a cave.").withColor(Formatting.BLUE.getColorValue()), false);
 							} else {
 								context.getSource().sendFeedback(() -> Text.literal("You are not in a cave.").withColor(Formatting.RED.getColorValue()), false);
@@ -230,7 +230,7 @@ public class Commands {
 							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
 							if (player == null) {
 								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.RED.getColorValue()), false);
-							} else if (Algorithms.isPlayerInCave(player)) {
+							} else if (Algorithms.isEntityInCave(player)) {
 								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is in a cave.").withColor(Formatting.BLUE.getColorValue()), false);
 							} else {
 								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is not in a cave.").withColor(Formatting.RED.getColorValue()), false);

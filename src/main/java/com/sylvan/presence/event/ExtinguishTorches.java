@@ -22,13 +22,16 @@ public class ExtinguishTorches {
 	public static Map<UUID, Map.Entry<DimensionType, Stack<BlockPos>>> torchPlacementMap = new HashMap<>();
 
 	// Config
-	public static boolean extinguishTorchesEnabled = true;			// Whether the extinguish torches event is active
-	private static int extinguishTorchesTrackDelayMin = 60 * 30;		// The minimum delay between beginning to track torches
-	private static int extinguishTorchesTrackDelayMax = 60 * 60 * 5;	// The maximum delay between beginning to track torches
-	private static int extinguishTorchesExtinguishRetryDelay = 60 * 10;	// The delay between tries to extinguish tracked torches
-	public static int extinguishTorchesTrackedMax = 16;			// The maximum number of torches to track
-	public static int extinguishTorchesTorchDistanceMax = 32;		// The maximum distance between the last tracked torch (so that the torches are in the same cave)
-	public static int extinguishTorchesSkyLightLevelMax = 6;		// The maximum light level to determine whether to track the placed torch (so that surface torches are not tracked)
+	public static boolean extinguishTorchesEnabled = true;				// Whether the extinguish torches event is active
+	private static int extinguishTorchesTrackDelayMin = 60 * 30;			// The minimum delay between beginning to track torches
+	private static int extinguishTorchesTrackDelayMax = 60 * 60 * 5;		// The maximum delay between beginning to track torches
+	private static int extinguishTorchesExtinguishRetryDelay = 60 * 10;		// The delay between tries to extinguish tracked torches
+	public static int extinguishTorchesTrackedMax = 16;				// The maximum number of torches to track
+	public static boolean extinguishTorchesMaxDistanceConstraint = true;		// Whether the torch must be within a certain distance of the last torch to be tracked
+	public static int extinguishTorchesTorchDistanceMax = 32;			// The maximum distance between the last tracked torch (so that the torches are in the same cave)
+	public static boolean extinguishTorchesMaxSkyLightLevelConstraint = true;	// Whether torches are not tracked if they are placed on a block over a certain sky light level
+	public static int extinguishTorchesSkyLightLevelMax = 6;			// The maximum light level to determine whether to track the placed torch (so that surface torches are not tracked)
+	public static boolean extinguishTorchesSeenConstraint = true;			// Whether torches that are in eyesight of a player are removed
 
 	public static void loadConfig() {
 		try {
@@ -37,8 +40,11 @@ public class ExtinguishTorches {
 			extinguishTorchesTrackDelayMax = Presence.config.getOrSetValue("extinguishTorchesTrackDelayMax", extinguishTorchesTrackDelayMax).getAsInt();
 			extinguishTorchesExtinguishRetryDelay = Presence.config.getOrSetValue("extinguishTorchesExtinguishRetryDelay", extinguishTorchesExtinguishRetryDelay).getAsInt();
 			extinguishTorchesTrackedMax = Presence.config.getOrSetValue("extinguishTorchesTrackedMax", extinguishTorchesTrackedMax).getAsInt();
+			extinguishTorchesMaxDistanceConstraint = Presence.config.getOrSetValue("extinguishTorchesMaxDistanceConstraint", extinguishTorchesMaxDistanceConstraint).getAsBoolean();
 			extinguishTorchesTorchDistanceMax = Presence.config.getOrSetValue("extinguishTorchesTorchDistanceMax", extinguishTorchesTorchDistanceMax).getAsInt();
+			extinguishTorchesMaxSkyLightLevelConstraint = Presence.config.getOrSetValue("extinguishTorchesMaxSkyLightLevelConstraint", extinguishTorchesMaxSkyLightLevelConstraint).getAsBoolean();
 			extinguishTorchesSkyLightLevelMax = Presence.config.getOrSetValue("extinguishTorchesSkyLightLevelMax", extinguishTorchesSkyLightLevelMax).getAsInt();
+			extinguishTorchesSeenConstraint = Presence.config.getOrSetValue("extinguishTorchesSeenConstraint", extinguishTorchesSeenConstraint).getAsBoolean();
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for ExtinguishTorches.java. Wiping and using default.", e);
 			Presence.config.wipe();
@@ -100,12 +106,11 @@ public class ExtinguishTorches {
 			for (BlockPos torchPos : torchStack) {
 				block = world.getBlockState(torchPos).getBlock();
 				if (
-					((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) &&	// Block must still be a torch
-					!Algorithms.canBlockBeSeenByPlayers(world.getPlayers(), torchPos)	// Player cannot see the torch being removed
-				) {
-					// Remove the torch
-					world.removeBlock(torchPos, false);
-				} // Otherwise skip torch
+					!((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) ||						// Block must still be a torch
+					(extinguishTorchesSeenConstraint && Algorithms.canBlockBeSeenByPlayers(world.getPlayers(), torchPos))	// Player cannot see the torch being removed
+				) continue;
+				// Remove the torch
+				world.removeBlock(torchPos, false);
 			}
 
 			torchStack.clear();
