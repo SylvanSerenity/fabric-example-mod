@@ -82,10 +82,10 @@ public class PlayerData {
 	private long playTime = 0;			// Time in minutes that the player has played
 
 	private PlayerData(final PlayerEntity playerEntity) {
-		player = playerEntity;
-		uuid = playerEntity.getUuid();
-		playerDataPath = playerDataDirectory + uuid.toString();
-		joinTime = LocalDateTime.now();
+		this.player = playerEntity;
+		this.uuid = playerEntity.getUuid();
+		this.playerDataPath = playerDataDirectory + uuid.toString();
+		this.joinTime = LocalDateTime.now();
 		load();
 		rollHauntChance();
 	}
@@ -108,11 +108,11 @@ public class PlayerData {
 	}
 
 	public void setHaunted(boolean haunted) {
-		isHaunted = haunted;
+		this.isHaunted = haunted;
 	}
 
 	public boolean rollHauntChance() {
-		isHaunted = Algorithms.RANDOM.nextFloat() <= hauntChance;
+		this.isHaunted = Algorithms.RANDOM.nextFloat() <= hauntChance;
 		return isHaunted;
 	}
 

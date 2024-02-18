@@ -1,15 +1,18 @@
 package com.sylvan.presence;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.world.World;
 
 import static net.minecraft.server.command.CommandManager.*;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.sylvan.presence.data.PlayerData;
+import com.sylvan.presence.entity.HerobrineEntity;
 import com.sylvan.presence.event.AmbientSounds;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
@@ -238,6 +241,26 @@ public class Commands {
 							return 1;
 						})
 					)
+				)
+			)
+			.then(
+				literal("fakeHerobrine")
+				.then(
+					literal("summon")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							final PlayerEntity player = context.getSource().getPlayer();
+							final World world = player.getWorld();
+							context.getSource().sendFeedback(() -> Text.literal("Summoned fake Herobrine.").withColor(Formatting.BLUE.getColorValue()), false);
+
+							HerobrineEntity entity = new HerobrineEntity(EntityType.ARMOR_STAND, world);
+							entity.refreshPositionAndAngles(player.getBlockPos(), player.getYaw(), player.getPitch());
+							world.spawnEntity(entity);
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot summon fake Herobrine by server.").withColor(Formatting.DARK_RED.getColorValue()), false);
+						}
+						return 1;
+					})
 				)
 			)
 			.then(
