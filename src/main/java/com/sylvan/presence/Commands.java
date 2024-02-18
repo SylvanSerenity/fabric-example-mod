@@ -9,6 +9,7 @@ import static net.minecraft.server.command.CommandManager.*;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.sylvan.presence.data.PlayerData;
 import com.sylvan.presence.event.AmbientSounds;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
@@ -35,6 +36,13 @@ public class Commands {
 					})
 					.then(
 						argument("player", StringArgumentType.word())
+						.suggests((context, builder) -> {
+							final Iterable<String> playerNames = context.getSource().getPlayerNames();
+							for (final String playerName : playerNames) {
+								builder.suggest(playerName);
+							}
+							return builder.buildFuture();
+						})
 						.executes(context -> {
 							final String playerName = StringArgumentType.getString(context, "player");
 							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
@@ -86,6 +94,13 @@ public class Commands {
 						})
 						.then(
 							argument("player", StringArgumentType.word())
+							.suggests((context, builder) -> {
+								final Iterable<String> playerNames = context.getSource().getPlayerNames();
+								for (final String playerName : playerNames) {
+									builder.suggest(playerName);
+								}
+								return builder.buildFuture();
+							})
 							.executes(context -> {
 								final String playerName = StringArgumentType.getString(context, "player");
 								final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
@@ -121,6 +136,13 @@ public class Commands {
 						})
 						.then(
 							argument("player", StringArgumentType.word())
+							.suggests((context, builder) -> {
+								final Iterable<String> playerNames = context.getSource().getPlayerNames();
+								for (final String playerName : playerNames) {
+									builder.suggest(playerName);
+								}
+								return builder.buildFuture();
+							})
 							.executes(context -> {
 								final String playerName = StringArgumentType.getString(context, "player");
 								final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
@@ -153,6 +175,13 @@ public class Commands {
 						})
 						.then(
 							argument("player", StringArgumentType.word())
+							.suggests((context, builder) -> {
+								final Iterable<String> playerNames = context.getSource().getPlayerNames();
+								for (final String playerName : playerNames) {
+									builder.suggest(playerName);
+								}
+								return builder.buildFuture();
+							})
 							.executes(context -> {
 								final String playerName = StringArgumentType.getString(context, "player");
 								final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
@@ -193,6 +222,13 @@ public class Commands {
 						})
 						.then(
 							argument("player", StringArgumentType.word())
+							.suggests((context, builder) -> {
+								final Iterable<String> playerNames = context.getSource().getPlayerNames();
+								for (final String playerName : playerNames) {
+									builder.suggest(playerName);
+								}
+								return builder.buildFuture();
+							})
 							.executes(context -> {
 								final String playerName = StringArgumentType.getString(context, "player");
 								final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
@@ -209,37 +245,6 @@ public class Commands {
 					)
 				)
 				.then(
-					literal("isInCave")
-					.executes(context -> {
-						if (context.getSource().isExecutedByPlayer()) {
-							final PlayerEntity player = context.getSource().getPlayer();
-							if (Algorithms.isEntityInCave(player)) {
-								context.getSource().sendFeedback(() -> Text.literal("You are in a cave.").withColor(Formatting.BLUE.getColorValue()), false);
-							} else {
-								context.getSource().sendFeedback(() -> Text.literal("You are not in a cave.").withColor(Formatting.RED.getColorValue()), false);
-							}
-						} else {
-							context.getSource().sendFeedback(() -> Text.literal("Cannot query cave status. Please specify a player.").withColor(Formatting.RED.getColorValue()), false);
-						}
-						return 1;
-					})
-					.then(
-						argument("player", StringArgumentType.word())
-						.executes(context -> {
-							final String playerName = StringArgumentType.getString(context, "player");
-							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
-							if (player == null) {
-								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.RED.getColorValue()), false);
-							} else if (Algorithms.isEntityInCave(player)) {
-								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is in a cave.").withColor(Formatting.BLUE.getColorValue()), false);
-							} else {
-								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is not in a cave.").withColor(Formatting.RED.getColorValue()), false);
-							}
-							return 1;
-						})
-					)
-				)
-				.then(
 					literal("nearbySounds")
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
@@ -252,6 +257,13 @@ public class Commands {
 					})
 					.then(
 						argument("player", StringArgumentType.word())
+						.suggests((context, builder) -> {
+							final Iterable<String> playerNames = context.getSource().getPlayerNames();
+							for (final String playerName : playerNames) {
+								builder.suggest(playerName);
+							}
+							return builder.buildFuture();
+						})
 						.executes(context -> {
 							final String playerName = StringArgumentType.getString(context, "player");
 							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
@@ -264,6 +276,88 @@ public class Commands {
 							return 1;
 						})
 					)
+				)
+			)
+			.then(
+				literal("haunt")
+				.executes(context -> {
+					if (context.getSource().isExecutedByPlayer()) {
+						final PlayerEntity player = context.getSource().getPlayer();
+						final PlayerData playerData = PlayerData.getPlayerData(player);
+						if (playerData.isHaunted()) {
+							context.getSource().sendFeedback(() -> Text.literal("Freed player.").withColor(Formatting.BLUE.getColorValue()), false);
+							playerData.setHaunted(false);
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Haunted player.").withColor(Formatting.BLUE.getColorValue()), false);
+							playerData.setHaunted(true);
+						}
+					} else {
+						context.getSource().sendFeedback(() -> Text.literal("Cannot haunt server. Please specify a player.").withColor(Formatting.RED.getColorValue()), false);
+					}
+					return 1;
+				})
+				.then(
+					argument("player", StringArgumentType.word())
+					.suggests((context, builder) -> {
+						final Iterable<String> playerNames = context.getSource().getPlayerNames();
+						for (final String playerName : playerNames) {
+							builder.suggest(playerName);
+						}
+						return builder.buildFuture();
+					})
+					.executes(context -> {
+						final String playerName = StringArgumentType.getString(context, "player");
+						final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+						final PlayerData playerData = PlayerData.getPlayerData(player);
+						if (player == null) {
+							context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.RED.getColorValue()), false);
+						} else if (playerData.isHaunted()) {
+							context.getSource().sendFeedback(() -> Text.literal("Freed player.").withColor(Formatting.BLUE.getColorValue()), false);
+							playerData.setHaunted(false);
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Haunted player.").withColor(Formatting.BLUE.getColorValue()), false);
+							playerData.setHaunted(true);
+						}
+						return 1;
+					})
+				)
+			)
+			.then(
+				literal("isInCave")
+				.executes(context -> {
+					if (context.getSource().isExecutedByPlayer()) {
+						final PlayerEntity player = context.getSource().getPlayer();
+						if (Algorithms.isEntityInCave(player)) {
+							context.getSource().sendFeedback(() -> Text.literal("You are in a cave.").withColor(Formatting.BLUE.getColorValue()), false);
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("You are not in a cave.").withColor(Formatting.RED.getColorValue()), false);
+						}
+					} else {
+						context.getSource().sendFeedback(() -> Text.literal("Cannot query server cave status. Please specify a player.").withColor(Formatting.RED.getColorValue()), false);
+					}
+					return 1;
+				})
+				.then(
+					argument("player", StringArgumentType.word())
+					.suggests((context, builder) -> {
+						final Iterable<String> playerNames = context.getSource().getPlayerNames();
+						for (final String playerName : playerNames) {
+							builder.suggest(playerName);
+						}
+						return builder.buildFuture();
+					})
+					.executes(context -> {
+						final String playerName = StringArgumentType.getString(context, "player");
+						final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+						if (player == null) {
+							context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.RED.getColorValue()), false);
+						} else if (Algorithms.isEntityInCave(player)) {
+							context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is in a cave.").withColor(Formatting.BLUE.getColorValue()), false);
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is not in a cave.").withColor(Formatting.RED.getColorValue()), false);
+						}
+						return 1;
+					})
 				)
 			)
 		));
