@@ -1,5 +1,7 @@
 package com.sylvan.presence.data;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -18,12 +20,15 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
 
 public class PlayerData {
-	public static final Map<UUID, PlayerData> playerDataMap = new HashMap<>();
+	private static final Map<UUID, PlayerData> playerDataMap = new HashMap<>();
 	private static MinecraftServer server;
+	private static String playerDataDirectory;
 
 	// Config
-	public static float defaultHauntChance = 0.1f;	// Default chance of being haunted when joining the server. Range: [0.0, 1.0]
-	private static float defaultHauntLevel = 1.0f;	// The default haunt level of each player
+	public static float defaultHauntChance = 0.1f;			// Default chance of being haunted when joining the server. Range: [0.0, 1.0]
+	private static float defaultHauntLevel = 1.0f;			// The default haunt level of each player
+	private static float hauntChanceMaxBeforeDecrease = 0.75f;	// The maximum haunt chance before haunted players start getting their haunt chance reduced based on play time
+	private static int minutesToFullyReduceHauntChance = 600;	// The number of minutes that would reduce haunt chance by 100%
 
 	public static void addPlayerData(final UUID uuid) {
 		playerDataMap.put(uuid, new PlayerData(uuid));
@@ -38,6 +43,7 @@ public class PlayerData {
 		try {
 			defaultHauntChance = Presence.config.getOrSetValue("defaultHauntChance", defaultHauntChance).getAsFloat();
 			defaultHauntLevel = Presence.config.getOrSetValue("defaultHauntLevel", defaultHauntLevel).getAsFloat();
+			hauntChanceMaxBeforeDecrease = Presence.config.getOrSetValue("hauntChanceMaxBeforeDecrease", hauntChanceMaxBeforeDecrease).getAsFloat();
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for PlayerData.java. Wiping and using default.", e);
 			Presence.config.wipe();
@@ -47,20 +53,24 @@ public class PlayerData {
 
 	public static void setInstance(final MinecraftServer minecraftServer) {
 		server = minecraftServer;
+		playerDataDirectory = server.getSavePath(WorldSavePath.ROOT).toString() + "/presence/playerdata/";
 	}
 
-	// Instance variables
+	// Instance
 	private UUID uuid;
 	private String playerDataPath;
+	private LocalDateTime joinTime;
+	private boolean isHaunted = false;
 
+	// Persistant
 	private float hauntChance = defaultHauntChance;	// Chance of being haunted when joining the server
 	private float hauntLevel = defaultHauntLevel;	// Divides delay minima and maxima by hauntLevel, such that events happen more often as time goes on. 1.0 has no effect, and larger numbers increase events
-	private boolean isHaunted = false;		// Whether the player is haunted and should be subject to events
+	private long playTime = 0;			// Time in minutes that the player has played
 
 	private PlayerData(final UUID uuid) {
 		this.uuid = uuid;
-		playerDataPath = server.getSavePath(WorldSavePath.ROOT).toString() + "/presence/" + uuid.toString();
-
+		playerDataPath = playerDataDirectory + uuid.toString();
+		joinTime = LocalDateTime.now();
 		load();
 
 		if (rollHauntChance()) {
@@ -94,7 +104,20 @@ public class PlayerData {
 	}
 
 	public float calculateHauntChance() {
-		// TODO If haunted, reduce, otherwise, increase
+		final float difference = ((float) (playTime + Duration.between(joinTime, LocalDateTime.now()).toMinutes())) / Math.max(1.0f, minutesToFullyReduceHauntChance);
+		if (isHaunted && hauntChance > hauntChanceMaxBeforeDecrease) {
+			// Decrease haunt chace
+			hauntChance = Math.max(
+				defaultHauntChance,
+				Math.min(1.0f, hauntChance - difference)
+			);
+		} else {
+			// Incraese haunt chace
+			hauntChance = Math.max(
+				defaultHauntChance,
+				Math.min(1.0f, hauntChance + difference)
+			);
+		}
 		return hauntChance;
 	}
 
@@ -111,6 +134,7 @@ public class PlayerData {
 		try {
 			hauntChance = dataFile.getOrSetValue("hauntChance", hauntChance).getAsFloat();
 			hauntLevel = dataFile.getOrSetValue("hauntLevel", hauntLevel).getAsFloat();
+			playTime = dataFile.getOrSetValue("playTime", playTime).getAsLong();
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Corrupted player data for " + uuid.toString() + ". Wiping and using default values.", e);
 			dataFile.wipe();
@@ -118,11 +142,18 @@ public class PlayerData {
 		dataFile.writeJson(dataFile.getJsonObject(), false);
 	}
 
+	public void remove() {
+		calculateHauntChance();
+		save();
+		playerDataMap.remove(uuid);
+	}
+
 	public void save() {
 		final JsonFile dataFile = new JsonFile(playerDataPath);
 		final JsonObject data = dataFile.getJsonObject();
 		dataFile.setValue(data, "hauntChance", hauntChance);
 		dataFile.setValue(data, "hauntLevel", hauntLevel);
+		dataFile.setValue(data, "playTime", playTime + Duration.between(joinTime, LocalDateTime.now()).toMinutes());
 		dataFile.writeJson(data, false);
 	}
 }

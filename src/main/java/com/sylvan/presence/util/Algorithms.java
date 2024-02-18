@@ -22,7 +22,7 @@ public class Algorithms {
 	}
 
 	public static int divideByFloat(final int dividend, final float divisor) {
-		return (int) (((float) dividend) / divisor);
+		return (int) (((float) dividend) / Math.max(0.001f, divisor));
 	}
 
 	public static <K> K randomKeyFromWeightMap(final Map<K, Float> keyWeightMap) {

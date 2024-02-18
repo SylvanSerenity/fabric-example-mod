@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.sylvan.presence.Presence;
 import com.sylvan.presence.data.PlayerData;
-import com.sylvan.presence.util.Algorithms;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -54,22 +53,14 @@ public class Events {
 		// Schedule player join events
 		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
 			final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
-			// Give player a random haunt chance when they join
-			if (Algorithms.RANDOM.nextFloat() <= PlayerData.defaultHauntChance) {
-				// If player is haunted, schedule all events per the configuration file
-				PlayerData.addPlayerData(player.getUuid());
-				if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
-				if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);
-				if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
-				if (AmbientSounds.ambientSoundsEnabled) AmbientSounds.scheduleEvent(player);
-			}
+			PlayerData.addPlayerData(player.getUuid());
 		});
 
 		// Attempt to remove torches when player disconnects
 		ServerPlayConnectionEvents.DISCONNECT.register((serverPlayNetworkHandler, server) -> {
 			final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
 			if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.extinguishTrackedTorches(player);
-			PlayerData.getPlayerData(player.getUuid()).save();
+			PlayerData.getPlayerData(player.getUuid()).remove();
 		});
 
 		// Add torch tracker for extinguish torches event
