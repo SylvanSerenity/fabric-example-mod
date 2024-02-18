@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.sylvan.presence.Presence;
+import com.sylvan.presence.data.PlayerData;
 import com.sylvan.presence.util.Algorithms;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,18 +19,18 @@ public class AmbientSounds {
 	private static final List<Map.Entry<SoundEvent, Float>> ambientSounds = new ArrayList<>();
 
 	// Config
-	protected static boolean ambientSoundsEnabled = true;
-	private static int ambientSoundsDelayMin = 60 * 30;
-	private static int ambientSoundsDelayMax = 60 * 60 * 2;
-	private static int ambientSoundsRetryDelay = 60;
-	private static int ambientSoundsLightLevelMax = 7;
-	private static float ambientSoundsCaveWeight = 95.0f;
-	private static float ambientSoundsUnderwaterRareWeight = 4.5f;
-	private static float ambientSoundsUnderwaterUltraRareWeight = 0.5f;
-	private static float ambientSoundsPitchMin = 0.5f;
-	private static float ambientSoundsPitchMax = 1.0f;
+	public static boolean ambientSoundsEnabled = true;			// Whether the ambient sounds event is active
+	private static int ambientSoundsDelayMin = 60 * 30;			// The minimum delay between ambient sounds
+	private static int ambientSoundsDelayMax = 60 * 60 * 2;			// The maximum delay between ambient sounds
+	private static int ambientSoundsRetryDelay = 60;			// The delay between tries to play ambient sound
+	private static int ambientSoundsLightLevelMax = 7;			// The maximum light level to play ambient sound (so that it is dark)
+	private static float ambientSoundsCaveWeight = 95.0f;			// The weight of the cave sound
+	private static float ambientSoundsUnderwaterRareWeight = 4.5f;		// The weight of the underwater beast sound
+	private static float ambientSoundsUnderwaterUltraRareWeight = 0.5f;	// The weight of the underwater leviathan sound
+	private static float ambientSoundsPitchMin = 0.5f;			// The minimum sound pitch (so that it is slow and darker sounding)
+	private static float ambientSoundsPitchMax = 1.0f;			// The maximum sound pitch
 
-	private static void loadConfig() {
+	public static void loadConfig() {
 		try {
 			ambientSoundsEnabled = Presence.config.getOrSetValue("ambientSoundsEnabled", ambientSoundsEnabled).getAsBoolean();
 			ambientSoundsDelayMin = Presence.config.getOrSetValue("ambientSoundsDelayMin", ambientSoundsDelayMin).getAsInt();
@@ -49,7 +50,6 @@ public class AmbientSounds {
 	}
 
 	public static void initEvent() {
-		loadConfig();
 		ambientSounds.addAll(List.of(
 			new AbstractMap.SimpleEntry<>(SoundEvents.AMBIENT_CAVE.value(), ambientSoundsCaveWeight),
 			new AbstractMap.SimpleEntry<>(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_RARE, ambientSoundsUnderwaterRareWeight),
@@ -58,14 +58,15 @@ public class AmbientSounds {
 	}
 
 	public static void scheduleEvent(final PlayerEntity player) {
+		final float hauntLevel = PlayerData.getPlayerData(player.getUuid()).getHauntLevel();
 		Events.scheduler.schedule(
 			() -> {
 				playAmbientSound(player);
 				if (!player.isRemoved()) scheduleEvent(player);
 			},
 			Algorithms.RANDOM.nextBetween(
-				ambientSoundsDelayMin,
-				ambientSoundsDelayMax
+				Algorithms.divideByFloat(ambientSoundsDelayMin, hauntLevel),
+				Algorithms.divideByFloat(ambientSoundsDelayMax, hauntLevel)
 			), TimeUnit.SECONDS
 		);
 	}

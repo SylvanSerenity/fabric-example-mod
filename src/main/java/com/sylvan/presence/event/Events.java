@@ -1,13 +1,13 @@
 package com.sylvan.presence.event;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import com.sylvan.presence.Presence;
+import com.sylvan.presence.data.PlayerData;
 import com.sylvan.presence.util.Algorithms;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -22,25 +22,9 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class Events {
 	public static ScheduledExecutorService scheduler;
-	public static List<UUID> hauntedPlayers = new ArrayList<>();
-
-	// Config
-	private static float hauntChance = 0.5f;
-
-	private static void loadConfig() {
-		try {
-			hauntChance = Presence.config.getOrSetValue("hauntChance", hauntChance).getAsFloat();
-		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for Events.java. Wiping and using default default.", e);
-			Presence.config.clearConfig();
-			initEvents();
-		}
-	}
 
 	public static void initEvents() {
-		loadConfig();
 		AmbientSounds.initEvent();
-		ExtinguishTorches.initEvent();
 		NearbySounds.initEvent();
 	}
 
@@ -50,6 +34,7 @@ public class Events {
 		// Start/stop scheduler with server
 		ServerLifecycleEvents.SERVER_STARTING.register((serverStarting) -> {
 			scheduler = Executors.newScheduledThreadPool(8);
+			PlayerData.setPlayerManager(serverStarting.getPlayerManager());
 		});
 		ServerLifecycleEvents.SERVER_STOPPING.register((serverStopping) -> {
 			scheduler.shutdown();
@@ -70,9 +55,9 @@ public class Events {
 		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
 			final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
 			// Give player a random haunt chance when they join
-			if (Algorithms.RANDOM.nextFloat() <= hauntChance) {
+			if (Algorithms.RANDOM.nextFloat() <= PlayerData.defaultHauntChance) {
 				// If player is haunted, schedule all events per the configuration file
-				hauntedPlayers.add(player.getUuid());
+				PlayerData.addPlayerData(player.getUuid());
 				if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
 				if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);
 				if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
@@ -84,7 +69,7 @@ public class Events {
 		ServerPlayConnectionEvents.DISCONNECT.register((serverPlayNetworkHandler, server) -> {
 			final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
 			if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.extinguishTrackedTorches(player);
-			if (hauntedPlayers.contains(player.getUuid())) hauntedPlayers.remove(player.getUuid());
+			PlayerData.savePlayerData(player.getUuid());
 		});
 
 		// Add torch tracker for extinguish torches event

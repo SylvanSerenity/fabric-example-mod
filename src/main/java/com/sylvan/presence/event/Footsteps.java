@@ -3,6 +3,7 @@ package com.sylvan.presence.event;
 import java.util.concurrent.TimeUnit;
 
 import com.sylvan.presence.Presence;
+import com.sylvan.presence.data.PlayerData;
 import com.sylvan.presence.util.Algorithms;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,17 +15,17 @@ import net.minecraft.world.World;
 
 public class Footsteps {
 	// Config
-	protected static boolean footstepsEnabled = true;
-	private static int footstepsDelayMin = 60 * 5;
-	private static int footstepsDelayMax = 60 * 60 * 4;
-	private static int footstepsReflexMs = 500;
-	private static int footstepsMaxReflexVariance = 150;
-	private static int footstepsStepsMin = 1;
-	private static int footstepsStepsMax = 5;
-	private static int footstepsMsPerStepMax = 300;
-	private static int footstepsStepVarianceMax = 25;
+	public static boolean footstepsEnabled = true;	// Whether the footsteps event is active
+	private static int footstepsDelayMin = 60 * 20;		// The minimum delay between footstep events
+	private static int footstepsDelayMax = 60 * 60 * 4;	// The maximum delay between footstep events
+	private static int footstepsReflexMs = 500;		// The maximum time the footstep event can take (so that the player turns around right after they stop)
+	private static int footstepsMaxReflexVariance = 150;	// The maximum addition to the reflex time (to add randomness to the footstep speed)
+	private static int footstepsStepsMin = 1;		// The minimum number of footsteps to play
+	private static int footstepsStepsMax = 5;		// The maximum number of footsteps to play
+	private static int footstepsMsPerStepMax = 300;		// The maximum amount of time of each step in milliseconds (so that it doesn't sound like walking with less footsteps)
+	private static int footstepsStepVarianceMax = 25;	// The maximum amount of time to add between each footstep (so the step cadence has randomness)
 
-	private static void loadConfig() {
+	public static void loadConfig() {
 		try {
 			footstepsEnabled = Presence.config.getOrSetValue("footstepsEnabled", footstepsEnabled).getAsBoolean();
 			footstepsDelayMin = Presence.config.getOrSetValue("footstepsDelayMin", footstepsDelayMin).getAsInt();
@@ -42,19 +43,16 @@ public class Footsteps {
 		}
 	}
 
-	public static void initEvent() {
-		loadConfig();
-	}
-
 	public static void scheduleEvent(final PlayerEntity player) {
+		final float hauntLevel = PlayerData.getPlayerData(player.getUuid()).getHauntLevel();
 		Events.scheduler.schedule(
 			() -> {
 				generateFootsteps(player, Algorithms.RANDOM.nextBetween(footstepsStepsMin, footstepsStepsMax));
 				if (!player.isRemoved()) scheduleEvent(player);
 			},
 			Algorithms.RANDOM.nextBetween(
-				footstepsDelayMin,
-				footstepsDelayMax
+				Algorithms.divideByFloat(footstepsDelayMin, hauntLevel),
+				Algorithms.divideByFloat(footstepsDelayMax, hauntLevel)
 			), TimeUnit.SECONDS
 		);
 	}

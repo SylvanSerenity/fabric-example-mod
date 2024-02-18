@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.sylvan.presence.Presence;
+import com.sylvan.presence.data.PlayerData;
 import com.sylvan.presence.util.Algorithms;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,18 +21,18 @@ public class NearbySounds {
 	private static final List<Map.Entry<SoundEvent, Float>> nearbySounds = new ArrayList<>();
 
 	// Config
-	protected static boolean nearbySoundsEnabled = true;
-	private static int nearbySoundsDelayMin = 60 * 15;
-	private static int nearbySoundsDelayMax = 60 * 60 * 3;
-	private static int nearbySoundsDistanceMin = 12; // 12 gives a distant-feeling sond to where it is often barely noticeable
-	private static int nearbySoundsDistanceMax = 16; // 16 is maximum distance to hear sounds
-	private static float nearbySoundsItemPickupWeight = 45.0f;
-	private static float nearbySoundsBigFallWeight = 15.0f;
-	private static float nearbySoundsSmallFallWeight = 30.0f;
-	private static float nearbySoundsEatWeight = 9.5f;
-	private static float nearbySoundsBreathWeight = 0.5f;
+	public static boolean nearbySoundsEnabled = true;		// Whether the naerby sounds event is active
+	private static int nearbySoundsDelayMin = 60 * 5;		// The minimum delay between nearby sounds events
+	private static int nearbySoundsDelayMax = 60 * 60 * 3;		// The maximum delay between nearby sounds events
+	private static int nearbySoundsDistanceMin = 12;		// The minimum distance of the sound from the player. 12 gives a distant-feeling sond to where it is often barely noticeable
+	private static int nearbySoundsDistanceMax = 16;		// The maximum distance of the sound from the player. 16 is maximum distance to hear sounds
+	private static float nearbySoundsItemPickupWeight = 45.0f;	// The weight of the item pickup sound
+	private static float nearbySoundsBigFallWeight = 15.0f;		// The weight of the big fall sound
+	private static float nearbySoundsSmallFallWeight = 30.0f;	// The weight of the small fall/trip sound
+	private static float nearbySoundsEatWeight = 9.5f;		// The weight of the eat sound
+	private static float nearbySoundsBreathWeight = 0.5f;		// The weight of the breath sound
 
-	private static void loadConfig() {
+	public static void loadConfig() {
 		try {
 			nearbySoundsEnabled = Presence.config.getOrSetValue("nearbySoundsEnabled", nearbySoundsEnabled).getAsBoolean();
 			nearbySoundsDelayMin = Presence.config.getOrSetValue("nearbySoundsDelayMin", nearbySoundsDelayMin).getAsInt();
@@ -51,7 +52,6 @@ public class NearbySounds {
 	}
 
 	public static void initEvent() {
-		loadConfig();
 		nearbySounds.addAll(List.of(
 			new AbstractMap.SimpleEntry<>(SoundEvents.ENTITY_ITEM_PICKUP, nearbySoundsItemPickupWeight),
 			new AbstractMap.SimpleEntry<>(SoundEvents.ENTITY_PLAYER_BIG_FALL, nearbySoundsBigFallWeight),
@@ -62,14 +62,15 @@ public class NearbySounds {
 	}
 
 	public static void scheduleEvent(final PlayerEntity player) {
+		final float hauntLevel = PlayerData.getPlayerData(player.getUuid()).getHauntLevel();
 		Events.scheduler.schedule(
 			() -> {
 				playNearbySound(player);
 				if (!player.isRemoved()) scheduleEvent(player);
 			},
 			Algorithms.RANDOM.nextBetween(
-				nearbySoundsDelayMin,
-				nearbySoundsDelayMax
+				Algorithms.divideByFloat(nearbySoundsDelayMin, hauntLevel),
+				Algorithms.divideByFloat(nearbySoundsDelayMax, hauntLevel)
 			), TimeUnit.SECONDS
 		);
 	}

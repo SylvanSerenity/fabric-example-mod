@@ -18,6 +18,10 @@ public class Algorithms {
 		return min + RANDOM.nextFloat() * (max - min);
 	}
 
+	public static int divideByFloat(final int dividend, final float divisor) {
+		return (int) (((float) dividend) / divisor);
+	}
+
 	public static <K> K randomKeyFromWeightMap(final List<Map.Entry<K, Float>> keyWeightMap) {
 		final float totalWeight = keyWeightMap.stream().map(entry -> entry.getValue()).reduce(0.0f, Float::sum);
 		float randomValue = RANDOM.nextFloat() * totalWeight;

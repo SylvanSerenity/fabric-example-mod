@@ -5,7 +5,12 @@ import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sylvan.presence.data.PlayerData;
+import com.sylvan.presence.event.AmbientSounds;
 import com.sylvan.presence.event.Events;
+import com.sylvan.presence.event.ExtinguishTorches;
+import com.sylvan.presence.event.Footsteps;
+import com.sylvan.presence.event.NearbySounds;
 import com.sylvan.presence.util.Config;
 
 public class Presence implements ModInitializer {
@@ -31,7 +36,14 @@ public class Presence implements ModInitializer {
 	}
 
 	private void initConfig() {
-		// Load/save config
+		// Load/create config file
 		config = new Config(MOD_ID);
+
+		// Load config variables
+		PlayerData.loadConfig();
+		AmbientSounds.loadConfig();
+		ExtinguishTorches.loadConfig();
+		Footsteps.loadConfig();
+		NearbySounds.loadConfig();
 	}
 }
