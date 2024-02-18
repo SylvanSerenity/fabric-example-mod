@@ -77,8 +77,9 @@ public class NearbySounds {
 		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
 		Events.scheduler.schedule(
 			() -> {
+				if (player.isRemoved()) return;
 				playNearbySound(player);
-				if (!player.isRemoved()) scheduleEvent(player);
+				scheduleEvent(player);
 			},
 			Algorithms.RANDOM.nextBetween(
 				Algorithms.divideByFloat(nearbySoundsDelayMin, hauntLevel),

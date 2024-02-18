@@ -157,7 +157,13 @@ public class PlayerData {
 	public void scheduleEvents() {
 		final PlayerEntity player = getPlayer();
 		scheduleHauntLevelCalculation();
-		if (AmbientSounds.ambientSoundsEnabled) AmbientSounds.scheduleEvent(player);
+		if (AmbientSounds.ambientSoundsEnabled) AmbientSounds.scheduleEvent(
+			player,
+			Algorithms.RANDOM.nextBetween(
+				Algorithms.divideByFloat(AmbientSounds.ambientSoundsDelayMin, hauntLevel),
+				Algorithms.divideByFloat(AmbientSounds.ambientSoundsDelayMax, hauntLevel)
+			)
+		);
 		if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);
 		if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
 		if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);

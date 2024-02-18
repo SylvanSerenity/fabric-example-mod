@@ -56,7 +56,8 @@ public class ExtinguishTorches {
 		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
 		Events.scheduler.schedule(
 			() -> {
-				if (!player.isRemoved()) ExtinguishTorches.startTrackingTorches(player);
+				if (player.isRemoved()) return;
+				startTrackingTorches(player);
 			},
 			Algorithms.RANDOM.nextBetween(
 				Algorithms.divideByFloat(extinguishTorchesTrackDelayMin, hauntLevel),
@@ -75,10 +76,15 @@ public class ExtinguishTorches {
 
 	public static void scheduleExtinguish(final PlayerEntity player) {
 		Events.scheduler.schedule(() -> {
-			if (torchPlacementMap.containsKey(player.getUuid()) && !ExtinguishTorches.extinguishTrackedTorches(player)) {
+			if (player.isRemoved()) {
+				extinguishTrackedTorches(player);
+				return;
+			}
+
+			if (torchPlacementMap.containsKey(player.getUuid()) && !extinguishTrackedTorches(player)) {
 				// Wait for torches to be placed if first try yielded no results
 				scheduleExtinguish(player);
-			} else if (!player.isRemoved()) {
+			} else {
 				scheduleTracking(player);
 			}
 		}, extinguishTorchesExtinguishRetryDelay, TimeUnit.SECONDS);

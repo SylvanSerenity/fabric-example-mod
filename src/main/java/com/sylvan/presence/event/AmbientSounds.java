@@ -22,8 +22,8 @@ public class AmbientSounds {
 
 	// Config
 	public static boolean ambientSoundsEnabled = true;			// Whether the ambient sounds event is active
-	private static int ambientSoundsDelayMin = 60 * 30;			// The minimum delay between ambient sounds
-	private static int ambientSoundsDelayMax = 60 * 60 * 2;			// The maximum delay between ambient sounds
+	public static int ambientSoundsDelayMin = 60 * 30;			// The minimum delay between ambient sounds
+	public static int ambientSoundsDelayMax = 60 * 60 * 2;			// The maximum delay between ambient sounds
 	private static int ambientSoundsRetryDelay = 60;			// The delay between tries to play ambient sound
 	private static boolean ambientSoundsCaveConstraint = true;		// Whether the player must be in a cave for the sound to play
 	private static boolean ambientSoundsDarknessConstraint = true;		// Whether the player must be in darkness for the sound to play
@@ -81,38 +81,39 @@ public class AmbientSounds {
 		}
 	}
 
-	public static void scheduleEvent(final PlayerEntity player) {
+	public static void scheduleEvent(final PlayerEntity player, final int delay) {
 		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
 		Events.scheduler.schedule(
 			() -> {
-				playAmbientSound(player);
-				if (!player.isRemoved()) scheduleEvent(player);
+				if (player.isRemoved()) return;
+				if (playAmbientSound(player)) {
+					scheduleEvent(
+						player,
+						Algorithms.RANDOM.nextBetween(
+							Algorithms.divideByFloat(ambientSoundsDelayMin, hauntLevel),
+							Algorithms.divideByFloat(ambientSoundsDelayMax, hauntLevel)
+						)
+					);
+				} else {
+					// Retry if it is a bad time
+					scheduleEvent(player, ambientSoundsRetryDelay);
+				}
 			},
-			Algorithms.RANDOM.nextBetween(
-				Algorithms.divideByFloat(ambientSoundsDelayMin, hauntLevel),
-				Algorithms.divideByFloat(ambientSoundsDelayMax, hauntLevel)
-			), TimeUnit.SECONDS
+			delay, TimeUnit.SECONDS
 		);
 	}
 
-	public static void playAmbientSound(final PlayerEntity player) {
-		if (player.isRemoved()) return;
+	public static boolean playAmbientSound(final PlayerEntity player) {
+		if (player.isRemoved()) return false;
 
 		if (
 			(ambientSoundsCaveConstraint && !Algorithms.isEntityInCave(player)) ||							// Player must be in a cave
 			(ambientSoundsDarknessConstraint && player.getWorld().getLightLevel(player.getBlockPos()) > ambientSoundsLightLevelMax)	// Player must be in darkness
-		) {
-			// Retry if it is a bad time
-			Events.scheduler.schedule(
-				() -> {
-					playAmbientSound(player);
-				}, ambientSoundsRetryDelay, TimeUnit.SECONDS
-			);
-			return;
-		}
+		) return false;
 
 		final float pitch = Algorithms.randomBetween(ambientSoundsPitchMin, ambientSoundsPitchMax);
 		final SoundEvent sound = Algorithms.randomKeyFromWeightMap(ambientSounds);
 		player.playSound(sound, SoundCategory.AMBIENT, 256.0f, pitch);
+		return true;
 	}
 }
