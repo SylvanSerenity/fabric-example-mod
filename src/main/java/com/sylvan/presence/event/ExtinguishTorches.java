@@ -22,11 +22,11 @@ public class ExtinguishTorches {
 	public static Map<UUID, Map.Entry<DimensionType, Stack<BlockPos>>> torchPlacementMap = new HashMap<>();
 
 	// Config
-	public static boolean extinguishTorchesEnabled = true;		// Whether the extinguish torches event is active
+	public static boolean extinguishTorchesEnabled = true;			// Whether the extinguish torches event is active
 	private static int extinguishTorchesTrackDelayMin = 60 * 30;		// The minimum delay between beginning to track torches
 	private static int extinguishTorchesTrackDelayMax = 60 * 60 * 5;	// The maximum delay between beginning to track torches
-	private static int extinguishTorchesExtinguishRetryDelay = 60;		// The delay between tries to extinguish tracked torches
-	public static int extinguishTorchesTrackedMax = 32;			// The maximum number of torches to track
+	private static int extinguishTorchesExtinguishRetryDelay = 60 * 10;	// The delay between tries to extinguish tracked torches
+	public static int extinguishTorchesTrackedMax = 16;			// The maximum number of torches to track
 	public static int extinguishTorchesTorchDistanceMax = 32;		// The maximum distance between the last tracked torch (so that the torches are in the same cave)
 	public static int extinguishTorchesSkyLightLevelMax = 6;		// The maximum light level to determine whether to track the placed torch (so that surface torches are not tracked)
 
