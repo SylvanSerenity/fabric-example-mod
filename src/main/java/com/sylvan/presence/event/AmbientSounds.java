@@ -51,8 +51,8 @@ public class AmbientSounds {
 			ambientSoundsPitchMax = Presence.config.getOrSetValue("ambientSoundsPitchMax", ambientSoundsPitchMax).getAsFloat();
 			ambientSoundsSoundWeights = Presence.config.getOrSetValue("ambientSoundWeights", ambientSoundsSoundWeights).getAsJsonObject();
 		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default default.", e);
-			Presence.config.clearConfig();
+			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default values.", e);
+			Presence.config.wipe();
 			Presence.initConfig();
 		}
 	}
@@ -71,8 +71,8 @@ public class AmbientSounds {
 				ambientSounds.put(sound, entry.getValue().getAsFloat());
 			}
 		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default default.", e);
-			Presence.config.clearConfig();
+			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default values.", e);
+			Presence.config.wipe();
 			Presence.initConfig();
 			Events.initEvents();
 		}

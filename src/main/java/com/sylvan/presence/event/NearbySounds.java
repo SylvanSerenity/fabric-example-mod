@@ -46,8 +46,8 @@ public class NearbySounds {
 			nearbySoundsDistanceMax = Presence.config.getOrSetValue("nearbySoundsDistanceMax", nearbySoundsDistanceMax).getAsInt();
 			nearbySoundsSoundWeights = Presence.config.getOrSetValue("nearbySoundsSoundWeights", nearbySoundsSoundWeights).getAsJsonObject();
 		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for NearbySounds.java. Wiping and using default default.", e);
-			Presence.config.clearConfig();
+			Presence.LOGGER.error("Configuration issue for NearbySounds.java. Wiping and using default values.", e);
+			Presence.config.wipe();
 			Presence.initConfig();
 		}
 	}
@@ -66,8 +66,8 @@ public class NearbySounds {
 				nearbySounds.put(sound, entry.getValue().getAsFloat());
 			}
 		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default default.", e);
-			Presence.config.clearConfig();
+			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default values.", e);
+			Presence.config.wipe();
 			Presence.initConfig();
 			Events.initEvents();
 		}

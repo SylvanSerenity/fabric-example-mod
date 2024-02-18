@@ -34,13 +34,13 @@ public class Events {
 		// Start/stop scheduler with server
 		ServerLifecycleEvents.SERVER_STARTING.register((serverStarting) -> {
 			scheduler = Executors.newScheduledThreadPool(8);
-			PlayerData.setPlayerManager(serverStarting.getPlayerManager());
+			PlayerData.setInstance(serverStarting);
 		});
 		ServerLifecycleEvents.SERVER_STOPPING.register((serverStopping) -> {
 			scheduler.shutdown();
 
 			if (!Presence.config.exists()) {
-				Presence.config.clearConfig();
+				Presence.config.wipe();
 				Presence.initConfig();
 			}
 
@@ -69,7 +69,7 @@ public class Events {
 		ServerPlayConnectionEvents.DISCONNECT.register((serverPlayNetworkHandler, server) -> {
 			final PlayerEntity player = serverPlayNetworkHandler.getPlayer();
 			if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.extinguishTrackedTorches(player);
-			PlayerData.savePlayerData(player.getUuid());
+			PlayerData.getPlayerData(player.getUuid()).save();
 		});
 
 		// Add torch tracker for extinguish torches event

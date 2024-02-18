@@ -37,8 +37,8 @@ public class Footsteps {
 			footstepsMsPerStepMax = Presence.config.getOrSetValue("footstepsMsPerStepMax", footstepsMsPerStepMax).getAsInt();
 			footstepsStepVarianceMax = Presence.config.getOrSetValue("footstepsStepVarianceMax", footstepsStepVarianceMax).getAsInt();
 		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for Footsteps.java. Wiping and using default default.", e);
-			Presence.config.clearConfig();
+			Presence.LOGGER.error("Configuration issue for Footsteps.java. Wiping and using default values.", e);
+			Presence.config.wipe();
 			Presence.initConfig();
 		}
 	}
