@@ -9,15 +9,16 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.EulerAngle;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class HerobrineEntity {
 	private World world;
-	private ArmorStandEntity headArmsEntity;
+	private ArmorStandEntity headEntity;
 	private ArmorStandEntity eyesEntity;
 	private ArmorStandEntity bodyEntity;
+	private ArmorStandEntity armsEntity;
 	private ArmorStandEntity legsEntity;
 
 	private static NbtCompound headBodyCompound = new NbtCompound();
@@ -49,9 +50,16 @@ public class HerobrineEntity {
 		legsCompound.put("Pose", armLegPoseCompound);
 	}
 
-	public HerobrineEntity(final World world, final BlockPos blockPos, final float yaw, final float pitch, final float roll) {
+	private static ItemStack newModelItem(final int modelValue) {
+		ItemStack itemStack = new ItemStack(Items.DISC_FRAGMENT_5);
+		NbtCompound tag = itemStack.hasNbt() ? itemStack.getNbt() : new NbtCompound();
+		tag.putInt("CustomModelData", modelValue);
+		itemStack.setNbt(tag);
+		return itemStack;
+	}
+
+	public HerobrineEntity(final World world) {
 		this.world = world;
-		EulerAngle headRotation = new EulerAngle(pitch, yaw, roll);
 
 		ItemStack head = newModelItem(1350146);
 		ItemStack eyes = newModelItem(1350147);
@@ -61,55 +69,70 @@ public class HerobrineEntity {
 		ItemStack leftLeg = newModelItem(1350151);
 		ItemStack rightLeg = newModelItem(1350152);
 
-		this.headArmsEntity = EntityType.ARMOR_STAND.create(world);
-		headArmsEntity.readCustomDataFromNbt(headBodyCompound);
-		headArmsEntity.equipStack(EquipmentSlot.HEAD, head);
-		headArmsEntity.equipStack(EquipmentSlot.MAINHAND, rightArm);
-		headArmsEntity.equipStack(EquipmentSlot.OFFHAND, leftArm);
-		headArmsEntity.setNoGravity(true);
-		headArmsEntity.refreshPositionAndAngles(blockPos, yaw, pitch);
-		headArmsEntity.setHeadRotation(headRotation);
+		this.headEntity = EntityType.ARMOR_STAND.create(world);
+		headEntity.readCustomDataFromNbt(headBodyCompound);
+		headEntity.equipStack(EquipmentSlot.HEAD, head);
+		headEntity.setNoGravity(true);
 
 		this.eyesEntity = EntityType.ARMOR_STAND.create(world);
 		eyesEntity.readCustomDataFromNbt(headBodyCompound);
 		eyesEntity.equipStack(EquipmentSlot.HEAD, eyes);
 		eyesEntity.setNoGravity(true);
-		eyesEntity.refreshPositionAndAngles(blockPos, yaw, pitch);
-		eyesEntity.setHeadRotation(headRotation);
 
 		this.bodyEntity = EntityType.ARMOR_STAND.create(world);
 		bodyEntity.readCustomDataFromNbt(headBodyCompound);
 		bodyEntity.equipStack(EquipmentSlot.HEAD, body);
 		bodyEntity.setNoGravity(true);
-		bodyEntity.refreshPositionAndAngles(blockPos, yaw, pitch);
+
+		this.armsEntity = EntityType.ARMOR_STAND.create(world);
+		armsEntity.readCustomDataFromNbt(headBodyCompound);
+		armsEntity.equipStack(EquipmentSlot.MAINHAND, rightArm);
+		armsEntity.equipStack(EquipmentSlot.OFFHAND, leftArm);
+		armsEntity.setNoGravity(true);
 
 		this.legsEntity = EntityType.ARMOR_STAND.create(world);
 		legsEntity.readCustomDataFromNbt(legsCompound);
 		legsEntity.equipStack(EquipmentSlot.MAINHAND, rightLeg);
 		legsEntity.equipStack(EquipmentSlot.OFFHAND, leftLeg);
 		legsEntity.setNoGravity(true);
-		legsEntity.refreshPositionAndAngles(blockPos, yaw, pitch);
-	}
-
-	private static ItemStack newModelItem(final int modelValue) {
-		ItemStack itemStack = new ItemStack(Items.DISC_FRAGMENT_5);
-		NbtCompound tag = itemStack.hasNbt() ? itemStack.getNbt() : new NbtCompound();
-		tag.putInt("CustomModelData", modelValue);
-		itemStack.setNbt(tag);
-		return itemStack;
 	}
 
 	public void summon() {
-		world.spawnEntity(headArmsEntity);
+		world.spawnEntity(headEntity);
 		world.spawnEntity(eyesEntity);
 		world.spawnEntity(bodyEntity);
+		world.spawnEntity(armsEntity);
 		world.spawnEntity(legsEntity);
 	}
 
 	public void remove() {
-		headArmsEntity.remove(RemovalReason.DISCARDED);
+		headEntity.remove(RemovalReason.DISCARDED);
 		eyesEntity.remove(RemovalReason.DISCARDED);
 		bodyEntity.remove(RemovalReason.DISCARDED);
+		armsEntity.remove(RemovalReason.DISCARDED);
 		legsEntity.remove(RemovalReason.DISCARDED);
+	}
+
+	public void setHeadRotation(final float pitch, final float yaw, final float roll) {
+		EulerAngle headRotation = new EulerAngle(pitch, yaw, roll);
+		headEntity.setHeadRotation(headRotation);
+		eyesEntity.setHeadRotation(headRotation);
+	}
+
+	public void setBodyRotation(final float yaw) {
+		EulerAngle bodyRotation = new EulerAngle(0.0f, yaw, 0.0f);
+		headEntity.setBodyRotation(bodyRotation);
+		eyesEntity.setBodyRotation(bodyRotation);
+		bodyEntity.setBodyRotation(bodyRotation);
+		armsEntity.setBodyRotation(bodyRotation);
+		legsEntity.setBodyRotation(bodyRotation);
+	}
+
+	public void setPosition(final Vec3d pos) {
+		headEntity.setPosition(pos);
+		eyesEntity.setPosition(pos);
+		bodyEntity.setPosition(pos);
+		armsEntity.setPosition(pos);
+		legsEntity.setPosition(pos);
 	}
 }
