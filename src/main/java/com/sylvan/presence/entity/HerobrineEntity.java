@@ -1,5 +1,8 @@
 package com.sylvan.presence.entity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.Entity.RemovalReason;
@@ -16,13 +19,13 @@ import net.minecraft.world.World;
 public class HerobrineEntity {
 	private World world;
 	private ArmorStandEntity headEntity;
-	private ArmorStandEntity eyesEntity;
 	private ArmorStandEntity bodyEntity;
 	private ArmorStandEntity armsEntity;
 	private ArmorStandEntity legsEntity;
 
-	private static NbtCompound headBodyCompound = new NbtCompound();
-	private static NbtCompound legsCompound = new NbtCompound();
+	private static final NbtCompound headBodyCompound = new NbtCompound();
+	private static final NbtCompound legsCompound = new NbtCompound();
+	public static final Map<String, Integer> skins = new HashMap<>();
 
 	public static void initEntity() {
 		NbtList armPoseValues = new NbtList();
@@ -48,36 +51,38 @@ public class HerobrineEntity {
 		legsCompound.putInt("DisabledSlots", 2039583);
 		legsCompound.putBoolean("Small", true);
 		legsCompound.put("Pose", armLegPoseCompound);
+
+		skins.put("classic", 100);
+		skins.put("smile", 200);
 	}
 
-	private static ItemStack newModelItem(final int modelValue) {
+	private static ItemStack newModelItem(final int skinValue) {
 		ItemStack itemStack = new ItemStack(Items.DISC_FRAGMENT_5);
 		NbtCompound tag = itemStack.hasNbt() ? itemStack.getNbt() : new NbtCompound();
-		tag.putInt("CustomModelData", modelValue);
+		tag.putInt("CustomModelData", skinValue);
 		itemStack.setNbt(tag);
 		return itemStack;
 	}
 
-	public HerobrineEntity(final World world) {
+	public HerobrineEntity(final World world, final String skin) {
 		this.world = world;
 
-		ItemStack head = newModelItem(1350146);
-		ItemStack eyes = newModelItem(1350147);
-		ItemStack body = newModelItem(1350148);
-		ItemStack leftArm = newModelItem(1350149);
-		ItemStack rightArm = newModelItem(1350150);
-		ItemStack leftLeg = newModelItem(1350151);
-		ItemStack rightLeg = newModelItem(1350152);
+		int skinId = skins.get("classic");
+		if (skins.containsKey(skin)) {
+			skinId = skins.get(skin);
+		}
+
+		ItemStack head = newModelItem(skinId);
+		ItemStack body = newModelItem(skinId + 1);
+		ItemStack leftArm = newModelItem(skinId + 2);
+		ItemStack rightArm = newModelItem(skinId + 3);
+		ItemStack leftLeg = newModelItem(skinId + 4);
+		ItemStack rightLeg = newModelItem(skinId + 5);
 
 		this.headEntity = EntityType.ARMOR_STAND.create(world);
 		headEntity.readCustomDataFromNbt(headBodyCompound);
 		headEntity.equipStack(EquipmentSlot.HEAD, head);
 		headEntity.setNoGravity(true);
-
-		this.eyesEntity = EntityType.ARMOR_STAND.create(world);
-		eyesEntity.readCustomDataFromNbt(headBodyCompound);
-		eyesEntity.equipStack(EquipmentSlot.HEAD, eyes);
-		eyesEntity.setNoGravity(true);
 
 		this.bodyEntity = EntityType.ARMOR_STAND.create(world);
 		bodyEntity.readCustomDataFromNbt(headBodyCompound);
@@ -99,7 +104,6 @@ public class HerobrineEntity {
 
 	public void summon() {
 		world.spawnEntity(headEntity);
-		world.spawnEntity(eyesEntity);
 		world.spawnEntity(bodyEntity);
 		world.spawnEntity(armsEntity);
 		world.spawnEntity(legsEntity);
@@ -107,7 +111,6 @@ public class HerobrineEntity {
 
 	public void remove() {
 		headEntity.remove(RemovalReason.DISCARDED);
-		eyesEntity.remove(RemovalReason.DISCARDED);
 		bodyEntity.remove(RemovalReason.DISCARDED);
 		armsEntity.remove(RemovalReason.DISCARDED);
 		legsEntity.remove(RemovalReason.DISCARDED);
@@ -116,7 +119,6 @@ public class HerobrineEntity {
 	public void setHeadRotation(final float pitch, final float yaw, final float roll) {
 		EulerAngle headRotation = new EulerAngle(pitch, yaw, roll);
 		headEntity.setHeadRotation(headRotation);
-		eyesEntity.setHeadRotation(headRotation);
 	}
 
 	public void setBodyRotation(final float yaw) {
@@ -128,7 +130,6 @@ public class HerobrineEntity {
 
 	public void setPosition(final Vec3d pos) {
 		headEntity.setPosition(pos);
-		eyesEntity.setPosition(pos);
 		bodyEntity.setPosition(pos);
 		armsEntity.setPosition(pos);
 		legsEntity.setPosition(pos);

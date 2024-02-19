@@ -1,0 +1,20 @@
+{
+	"message.warning": {
+		"subtitle": "subtitle.message.warning",
+		"sounds": [
+			{
+				"name": "presence:warning",
+				"volume": 0.8
+			}
+		]
+	},
+	"event.freeze": {
+		"sounds": [
+			{
+				"name": "presence:freeze",
+				"volume": 1,
+				"pitch": 1
+			}
+		]
+	}
+}

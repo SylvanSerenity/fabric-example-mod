@@ -224,7 +224,7 @@ public class Commands {
 						return 1;
 					})
 					.then(
-						argument("footstepCount", IntegerArgumentType.integer())
+						argument("footstepCount", IntegerArgumentType.integer(1))
 						.executes(context -> {
 							if (context.getSource().isExecutedByPlayer()) {
 								final int footstepCount = IntegerArgumentType.getInteger(context, "footstepCount");
@@ -296,25 +296,52 @@ public class Commands {
 			.then(
 				literal("fakeHerobrine")
 				.then(
-					literal("summon")
-					.executes(context -> {
-						if (context.getSource().isExecutedByPlayer()) {
-							final PlayerEntity player = context.getSource().getPlayer();
-							context.getSource().sendFeedback(() -> Text.literal("Summoned fake Herobrine.").withColor(Formatting.BLUE.getColorValue()), false);
-							summonFakeHerobrine(player);
-						} else {
-							context.getSource().sendFeedback(() -> Text.literal("Cannot summon fake Herobrine by server.").withColor(Formatting.DARK_RED.getColorValue()), false);
-						}
-						return 1;
-					})
-				)
-				.then(
 					literal("destroy")
 					.executes(context -> {
 						context.getSource().sendFeedback(() -> Text.literal("Destroyed fake Herobrine.").withColor(Formatting.BLUE.getColorValue()), false);
 						destroyFakeHerobrine();
 						return 1;
 					})
+				)
+				.then(
+					literal("summon")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							final PlayerEntity player = context.getSource().getPlayer();
+							context.getSource().sendFeedback(() -> Text.literal("Summoned fake Herobrine.").withColor(Formatting.BLUE.getColorValue()), false);
+							summonFakeHerobrine(player, "classic");
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot summon fake Herobrine by server.").withColor(Formatting.DARK_RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						literal("skin")
+						.then(
+							argument("skinName", StringArgumentType.word())
+							.suggests((context, builder) -> {
+								for (final String skin : HerobrineEntity.skins.keySet()) {
+									builder.suggest(skin);
+								}
+								return builder.buildFuture();
+							})
+							.executes(context -> {
+								if (context.getSource().isExecutedByPlayer()) {
+									final String skin = StringArgumentType.getString(context, "skinName");
+									if (HerobrineEntity.skins.containsKey(skin)) {
+										final PlayerEntity player = context.getSource().getPlayer();
+										context.getSource().sendFeedback(() -> Text.literal("Summoned fake Herobrine.").withColor(Formatting.BLUE.getColorValue()), false);
+										summonFakeHerobrine(player, skin);
+									} else {
+										context.getSource().sendFeedback(() -> Text.literal("Skin not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+									}
+								} else {
+									context.getSource().sendFeedback(() -> Text.literal("Cannot summon fake Herobrine by server.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								}
+								return 1;
+							})
+						)
+					)
 				)
 			)
 			.then(
@@ -483,10 +510,10 @@ public class Commands {
 		));
 	}
 
-	private static void summonFakeHerobrine(final PlayerEntity player) {
+	private static void summonFakeHerobrine(final PlayerEntity player, final String skin) {
 		destroyFakeHerobrine();
 		final World world = player.getWorld();
-		herobrineEntity = new HerobrineEntity(world);
+		herobrineEntity = new HerobrineEntity(world, skin);
 		herobrineEntity.setPosition(player.getPos());
 		herobrineEntity.setBodyRotation(player.getYaw());
 		herobrineEntity.setHeadRotation(player.getPitch(), player.getYaw(), Algorithms.randomBetween(-15.0f, 15.0f));
