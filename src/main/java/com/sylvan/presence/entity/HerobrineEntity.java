@@ -49,9 +49,9 @@ public class HerobrineEntity {
 		legsCompound.put("Pose", armLegPoseCompound);
 	}
 
-	public HerobrineEntity(final World world, final BlockPos blockPos, final float yaw, final float pitch) {
+	public HerobrineEntity(final World world, final BlockPos blockPos, final float yaw, final float pitch, final float roll) {
 		this.world = world;
-		EulerAngle headRotation = new EulerAngle(pitch, yaw, 0.1f);
+		EulerAngle headRotation = new EulerAngle(pitch, yaw, roll);
 
 		ItemStack head = newModelItem(1350146);
 		ItemStack eyes = newModelItem(1350147);
