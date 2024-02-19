@@ -1,7 +1,8 @@
 {
+	"texture_size": [64, 64],
 	"elements": [
 		{
-			"name": "Box4",
+			"name": "Eyes",
 			"from": [4, 24, 4],
 			"to": [12, 32, 12],
 			"faces": {
@@ -10,9 +11,13 @@
 		}
 	],
 	"display": {
+		"gui": {
+			"rotation": [30, 45, 0],
+			"translation": [0, -16.5, 0]
+		},
 		"head": {
-			"translation": [0, -31.08, 0.01],
-			"scale": [1.502, 1.502, 1.502]
+			"translation": [0, -29.75, 0],
+			"scale": [1.5, 1.5, 1.5]
 		}
 	}
 }

@@ -1,7 +1,8 @@
 {
+	"texture_size": [64, 64],
 	"elements": [
 		{
-			"name": "Box4",
+			"name": "Body",
 			"from": [4, 12, 6],
 			"to": [12, 24, 10],
 			"faces": {
@@ -14,21 +15,7 @@
 			}
 		},
 		{
-			"name": "Box5",
-			"from": [12, 24, 10],
-			"to": [4, 12, 6],
-			"rotation": {"angle": 0, "axis": "y", "origin": [16, 16, 16]},
-			"faces": {
-				"north": {"uv": [8, 8, 10, 5], "texture": "#skin"},
-				"east": {"uv": [7, 8, 8, 5], "texture": "#skin"},
-				"south": {"uv": [5, 8, 7, 5], "texture": "#skin"},
-				"west": {"uv": [4, 8, 5, 5], "texture": "#skin"},
-				"up": {"uv": [9, 4, 7, 5], "texture": "#skin"},
-				"down": {"uv": [5, 5, 7, 4], "texture": "#skin"}
-			}
-		},
-		{
-			"name": "Box5",
+			"name": "BodyAdditions",
 			"from": [3.75, 11.75, 5.75],
 			"to": [12.25, 24.25, 10.25],
 			"faces": {
@@ -39,23 +26,14 @@
 				"up": {"uv": [5, 8, 7, 9], "texture": "#skin"},
 				"down": {"uv": [7, 8, 9, 9], "texture": "#skin"}
 			}
-		},
-		{
-			"name": "Box6",
-			"from": [12.25, 24.25, 10.25],
-			"to": [3.75, 11.75, 5.75],
-			"rotation": {"angle": 0, "axis": "y", "origin": [16, 16, 16]},
-			"faces": {
-				"north": {"uv": [8, 12, 10, 9], "texture": "#skin"},
-				"east": {"uv": [7, 12, 8, 9], "texture": "#skin"},
-				"south": {"uv": [5, 12, 7, 9], "texture": "#skin"},
-				"west": {"uv": [4, 12, 5, 9], "texture": "#skin"},
-				"up": {"uv": [9, 8, 7, 9], "texture": "#skin"},
-				"down": {"uv": [7, 8, 5, 9], "texture": "#skin"}
-			}
 		}
 	],
 	"display": {
+		"gui": {
+			"rotation": [30, 45, 0],
+			"translation": [0, -7, 0],
+			"scale": [0.8, 0.8, 0.8]
+		},
 		"head": {
 			"translation": [0, -31.04, 0],
 			"scale": [1.5, 1.5, 1.5]

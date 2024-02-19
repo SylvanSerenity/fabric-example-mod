@@ -57,7 +57,7 @@ public class HerobrineEntity {
 	}
 
 	private static ItemStack newModelItem(final int skinValue) {
-		ItemStack itemStack = new ItemStack(Items.TRIPWIRE_HOOK);
+		ItemStack itemStack = new ItemStack(Items.STONE_BUTTON);
 		NbtCompound tag = itemStack.hasNbt() ? itemStack.getNbt() : new NbtCompound();
 		tag.putInt("CustomModelData", skinValue);
 		itemStack.setNbt(tag);
@@ -122,8 +122,7 @@ public class HerobrineEntity {
 	}
 
 	public void setBodyRotation(final float yaw) {
-		EulerAngle bodyRotation = new EulerAngle(0.0f, yaw, 0.0f);
-		bodyEntity.setHeadRotation(bodyRotation);
+		bodyEntity.setYaw(yaw);
 		armsEntity.setYaw(yaw);
 		legsEntity.setYaw(yaw);
 	}
