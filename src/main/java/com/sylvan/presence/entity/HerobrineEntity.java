@@ -57,7 +57,7 @@ public class HerobrineEntity {
 	}
 
 	private static ItemStack newModelItem(final int skinValue) {
-		ItemStack itemStack = new ItemStack(Items.DISC_FRAGMENT_5);
+		ItemStack itemStack = new ItemStack(Items.TRIPWIRE_HOOK);
 		NbtCompound tag = itemStack.hasNbt() ? itemStack.getNbt() : new NbtCompound();
 		tag.putInt("CustomModelData", skinValue);
 		itemStack.setNbt(tag);

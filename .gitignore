@@ -31,8 +31,6 @@ bin/
 # fabric
 
 run/
-src/main/resources/assets/watching/*
-src/main/resources/assets/minecraft/*
 
 # java
 
