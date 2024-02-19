@@ -11,37 +11,64 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class HerobrineEntity {
-	World world;
-	ArmorStandEntity headArms;
-	ArmorStandEntity eyes;
-	ArmorStandEntity bodyLegs;
+	private World world;
+	private ArmorStandEntity headArmsEntity;
+	private ArmorStandEntity eyesEntity;
+	private ArmorStandEntity bodyEntity;
+	private ArmorStandEntity legsEntity;
+
+	private static NbtCompound headBodyCompound = new NbtCompound();
+	private static NbtCompound legsCompound = new NbtCompound();
+
+	public static void initEntity() {
+		headBodyCompound.putBoolean("Invisible", true);
+		headBodyCompound.putBoolean("Invulnerable", true);
+		headBodyCompound.putBoolean("NoBasePlate", true);
+		headBodyCompound.putBoolean("NoGravity", true);
+		headBodyCompound.putBoolean("ShowArms", true);
+		headBodyCompound.putInt("DisabledSlots", 2039583);
+
+		legsCompound.putBoolean("Invisible", true);
+		legsCompound.putBoolean("Invulnerable", true);
+		legsCompound.putBoolean("NoBasePlate", true);
+		legsCompound.putBoolean("NoGravity", true);
+		legsCompound.putBoolean("ShowArms", false);
+		legsCompound.putInt("DisabledSlots", 2039583);
+		legsCompound.putBoolean("Small", true);
+	}
 
 	public HerobrineEntity(final World world, final BlockPos blockPos, final float yaw, final float pitch) {
 		this.world = world;
 
 		ItemStack head = newModelItem(1350146);
-		ItemStack eye = newModelItem(1350147);
+		ItemStack eyes = newModelItem(1350147);
 		ItemStack body = newModelItem(1350148);
 		ItemStack leftArm = newModelItem(1350149);
 		ItemStack rightArm = newModelItem(1350150);
 		ItemStack leftLeg = newModelItem(1350151);
 		ItemStack rightLeg = newModelItem(1350152);
 
-		this.headArms = EntityType.ARMOR_STAND.create(world);
-		headArms.equipStack(EquipmentSlot.HEAD, head);
-		headArms.equipStack(EquipmentSlot.MAINHAND, rightArm);
-		headArms.equipStack(EquipmentSlot.OFFHAND, leftArm);
-		headArms.refreshPositionAndAngles(blockPos, yaw, pitch);
+		this.headArmsEntity = EntityType.ARMOR_STAND.create(world);
+		headArmsEntity.readCustomDataFromNbt(headBodyCompound);
+		headArmsEntity.equipStack(EquipmentSlot.HEAD, head);
+		headArmsEntity.equipStack(EquipmentSlot.MAINHAND, rightArm);
+		headArmsEntity.equipStack(EquipmentSlot.OFFHAND, leftArm);
+		headArmsEntity.refreshPositionAndAngles(blockPos, yaw, pitch);
 
-		this.eyes = EntityType.ARMOR_STAND.create(world);
-		eyes.equipStack(EquipmentSlot.HEAD, eye);
-		eyes.refreshPositionAndAngles(blockPos, yaw, pitch);
+		this.eyesEntity = EntityType.ARMOR_STAND.create(world);
+		eyesEntity.readCustomDataFromNbt(headBodyCompound);
+		eyesEntity.equipStack(EquipmentSlot.HEAD, eyes);
+		eyesEntity.refreshPositionAndAngles(blockPos, yaw, pitch);
 
-		this.bodyLegs = EntityType.ARMOR_STAND.create(world);
-		bodyLegs.equipStack(EquipmentSlot.CHEST, body);
-		bodyLegs.equipStack(EquipmentSlot.MAINHAND, rightLeg);
-		bodyLegs.equipStack(EquipmentSlot.OFFHAND, leftLeg);
-		bodyLegs.refreshPositionAndAngles(blockPos, yaw, pitch);
+		this.bodyEntity = EntityType.ARMOR_STAND.create(world);
+		bodyEntity.readCustomDataFromNbt(headBodyCompound);
+		bodyEntity.equipStack(EquipmentSlot.HEAD, body);
+		bodyEntity.refreshPositionAndAngles(blockPos, yaw, pitch);
+
+		this.legsEntity = EntityType.ARMOR_STAND.create(world);
+		legsEntity.readCustomDataFromNbt(legsCompound);
+		legsEntity.equipStack(EquipmentSlot.MAINHAND, rightLeg);
+		legsEntity.equipStack(EquipmentSlot.OFFHAND, leftLeg);
 	}
 
 	private static ItemStack newModelItem(final int modelValue) {
@@ -53,14 +80,16 @@ public class HerobrineEntity {
 	}
 
 	public void summon() {
-		world.spawnEntity(headArms);
-		world.spawnEntity(eyes);
-		world.spawnEntity(bodyLegs);
+		world.spawnEntity(headArmsEntity);
+		world.spawnEntity(eyesEntity);
+		world.spawnEntity(bodyEntity);
+		world.spawnEntity(legsEntity);
 	}
 
 	public void remove() {
-		headArms.remove(RemovalReason.DISCARDED);
-		eyes.remove(RemovalReason.DISCARDED);
-		bodyLegs.remove(RemovalReason.DISCARDED);
+		headArmsEntity.remove(RemovalReason.DISCARDED);
+		eyesEntity.remove(RemovalReason.DISCARDED);
+		bodyEntity.remove(RemovalReason.DISCARDED);
+		legsEntity.remove(RemovalReason.DISCARDED);
 	}
 }
