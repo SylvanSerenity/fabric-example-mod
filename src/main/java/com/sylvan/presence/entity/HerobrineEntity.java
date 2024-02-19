@@ -7,6 +7,8 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -21,20 +23,31 @@ public class HerobrineEntity {
 	private static NbtCompound legsCompound = new NbtCompound();
 
 	public static void initEntity() {
+		NbtList armPoseValues = new NbtList();
+		armPoseValues.add(NbtFloat.of(0.0f));
+		armPoseValues.add(NbtFloat.of(0.0f));
+		armPoseValues.add(NbtFloat.of(0.0f));
+
+		NbtCompound armLegPoseCompound = new NbtCompound();
+		armLegPoseCompound.put("LeftArm", armPoseValues);
+		armLegPoseCompound.put("RightArm", armPoseValues);
+
 		headBodyCompound.putBoolean("Invisible", true);
 		headBodyCompound.putBoolean("Invulnerable", true);
 		headBodyCompound.putBoolean("NoBasePlate", true);
 		headBodyCompound.putBoolean("NoGravity", true);
 		headBodyCompound.putBoolean("ShowArms", true);
 		headBodyCompound.putInt("DisabledSlots", 2039583);
+		headBodyCompound.put("Pose", armLegPoseCompound);
 
 		legsCompound.putBoolean("Invisible", true);
 		legsCompound.putBoolean("Invulnerable", true);
 		legsCompound.putBoolean("NoBasePlate", true);
 		legsCompound.putBoolean("NoGravity", true);
-		legsCompound.putBoolean("ShowArms", false);
+		legsCompound.putBoolean("ShowArms", true);
 		legsCompound.putInt("DisabledSlots", 2039583);
 		legsCompound.putBoolean("Small", true);
+		legsCompound.put("Pose", armLegPoseCompound);
 	}
 
 	public HerobrineEntity(final World world, final BlockPos blockPos, final float yaw, final float pitch) {
