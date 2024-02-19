@@ -487,9 +487,9 @@ public class Commands {
 		destroyFakeHerobrine();
 		final World world = player.getWorld();
 		herobrineEntity = new HerobrineEntity(world);
+		herobrineEntity.setPosition(player.getPos());
 		herobrineEntity.setBodyRotation(player.getYaw());
 		herobrineEntity.setHeadRotation(player.getPitch(), player.getYaw(), Algorithms.randomBetween(-15.0f, 15.0f));
-		herobrineEntity.setPosition(player.getPos());
 		herobrineEntity.summon();
 	}
 

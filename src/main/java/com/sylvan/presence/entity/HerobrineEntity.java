@@ -121,11 +121,9 @@ public class HerobrineEntity {
 
 	public void setBodyRotation(final float yaw) {
 		EulerAngle bodyRotation = new EulerAngle(0.0f, yaw, 0.0f);
-		headEntity.setBodyRotation(bodyRotation);
-		eyesEntity.setBodyRotation(bodyRotation);
-		bodyEntity.setBodyRotation(bodyRotation);
-		armsEntity.setBodyRotation(bodyRotation);
-		legsEntity.setBodyRotation(bodyRotation);
+		bodyEntity.setHeadRotation(bodyRotation);
+		armsEntity.setYaw(yaw);
+		legsEntity.setYaw(yaw);
 	}
 
 	public void setPosition(final Vec3d pos) {
