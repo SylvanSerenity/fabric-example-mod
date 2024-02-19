@@ -3,6 +3,9 @@ package com.sylvan.presence.entity;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sylvan.presence.util.Algorithms;
+
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.Entity.RemovalReason;
@@ -132,5 +135,11 @@ public class HerobrineEntity {
 		bodyEntity.setPosition(pos);
 		armsEntity.setPosition(pos);
 		legsEntity.setPosition(pos);
+	}
+
+	public void lookAt(final Entity entity) {
+		final EulerAngle rotation = Algorithms.getLookAtRotationEuler(headEntity, entity.getEyePos());
+		setHeadRotation(rotation.getPitch(), rotation.getYaw(), rotation.getRoll());
+		setBodyRotation(rotation.getYaw());
 	}
 }

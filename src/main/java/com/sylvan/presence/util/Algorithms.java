@@ -13,6 +13,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LightType;
@@ -83,11 +84,11 @@ public class Algorithms {
 		return new Identifier(namespace, name);
 	}
 
-	public static HitResult castRayFromEyeToBlock(final Entity entity, final BlockPos blockPos) {
+	public static HitResult castRayFromEye(final Entity entity, final Vec3d pos) {
 		return entity.getWorld().raycast(
 			new RaycastContext(
 				entity.getEyePos(),
-				blockPos.toCenterPos(),
+				pos,
 				RaycastContext.ShapeType.COLLIDER,
 				RaycastContext.FluidHandling.NONE,
 				entity
@@ -95,25 +96,10 @@ public class Algorithms {
 		);
 	}
 
-	public static HitResult.Type castRayFromEyeToEye(final Entity entity1, final Entity entity2) {
-		if (entity1.getEntityWorld().getDimension() != entity2.getEntityWorld().getDimension()) {
-			return HitResult.Type.MISS;
-		}
-		return entity1.getWorld().raycast(
-			new RaycastContext(
-				entity1.getEyePos(),
-				entity2.getEyePos(),
-				RaycastContext.ShapeType.COLLIDER,
-				RaycastContext.FluidHandling.NONE,
-				entity1
-			)
-		).getType();
-	}
-
-	public static boolean canBlockBeSeenByPlayers(final List<? extends PlayerEntity> players, final BlockPos blockPos) {
+	public static boolean canPosBeSeenByPlayers(final List<? extends PlayerEntity> players, final Vec3d pos) {
 		for (PlayerEntity player : players) {
-			if (!player.getBlockPos().isWithinDistance(blockPos, 128.0)) continue;
-			if (castRayFromEyeToBlock(player, blockPos).getType() == HitResult.Type.MISS) return true;
+			if (!player.getBlockPos().isWithinDistance(pos, 128.0)) continue;
+			if (castRayFromEye(player, pos).getType() == HitResult.Type.MISS) return true;
 		}
 		return false;
 	}
@@ -175,14 +161,13 @@ public class Algorithms {
 		);
 	}
 
-	public static BlockPos getRandomBlockNearEntity(final Entity entity, final int distanceMin, final int distanceMax) {
+	public static Vec3d getRandomPosNearEntity(final Entity entity, final int distanceMin, final int distanceMax) {
 		final Vec3d randomDirection = getRandomDirection();
 		final int distance = RANDOM.nextBetween(distanceMin, distanceMax);
 
 		// Scale the direction vector by the random distance
 		final Vec3d randomOffset = randomDirection.multiply(distance);
-		final BlockPos entityPos = entity.getBlockPos();
-		return entityPos.add(getBlockPosFromVec3d(randomOffset));
+		return entity.getPos().add(randomOffset);
 	}
 
 	public static BlockPos getRandomStandableBlockNearEntity(final Entity entity, final int distanceMin, final int distanceMax, final int maxAttempts) {
@@ -192,14 +177,14 @@ public class Algorithms {
 		final int maxDistanceUp = entityPos.getY() + moveDistance;
 
 		// Start with random block and check maxAttempt times
-		BlockPos blockPos = getRandomBlockNearEntity(entity, distanceMin, distanceMax);
+		BlockPos blockPos = getBlockPosFromVec3d(getRandomPosNearEntity(entity, distanceMin, distanceMax));
 		for (int i = 0; i < maxAttempts; ++i) {
 			// Move to nearest standable block
 			blockPos = getNearestStandableBlockPosTowardsEntity(entity, blockPos, maxDistanceDown, maxDistanceUp);
 			// Return if blockPos is within constraints
 			if (!blockPos.isWithinDistance(entityPos, distanceMin) && blockPos.isWithinDistance(entityPos, distanceMax)) return blockPos;
 			// Try again
-			blockPos = getRandomBlockNearEntity(entity, distanceMin, distanceMax);
+			blockPos = getBlockPosFromVec3d(getRandomPosNearEntity(entity, distanceMin, distanceMax));
 		}
 
 		// If nothing is found in 50 attempts, just select a block in the wall
@@ -229,27 +214,27 @@ public class Algorithms {
 
 		// Raycast in cardinal directions
 		int nonCaveBlockCount = 0;
-		final HitResult up = castRayFromEyeToBlock(entity, entityPos.up(128));
+		final HitResult up = castRayFromEye(entity, entityPos.up(128).toCenterPos());
 		final BlockPos upPos = ((BlockHitResult) up).getBlockPos();
 		if ((up.getType() != HitResult.Type.BLOCK)) return false;
 		if (!isCaveBlockSound(world.getBlockState(upPos).getSoundGroup())) ++nonCaveBlockCount;
-		final HitResult down = castRayFromEyeToBlock(entity, entityPos.down(128));
+		final HitResult down = castRayFromEye(entity, entityPos.down(128).toCenterPos());
 		final BlockPos downPos = ((BlockHitResult) down).getBlockPos();
 		if ((down.getType() != HitResult.Type.BLOCK)) return false;
 		if (!isCaveBlockSound(world.getBlockState(downPos).getSoundGroup())) ++nonCaveBlockCount;
-		final HitResult north = castRayFromEyeToBlock(entity, entityPos.north(128));
+		final HitResult north = castRayFromEye(entity, entityPos.north(128).toCenterPos());
 		final BlockPos northPos = ((BlockHitResult) north).getBlockPos();
 		if ((north.getType() != HitResult.Type.BLOCK)) return false;
 		if (!isCaveBlockSound(world.getBlockState(northPos).getSoundGroup())) ++nonCaveBlockCount;
-		final HitResult south = castRayFromEyeToBlock(entity, entityPos.south(128));
+		final HitResult south = castRayFromEye(entity, entityPos.south(128).toCenterPos());
 		final BlockPos southPos = ((BlockHitResult) south).getBlockPos();
 		if ((south.getType() != HitResult.Type.BLOCK)) return false;
 		if (!isCaveBlockSound(world.getBlockState(southPos).getSoundGroup())) ++nonCaveBlockCount;
-		final HitResult east = castRayFromEyeToBlock(entity, entityPos.east(128));
+		final HitResult east = castRayFromEye(entity, entityPos.east(128).toCenterPos());
 		final BlockPos eastPos = ((BlockHitResult) east).getBlockPos();
 		if ((east.getType() != HitResult.Type.BLOCK)) return false;
 		if (!isCaveBlockSound(world.getBlockState(eastPos).getSoundGroup())) ++nonCaveBlockCount;
-		final HitResult west = castRayFromEyeToBlock(entity, entityPos.west(128));
+		final HitResult west = castRayFromEye(entity, entityPos.west(128).toCenterPos());
 		final BlockPos westPos = ((BlockHitResult) west).getBlockPos();
 		if ((west.getType() != HitResult.Type.BLOCK)) return false;
 		if (!isCaveBlockSound(world.getBlockState(westPos).getSoundGroup())) ++nonCaveBlockCount;
@@ -258,7 +243,7 @@ public class Algorithms {
 		HitResult hit;
 		BlockSoundGroup hitBlockSound;
 		for (int i = 0; i < algorithmsCaveDetectionRays; ++i) {
-			hit = castRayFromEyeToBlock(entity, getRandomBlockNearEntity(entity, 128, 128));
+			hit = castRayFromEye(entity, getRandomPosNearEntity(entity, 128, 128));
 			if (hit.getType() != HitResult.Type.BLOCK) return false;
 			hitBlockSound = world.getBlockState(((BlockHitResult) hit).getBlockPos()).getSoundGroup();
 			if (!isCaveBlockSound(hitBlockSound)) ++nonCaveBlockCount;
@@ -267,5 +252,24 @@ public class Algorithms {
 		// If over 5% of hit blocks are not normally found in a cave, assume player is in a base
 		if (((float) nonCaveBlockCount / (float) Math.max(1, algorithmsCaveDetectionRays + 6)) > algorithmsCaveDetectionMaxNonCaveaveBlockPercent) return false;
 		return true;
+	}
+
+	public static Vec3d getLookAtRotation(final Entity entity, final Vec3d pos) {
+		return pos.subtract(entity.getPos()).normalize();
+	}
+
+	public static EulerAngle getLookAtRotationEuler(final Entity entity, final Vec3d pos) {
+		final Vec3d rotation = getLookAtRotation(entity, pos);
+		float pitch = (float) Math.toDegrees(
+			Math.atan2(
+				rotation.getY(),
+				Math.sqrt((rotation.getX() * rotation.getX()) + (rotation.getZ() * rotation.getZ()))
+			)
+		);
+		float yaw = (float) Math.toDegrees(
+			Math.atan2(rotation.getZ(), rotation.getX())
+		) - 90.0f;
+
+		return new EulerAngle(pitch, yaw, 0.0f);
 	}
 }
