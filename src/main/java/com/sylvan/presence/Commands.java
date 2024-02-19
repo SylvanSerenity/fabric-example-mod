@@ -1,8 +1,6 @@
 package com.sylvan.presence;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -488,12 +486,11 @@ public class Commands {
 	private static void summonFakeHerobrine(final PlayerEntity player) {
 		destroyFakeHerobrine();
 		final World world = player.getWorld();
-		herobrineEntity = new HerobrineEntity(EntityType.ARMOR_STAND, world);
-		herobrineEntity.refreshPositionAndAngles(player.getBlockPos(), player.getYaw(), player.getPitch());
-		world.spawnEntity(herobrineEntity);
+		herobrineEntity = new HerobrineEntity(world, player.getBlockPos(), player.getYaw(), player.getPitch());
+		herobrineEntity.summon();
 	}
 
 	private static void destroyFakeHerobrine() {
-		if (herobrineEntity != null) herobrineEntity.remove(RemovalReason.DISCARDED);
+		if (herobrineEntity != null) herobrineEntity.remove();
 	}
 }
