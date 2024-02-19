@@ -69,6 +69,7 @@ public class HerobrineEntity {
 		legsEntity.readCustomDataFromNbt(legsCompound);
 		legsEntity.equipStack(EquipmentSlot.MAINHAND, rightLeg);
 		legsEntity.equipStack(EquipmentSlot.OFFHAND, leftLeg);
+		legsEntity.refreshPositionAndAngles(blockPos, yaw, pitch);
 	}
 
 	private static ItemStack newModelItem(final int modelValue) {
