@@ -106,9 +106,9 @@ public class Algorithms {
 
 	public static boolean canPlayerStandOnBlock(final World world, final BlockPos blockPos) {
 		return (
-			!world.getBlockState(blockPos).isAir() &&
-			world.getBlockState(blockPos.up()).isAir() &&
-			world.getBlockState(blockPos.up(2)).isAir()
+			world.getBlockState(blockPos).isOpaque() &&
+			!world.getBlockState(blockPos.up()).isOpaque() &&
+			!world.getBlockState(blockPos.up(2)).isOpaque()
 		);
 	}
 
@@ -165,7 +165,7 @@ public class Algorithms {
 		final Vec3d randomDirection = getRandomDirection();
 		final int distance = RANDOM.nextBetween(distanceMin, distanceMax);
 
-		// Scale the direction vector by the random distance
+		// Scale the direction vector by the random distance magnitude
 		final Vec3d randomOffset = randomDirection.multiply(distance);
 		return entity.getPos().add(randomOffset);
 	}
@@ -254,22 +254,24 @@ public class Algorithms {
 		return true;
 	}
 
-	public static Vec3d getLookAtRotation(final Entity entity, final Vec3d pos) {
-		return pos.subtract(entity.getPos()).normalize();
+	public static Vec3d getPosOffsetInDirection(final Vec3d pos, final Vec3d rotation, final float distance) {
+		// Scale vector by distance magnitude
+		final Vec3d offsetVector = rotation.multiply(distance);
+		return pos.add(offsetVector);
 	}
 
-	public static EulerAngle getLookAtRotationEuler(final Entity entity, final Vec3d pos) {
-		final Vec3d rotation = getLookAtRotation(entity, pos);
-		float pitch = (float) Math.toDegrees(
-			Math.atan2(
-				rotation.getY(),
-				Math.sqrt((rotation.getX() * rotation.getX()) + (rotation.getZ() * rotation.getZ()))
-			)
-		);
-		float yaw = (float) Math.toDegrees(
-			Math.atan2(rotation.getZ(), rotation.getX())
-		) - 90.0f;
+	public static Vec3d getLookAtDirection(final Entity entity, final Vec3d pos) {
+		return pos.subtract(entity.getEyePos()).normalize();
+	}
 
+	public static EulerAngle getLookAtDirectionRotation(final Entity entity, final Vec3d pos) {
+		final Vec3d direction = getLookAtDirection(entity, pos);
+
+		float pitch = (float) -Math.toDegrees(Math.atan2(
+			direction.getY(),
+			Math.sqrt((direction.getX() * direction.getX()) + (direction.getZ() * direction.getZ()))
+		));
+		float yaw = (float) Math.toDegrees(Math.atan2(direction.getZ(), direction.getX())) - 90.0f;
 		return new EulerAngle(pitch, yaw, 0.0f);
 	}
 }

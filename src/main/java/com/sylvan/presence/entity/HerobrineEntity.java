@@ -138,8 +138,8 @@ public class HerobrineEntity {
 	}
 
 	public void lookAt(final Entity entity) {
-		final EulerAngle rotation = Algorithms.getLookAtRotationEuler(headEntity, entity.getEyePos());
-		setHeadRotation(rotation.getPitch(), rotation.getYaw(), rotation.getRoll());
+		final EulerAngle rotation = Algorithms.getLookAtDirectionRotation(headEntity, entity.getEyePos());
+		setHeadRotation(rotation.getPitch(), rotation.getYaw(), 0.0f);
 		setBodyRotation(rotation.getYaw());
 	}
 }
