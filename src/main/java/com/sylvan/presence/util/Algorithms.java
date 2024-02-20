@@ -96,12 +96,23 @@ public class Algorithms {
 		);
 	}
 
+	public static boolean couldPosBeSeenByEntity(final Entity entity, final Vec3d pos) {
+		if (!player.getBlockPos().isWithinDistance(pos, 128.0)) return false;
+		return castRayFromEye(player, pos).getType() == HitResult.Type.MISS);
+	}
+
 	public static boolean couldPosBeSeenByPlayers(final List<? extends PlayerEntity> players, final Vec3d pos) {
-		for (PlayerEntity player : players) {
-			if (!player.getBlockPos().isWithinDistance(pos, 128.0)) continue;
-			if (castRayFromEye(player, pos).getType() == HitResult.Type.MISS) return true;
+		for (final PlayerEntity player : players) {
+			if (couldPosBeSeenByEntity(player, pos) return true;
 		}
 		return false;
+	}
+
+	public static boolean isPositionLookedAtByEntity(final Entity entity, final Vec3d pos, final double dotProductThreshold) {
+		if (!couldPosBeSeenByEntity(entity, pos) return false;
+		final Vec3d lookDirectionVector = entity.getRotationVector();
+		final double dotProduct = lookDirectionVector.dotProduct(getLookAtDirection(entity, pos));
+		return dotProduct > dotProductThreshold;
 	}
 
 	public static boolean canPlayerStandOnBlock(final World world, final BlockPos blockPos) {
@@ -259,13 +270,6 @@ public class Algorithms {
 
 	public static Vec3d getLookAtDirection(final Entity entity, final Vec3d pos) {
 		return getDirectionPostoPos(entity.getEyePos(), pos);
-	}
-
-	public static boolean isPositionLookedAtByEntity(final Entity entity, final Vec3d pos, final double dotProductThreshold) {
-		final Vec3d lookDirectionVector = entity.getRotationVector();
-		final double dotProduct = lookDirectionVector.dotProduct(getLookAtDirection(entity, pos));
-		// TODO Raycast check for miss
-		return dotProduct > dotProductThreshold;
 	}
 
 	public static Vec3d getPosOffsetInDirection(final Vec3d pos, final Vec3d rotation, final float distance) {
