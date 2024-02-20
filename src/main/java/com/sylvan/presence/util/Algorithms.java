@@ -25,7 +25,7 @@ public class Algorithms {
 
 	private static int algorithmsCaveDetectionRays = 30;				// The amount of rays to shoot in random directions to determine whether an entity is in a cave
 	private static float algorithmsCaveDetectionMaxNonCaveaveBlockPercent = 0.0f;	// The percent of blocks a cave detection ray can collide with that are not usually found in a cave before assuming player is in a base
-	private static float algorithmsLookThreshold = 0.95f;				// The threshold of the dot product between an entity and the position being queried for being seen
+	private static float algorithmsLookThreshold = 1.8f;				// The threshold of the dot product between an entity and the position being queried for being seen
 
 	public static void loadConfig() {
 		try {
@@ -260,7 +260,7 @@ public class Algorithms {
 		final Vec3d directionToPosVector = pos.subtract(lookDirectionVector).normalize();
 		final double dotProduct = lookDirectionVector.dotProduct(directionToPosVector);
 		Presence.LOGGER.info("Dot product: " + dotProduct);
-		return dotProduct > algorithmsLookThreshold;
+		return (dotProduct > algorithmsLookThreshold) || (dotProduct < -algorithmsLookThreshold);
 	}
 
 	public static Vec3d getPosOffsetInDirection(final Vec3d pos, final Vec3d rotation, final float distance) {
