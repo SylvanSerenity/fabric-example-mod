@@ -24,7 +24,7 @@ public class WaitBehind {
 	private static int waitBehindDistanceMin = 1;		// The minimum distance behind the player to summon Herobrine
 	private static int waitBehindDistanceMax = 1;		// The maximum distance behind the player to summon Herobrine
 	private static int waitBehindVerticleDistanceMax = 3;	// The maximum distance Herobrine can be above/below the player
-	private static int waitBehindReflexMs = 10;		// The time in milliseconds before Herobrine vanishes
+	private static int waitBehindReflexMs = 0;		// The time in milliseconds before Herobrine vanishes
 
 	public static final List<HerobrineEntity> herobrines = new ArrayList<>();
 
