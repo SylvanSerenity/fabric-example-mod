@@ -259,10 +259,18 @@ public class Algorithms {
 		return pos.subtract(entity.getEyePos()).normalize();
 	}
 
+	public static boolean isPositionLookedAtByEntity(final Entity entity, final Vec3d pos) {
+		final Vec3d lookDirectionVector = entity.getRotationVector();
+		final double dotProduct = lookDirectionVector.dotProduct(getLookAtDirection(entity, pos));
+		// TODO Scale by distance
+		return dotProduct > algorithmsLookThreshold;
+	}
+
 	public static boolean isPositionSeenByEntity(final Entity entity, final Vec3d pos) {
 		final Vec3d lookDirectionVector = entity.getRotationVector();
 		final double dotProduct = lookDirectionVector.dotProduct(getLookAtDirection(entity, pos));
 		Presence.LOGGER.info("Dot product: " + dotProduct);
+		// TODO Send rays at FOV to make a reverse projection and one from player looking direction to get a depth, and form a prism, then detect if the entity is within that prism
 		// TODO Scale by distance
 		return dotProduct > algorithmsLookThreshold;
 	}

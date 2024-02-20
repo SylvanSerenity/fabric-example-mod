@@ -11,6 +11,7 @@ import com.sylvan.presence.entity.HerobrineEntity;
 import com.sylvan.presence.util.Algorithms;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -20,7 +21,7 @@ public class WaitBehind {
 	public static boolean waitBehindEnabled = true;		// Whether the wait behind event is active
 	public static int waitBehindDelayMin = 60 * 45;		// The minimum delay between wait behind events
 	public static int waitBehindDelayMax = 60 * 60 * 5;	// The maximum delay between wait behind events
-	public static int waitBehindRetryDelay = 60;		// The delay between retrying wait behind events in case of failure
+	public static int waitBehindRetryDelay = 1;		// The delay between retrying wait behind events in case of failure
 	private static int waitBehindDistanceMin = 1;		// The minimum distance behind the player to summon Herobrine
 	private static int waitBehindDistanceMax = 1;		// The maximum distance behind the player to summon Herobrine
 	private static int waitBehindVerticleDistanceMax = 3;	// The maximum distance Herobrine can be above/below the player
@@ -67,17 +68,29 @@ public class WaitBehind {
 		);
 	}
 
-	public static void onWorldTick() {
+	public static void onWorldTick(final ServerWorld world) {
 		if (herobrines.isEmpty()) return;
 
 		Iterator<HerobrineEntity> it = herobrines.iterator();
-		HerobrineEntity entry;
+		HerobrineEntity herobrine;
 		while (it.hasNext()) {
-			entry = it.next();
-			if (entry.isSeenByPlayers()) {
-				if (waitBehindReflexMs > 0) entry.scheduleRemoval(waitBehindReflexMs);
-				else entry.remove();
+			herobrine = it.next();
+			if (herobrine.isSeenByPlayers()) {
+				if (waitBehindReflexMs > 0) herobrine.scheduleRemoval(waitBehindReflexMs);
+				else herobrine.remove();
 				it.remove();
+			}
+
+			// Follow player
+			for (final PlayerEntity player : world.getPlayers()) {
+				final Vec3d spawnPos = getSpawnPos(player);
+				if (!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos))) {
+					// Reschedule
+					scheduleEvent(player, waitBehindRetryDelay);
+					break;
+				}
+				herobrine.setPosition(spawnPos);
+				herobrine.lookAt(player);
 			}
 		}
 	}
@@ -89,11 +102,7 @@ public class WaitBehind {
 		herobrines.clear();
 	}
 
-	public static boolean waitBehind(final PlayerEntity player) {
-		if (player.isRemoved()) return false;
-
-		final World world = player.getWorld();
-
+	private static Vec3d getSpawnPos(final PlayerEntity player) {
 		// Get the block behind the player
 		final BlockPos playerBlockPos = player.getBlockPos();
 		final Vec3d playerFacing = player.getRotationVector();
@@ -103,7 +112,7 @@ public class WaitBehind {
 			Algorithms.RANDOM.nextBetween(waitBehindDistanceMin, waitBehindDistanceMax)
 		);
 		final BlockPos spawnBlockPos = Algorithms.getNearestStandableBlockPos(
-			world,
+			player.getWorld(),
 			Algorithms.getBlockPosFromVec3d(spawnPos),
 			playerBlockPos.getY() - waitBehindVerticleDistanceMax,
 			playerBlockPos.getY() + waitBehindVerticleDistanceMax
@@ -113,7 +122,15 @@ public class WaitBehind {
 			spawnBlockPos.getY() + 1, // Keep X/Z offset
 			spawnPos.getZ()
 		);
-		if (!Algorithms.canPlayerStandOnBlock(world, spawnBlockPos)) return false;
+		return spawnPos;
+	}
+
+	public static boolean waitBehind(final PlayerEntity player) {
+		if (player.isRemoved()) return false;
+
+		final World world = player.getWorld();
+		final Vec3d spawnPos = getSpawnPos(player);
+		if (!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos))) return false;
 
 		final HerobrineEntity herobrine = new HerobrineEntity(world, "smile");
 		herobrine.setPosition(spawnPos);
