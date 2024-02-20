@@ -20,6 +20,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -167,5 +168,21 @@ public class HerobrineEntity {
 			}
 		}
 		return false;
+	}
+
+	public Vec3d getPos() {
+		return headEntity.getPos();
+	}
+
+	public Vec3d getEyePos() {
+		return headEntity.getEyePos();
+	}
+
+	public Vec3d getRotationVector() {
+		return headEntity.getRotationVector();
+	}
+
+	public BlockPos getBlockPos() {
+		return headEntity.getBlockPos();
 	}
 }

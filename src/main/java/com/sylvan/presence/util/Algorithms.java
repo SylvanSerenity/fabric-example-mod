@@ -254,9 +254,12 @@ public class Algorithms {
 		if (((float) nonCaveBlockCount / (float) Math.max(1, algorithmsCaveDetectionRays + 6)) > algorithmsCaveDetectionMaxNonCaveaveBlockPercent) return false;
 		return true;
 	}
+	public static Vec3d getDirectionPostoPos(final Vec3d pos1, final Vec3d pos2) {
+		return pos2.subtract(pos1).normalize();
+	}
 
 	public static Vec3d getLookAtDirection(final Entity entity, final Vec3d pos) {
-		return pos.subtract(entity.getEyePos()).normalize();
+		return getDirectionPostoPos(entity.getEyePos(), pos);
 	}
 
 	public static boolean isPositionLookedAtByEntity(final Entity entity, final Vec3d pos) {
