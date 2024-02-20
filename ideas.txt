@@ -2,6 +2,7 @@ General:
 * Track if player is AFK in PlayerData and block server events
 * Events check for minimum haunt level
 * Remove glow lichen
+* Add night vision check to if player is in darkness (and move it to Algorithms)
 
 Events:
 * Herobrine spawns in the distance in caves and vanishes after being seen for 1 second

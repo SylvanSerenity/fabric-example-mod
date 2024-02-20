@@ -25,7 +25,6 @@ public class Algorithms {
 
 	private static int algorithmsCaveDetectionRays = 30;				// The amount of rays to shoot in random directions to determine whether an entity is in a cave
 	private static float algorithmsCaveDetectionMaxNonCaveaveBlockPercent = 0.0f;	// The percent of blocks a cave detection ray can collide with that are not usually found in a cave before assuming player is in a base
-	private static float algorithmsLookThreshold = 0.98f;				// The threshold of the dot product between an entity and the position being queried for being seen
 
 	public static void loadConfig() {
 		try {
@@ -262,20 +261,11 @@ public class Algorithms {
 		return getDirectionPostoPos(entity.getEyePos(), pos);
 	}
 
-	public static boolean isPositionLookedAtByEntity(final Entity entity, final Vec3d pos) {
+	public static boolean isPositionLookedAtByEntity(final Entity entity, final Vec3d pos, final double dotProductThreshold) {
 		final Vec3d lookDirectionVector = entity.getRotationVector();
 		final double dotProduct = lookDirectionVector.dotProduct(getLookAtDirection(entity, pos));
-		// TODO Scale by distance
-		return dotProduct > algorithmsLookThreshold;
-	}
-
-	public static boolean isPositionSeenByEntity(final Entity entity, final Vec3d pos) {
-		final Vec3d lookDirectionVector = entity.getRotationVector();
-		final double dotProduct = lookDirectionVector.dotProduct(getLookAtDirection(entity, pos));
-		Presence.LOGGER.info("Dot product: " + dotProduct);
-		// TODO Send rays at FOV to make a reverse projection and one from player looking direction to get a depth, and form a prism, then detect if the entity is within that prism
-		// TODO Scale by distance
-		return dotProduct > algorithmsLookThreshold;
+		// TODO Raycast check for miss
+		return dotProduct > dotProductThreshold;
 	}
 
 	public static Vec3d getPosOffsetInDirection(final Vec3d pos, final Vec3d rotation, final float distance) {

@@ -157,13 +157,13 @@ public class HerobrineEntity {
 		setBodyRotation(rotation.getYaw());
 	}
 
-	public boolean isSeenByPlayers() {
+	public boolean isSeenByPlayers(final double dotProductThreshold) {
 		final List<ServerPlayerEntity> players = headEntity.getServer().getPlayerManager().getPlayerList();
 		final double maxY = headEntity.getY() + headEntity.getHeight();
 		Vec3d pos = headEntity.getPos();
 		while (pos.getY() < maxY) {
 			for (final PlayerEntity player : players) {
-				if (Algorithms.isPositionSeenByEntity(player, pos)) return true;
+				if (Algorithms.isPositionLookedAtByEntity(player, pos, dotProductThreshold)) return true;
 				pos = pos.add(0, 0.25, 0);
 			}
 		}

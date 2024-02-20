@@ -88,7 +88,7 @@ public class WaitBehind {
 			}
 
 			// Remove if seen
-			if (herobrine.isSeenByPlayers()) {
+			if (herobrine.isSeenByPlayers(0.2)) {
 				if (waitBehindReflexMs > 0) herobrine.scheduleRemoval(waitBehindReflexMs);
 				else herobrine.remove();
 				it.remove();
@@ -106,6 +106,11 @@ public class WaitBehind {
 					playerDistance - Algorithms.RANDOM.nextBetween(waitBehindDistanceMin, waitBehindDistanceMax)
 				)
 			);
+			spawnPos = new Vec3d(
+				spawnPos.getX(),
+				player.getPos().getY(),
+				spawnPos.getZ()
+			);
 			final BlockPos spawnBlockPos = Algorithms.getNearestStandableBlockPos(
 				world,
 				Algorithms.getBlockPosFromVec3d(spawnPos),
@@ -117,7 +122,7 @@ public class WaitBehind {
 				spawnBlockPos.getY() + 1, // Keep X/Z offset
 				spawnPos.getZ()
 			);
-			if (!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) break;
+			if (!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) continue;
 			herobrine.setPosition(spawnPos);
 			herobrine.lookAt(player);
 		}
