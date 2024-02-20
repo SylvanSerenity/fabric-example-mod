@@ -1,7 +1,7 @@
 General:
 * Track if player is AFK in PlayerData and block server events
 * Events check for minimum haunt level
-* Remove glow lichen
+* Remove glow lichen from non-water caves
 * Add night vision check to if player is in darkness (and move it to Algorithms)
 
 Events:
@@ -13,7 +13,7 @@ Events:
 * Send server message to single players (no other player on the server)
 * Random block placement (crafting table, sign, etc). Check for whether nearby chunks already had this happen.
 * Add 1x1/1x2 strip mines
-* Flash open/close doors
+* Flash open/close doors when player opens a door
 * Base door open
-* Chest open
+* Play a chest opening sound when the player is nearby but cannot see a chest and swap two items
 * Poppy at door (one chance per block)
