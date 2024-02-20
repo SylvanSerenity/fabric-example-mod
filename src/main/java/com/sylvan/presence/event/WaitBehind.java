@@ -96,20 +96,31 @@ public class WaitBehind {
 			}
 
 			// Inch forward toward player
-			final double playerDistance = player.getPos().distanceTo(herobrine.getPos());
-			final Vec3d towardsPlayer = Algorithms.getDirectionPostoPos(herobrine.getPos(), player.getPos());
+			// Pretend player and Herobrine are on the same block to prevent direction from being dependent on Y-axis
+			final Vec3d playerXZ = new Vec3d(
+				player.getPos().getX(),
+				0,
+				player.getPos().getZ()
+			);
+			final Vec3d herobrineXZ = new Vec3d(
+				herobrine.getPos().getX(),
+				0,
+				herobrine.getPos().getZ()
+			);
+			final double playerDistanceXZ = playerXZ.distanceTo(herobrineXZ);
+			final Vec3d towardsPlayer = Algorithms.getDirectionPostoPos(
+				herobrineXZ,
+				playerXZ
+			);
+
+			// Calculate spawn position
 			Vec3d spawnPos = Algorithms.getPosOffsetInDirection(
 				herobrine.getPos(),
 				towardsPlayer,
 				(float) Math.max(
 					0,
-					playerDistance - Algorithms.RANDOM.nextBetween(waitBehindDistanceMin, waitBehindDistanceMax)
+					playerDistanceXZ - Algorithms.RANDOM.nextBetween(waitBehindDistanceMin, waitBehindDistanceMax)
 				)
-			);
-			spawnPos = new Vec3d(
-				spawnPos.getX(),
-				player.getPos().getY(),
-				spawnPos.getZ()
 			);
 			final BlockPos spawnBlockPos = Algorithms.getNearestStandableBlockPos(
 				world,
@@ -119,7 +130,7 @@ public class WaitBehind {
 			);
 			spawnPos = new Vec3d(
 				spawnPos.getX(),
-				spawnBlockPos.getY() + 1, // Keep X/Z offset
+				spawnBlockPos.getY() + 1, // Spawn on block while keeping X/Z offset
 				spawnPos.getZ()
 			);
 			if (!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) continue;

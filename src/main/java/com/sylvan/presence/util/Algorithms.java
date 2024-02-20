@@ -62,9 +62,9 @@ public class Algorithms {
 
 	public static BlockPos getBlockPosFromVec3d(final Vec3d vec3d) {
 		return new BlockPos(
-			(int) vec3d.getX(),
-			(int) vec3d.getY(),
-			(int) vec3d.getZ()
+			(int) Math.round(vec3d.getX()),
+			(int) Math.round(vec3d.getY()),
+			(int) Math.round(vec3d.getZ())
 		);
 	}
 
@@ -97,19 +97,19 @@ public class Algorithms {
 	}
 
 	public static boolean couldPosBeSeenByEntity(final Entity entity, final Vec3d pos) {
-		if (!player.getBlockPos().isWithinDistance(pos, 128.0)) return false;
-		return castRayFromEye(player, pos).getType() == HitResult.Type.MISS);
+		if (!entity.getBlockPos().isWithinDistance(pos, 128.0)) return false;
+		return castRayFromEye(entity, pos).getType() == HitResult.Type.MISS;
 	}
 
 	public static boolean couldPosBeSeenByPlayers(final List<? extends PlayerEntity> players, final Vec3d pos) {
 		for (final PlayerEntity player : players) {
-			if (couldPosBeSeenByEntity(player, pos) return true;
+			if (couldPosBeSeenByEntity(player, pos)) return true;
 		}
 		return false;
 	}
 
 	public static boolean isPositionLookedAtByEntity(final Entity entity, final Vec3d pos, final double dotProductThreshold) {
-		if (!couldPosBeSeenByEntity(entity, pos) return false;
+		if (!couldPosBeSeenByEntity(entity, pos)) return false;
 		final Vec3d lookDirectionVector = entity.getRotationVector();
 		final double dotProduct = lookDirectionVector.dotProduct(getLookAtDirection(entity, pos));
 		return dotProduct > dotProductThreshold;
