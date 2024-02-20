@@ -14,7 +14,10 @@ import com.sylvan.presence.util.Algorithms;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -90,6 +93,43 @@ public class ExtinguishTorches {
 		}, extinguishTorchesExtinguishRetryDelay, TimeUnit.SECONDS);
 	}
 
+	public static void onUseBlock(final PlayerEntity player, final World world, final BlockHitResult hitResult) {
+		if (!extinguishTorchesEnabled) return;
+
+		final BlockPos torchPos = hitResult.getBlockPos().offset(hitResult.getSide()); // Offset by 1 block in the direction of torch placement
+		if (
+			(player.getMainHandStack().getItem() != Items.TORCH && player.getOffHandStack().getItem() != Items.TORCH) ||	// Player must be holding a torch
+			(
+				ExtinguishTorches.extinguishTorchesMaxSkyLightLevelConstraint &&
+				world.getLightLevel(LightType.SKY, torchPos) > ExtinguishTorches.extinguishTorchesSkyLightLevelMax	// Torch must be underground
+			)
+		) return;
+
+		if (ExtinguishTorches.torchPlacementMap.containsKey(player.getUuid())) {
+			final Map.Entry<DimensionType, Stack<BlockPos>> entry = ExtinguishTorches.torchPlacementMap.get(player.getUuid());
+			if (entry.getKey() != world.getDimension()) {
+				// Restart if not in the same dimension
+				ExtinguishTorches.extinguishTrackedTorches(player);
+				ExtinguishTorches.startTrackingTorches(player);
+				return;
+			}
+
+			final Stack<BlockPos> torches = entry.getValue();
+			// Torch must be within extinguishTorchesTorchDistanceMax blocks from last torch
+			if (
+				ExtinguishTorches.extinguishTorchesMaxDistanceConstraint &&
+				!torches.empty() &&
+				!torches.peek().isWithinDistance(torchPos, ExtinguishTorches.extinguishTorchesTorchDistanceMax)
+			) return;
+
+			if (torches.size() >= ExtinguishTorches.extinguishTorchesTrackedMax) {
+				// Remove bottom of the stack to make room
+				torches.remove(0);
+			}
+			torches.push(torchPos);
+		}
+	}
+
 	public static boolean extinguishTrackedTorches(final PlayerEntity player) {
 		if (!player.isRemoved()) {
 			// Player must be tracked
@@ -113,7 +153,7 @@ public class ExtinguishTorches {
 				block = world.getBlockState(torchPos).getBlock();
 				if (
 					!((block == Blocks.TORCH) || (block == Blocks.WALL_TORCH)) ||								// Block must still be a torch
-					(extinguishTorchesSeenConstraint && Algorithms.canPosBeSeenByPlayers(world.getPlayers(), torchPos.toCenterPos()))	// Player cannot see the torch being removed
+					(extinguishTorchesSeenConstraint && Algorithms.couldPosBeSeenByPlayers(world.getPlayers(), torchPos.toCenterPos()))	// Player cannot see the torch being removed
 				) continue;
 				// Remove the torch
 				world.removeBlock(torchPos, false);

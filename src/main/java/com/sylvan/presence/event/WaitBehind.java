@@ -1,5 +1,8 @@
 package com.sylvan.presence.event;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.sylvan.presence.Presence;
@@ -21,6 +24,8 @@ public class WaitBehind {
 	private static int waitBehindDistanceMin = 1;		// The minimum distance behind the player to summon Herobrine
 	private static int waitBehindDistanceMax = 1;		// The maximum distance behind the player to summon Herobrine
 	private static int waitBehindVerticleDistanceMax = 3;	// The maximum distance Herobrine can be above/below the player
+
+	public static final List<HerobrineEntity> herobrines = new ArrayList<>();
 
 	public static void loadConfig() {
 		try {
@@ -60,6 +65,27 @@ public class WaitBehind {
 		);
 	}
 
+	public static void onWorldTick() {
+		if (herobrines.isEmpty()) return;
+
+		Iterator<HerobrineEntity> it = herobrines.iterator();
+		HerobrineEntity entry;
+		while (it.hasNext()) {
+			entry = it.next();
+			if (entry.isSeenByPlayers()) {
+				entry.remove();
+				it.remove();
+			}
+		}
+	}
+
+	public static void onShutdown() {
+		for (final HerobrineEntity herobrine : herobrines) {
+			herobrine.remove();
+		}
+		herobrines.clear();
+	}
+
 	public static boolean waitBehind(final PlayerEntity player) {
 		if (player.isRemoved()) return false;
 
@@ -90,9 +116,7 @@ public class WaitBehind {
 		herobrine.setPosition(spawnPos);
 		herobrine.lookAt(player);
 		herobrine.summon();
-
-		// TODO Remove when player looks
-		// herobrine.remove();
+		herobrines.add(herobrine);
 
 		return true;
 	}

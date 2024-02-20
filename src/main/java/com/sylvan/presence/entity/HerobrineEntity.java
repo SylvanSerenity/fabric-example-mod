@@ -1,6 +1,7 @@
 package com.sylvan.presence.entity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.sylvan.presence.util.Algorithms;
@@ -10,11 +11,13 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -141,5 +144,14 @@ public class HerobrineEntity {
 		final EulerAngle rotation = Algorithms.getLookAtDirectionRotation(headEntity, entity.getEyePos());
 		setHeadRotation(rotation.getPitch(), rotation.getYaw(), 0.0f);
 		setBodyRotation(rotation.getYaw());
+	}
+
+	public boolean isSeenByPlayers() {
+		final List<ServerPlayerEntity> players = headEntity.getServer().getPlayerManager().getPlayerList();
+		for (final PlayerEntity player : players) {
+			if (Algorithms.isPositionSeenByEntity(player, headEntity.getEyePos())) return true;
+			if (Algorithms.isPositionSeenByEntity(player, bodyEntity.getPos())) return true;
+		}
+		return false;
 	}
 }
