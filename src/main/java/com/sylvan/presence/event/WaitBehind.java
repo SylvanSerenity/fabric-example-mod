@@ -24,6 +24,7 @@ public class WaitBehind {
 	private static int waitBehindDistanceMin = 1;		// The minimum distance behind the player to summon Herobrine
 	private static int waitBehindDistanceMax = 1;		// The maximum distance behind the player to summon Herobrine
 	private static int waitBehindVerticleDistanceMax = 3;	// The maximum distance Herobrine can be above/below the player
+	private static int waitBehindReflexMs = 10;		// The time in milliseconds before Herobrine vanishes
 
 	public static final List<HerobrineEntity> herobrines = new ArrayList<>();
 
@@ -36,6 +37,7 @@ public class WaitBehind {
 			waitBehindDistanceMin = Presence.config.getOrSetValue("waitBehindDistanceMin", waitBehindDistanceMin).getAsInt();
 			waitBehindDistanceMax = Presence.config.getOrSetValue("waitBehindDistanceMax", waitBehindDistanceMax).getAsInt();
 			waitBehindVerticleDistanceMax = Presence.config.getOrSetValue("waitBehindVerticleDistanceMax", waitBehindVerticleDistanceMax).getAsInt();
+			waitBehindReflexMs = Presence.config.getOrSetValue("waitBehindReflexMs", waitBehindReflexMs).getAsInt();
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for Footsteps.java. Wiping and using default values.", e);
 			Presence.config.wipe();
@@ -73,7 +75,8 @@ public class WaitBehind {
 		while (it.hasNext()) {
 			entry = it.next();
 			if (entry.isSeenByPlayers()) {
-				entry.remove();
+				if (waitBehindReflexMs > 0) entry.scheduleRemoval(waitBehindReflexMs);
+				else entry.remove();
 				it.remove();
 			}
 		}

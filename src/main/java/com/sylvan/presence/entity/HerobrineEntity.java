@@ -3,7 +3,9 @@ package com.sylvan.presence.entity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import com.sylvan.presence.event.Events;
 import com.sylvan.presence.util.Algorithms;
 
 import net.minecraft.entity.Entity;
@@ -115,6 +117,14 @@ public class HerobrineEntity {
 		world.spawnEntity(legsEntity);
 	}
 
+	public void scheduleRemoval(final long ms) {
+		Events.scheduler.schedule(
+			() -> {
+				if (!headEntity.isRemoved()) remove();
+			}, ms, TimeUnit.MILLISECONDS
+		);
+	}
+
 	public void remove() {
 		headEntity.remove(RemovalReason.DISCARDED);
 		bodyEntity.remove(RemovalReason.DISCARDED);
@@ -148,9 +158,13 @@ public class HerobrineEntity {
 
 	public boolean isSeenByPlayers() {
 		final List<ServerPlayerEntity> players = headEntity.getServer().getPlayerManager().getPlayerList();
-		for (final PlayerEntity player : players) {
-			if (Algorithms.isPositionSeenByEntity(player, headEntity.getEyePos())) return true;
-			if (Algorithms.isPositionSeenByEntity(player, bodyEntity.getPos())) return true;
+		final double maxY = headEntity.getY() + headEntity.getHeight();
+		Vec3d pos = headEntity.getPos();
+		while (pos.getY() < maxY) {
+			for (final PlayerEntity player : players) {
+				if (Algorithms.isPositionSeenByEntity(player, pos)) return true;
+				pos = pos.add(0, 0.25, 0);
+			}
 		}
 		return false;
 	}
