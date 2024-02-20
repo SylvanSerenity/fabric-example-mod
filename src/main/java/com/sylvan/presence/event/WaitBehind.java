@@ -84,7 +84,6 @@ public class WaitBehind {
 			spawnBlockPos.getY() + 1, // Keep X/Z offset
 			spawnPos.getZ()
 		);
-		Presence.LOGGER.info("Trying to stand on: " + spawnBlockPos.toShortString());
 		if (!Algorithms.canPlayerStandOnBlock(world, spawnBlockPos)) return false;
 
 		final HerobrineEntity herobrine = new HerobrineEntity(world, "smile");
