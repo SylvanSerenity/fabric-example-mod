@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public class Stalk {
 	// Config
 	public static boolean stalkEnabled = true;		// Whether the stalk event is active
-	private static float stalkHauntLevelMin = 2.0f;		// The minimum haunt level to play event
+	private static float stalkHauntLevelMin = 2.5f;		// The minimum haunt level to play event
 	private static int stalkDelayMin = 60 * 45;		// The minimum delay between stalk events
 	private static int stalkDelayMax = 60 * 60 * 3;		// The maximum delay between stalk events
 	private static int stalkRetryDelay = 1;			// The delay between retrying stalk events in case of failure
