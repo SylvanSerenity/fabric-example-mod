@@ -1,6 +1,5 @@
 package com.sylvan.presence.entity;
 
-import com.sylvan.presence.Presence;
 import com.sylvan.presence.event.Stalk;
 import com.sylvan.presence.util.Algorithms;
 
@@ -19,6 +18,7 @@ public class StalkingEntity extends HerobrineEntity {
 	private StalkingState stalkingState = StalkingState.WATCHING;
 	private boolean shouldRemove = false;
 	private long ticksSeen = 0;
+	private float lastYaw;
 	private float yawTurnPerTick;
 	private long turningTicks = 0;
 
@@ -61,12 +61,9 @@ public class StalkingEntity extends HerobrineEntity {
 			if (ticksSeen > Stalk.stalkSeenTicksMax) {
 				stalkingState = StalkingState.TURNING;
 				final Vec3d awayFromPlayer = Algorithms.getDirectionPosToPos(playerXZ, herobrineXZ);
-				final float yawStart = (float) this.getYaw();
+				lastYaw = (float) this.getYaw();
 				final float yawGoal = (float) Algorithms.directionToAngles(awayFromPlayer).getYaw();
-				yawTurnPerTick = (yawGoal - yawStart) / Stalk.stalkTurningTicks; // TODO Fix
-				Presence.LOGGER.info("Start yaw:" + yawStart);
-				Presence.LOGGER.info("Yaw goal:" + yawGoal);
-				Presence.LOGGER.info("Yaw turn per tick:" + yawTurnPerTick);
+				yawTurnPerTick = (yawGoal - lastYaw) / Stalk.stalkTurningTicks;
 			}
 		} else {
 			// Look at player
@@ -77,9 +74,9 @@ public class StalkingEntity extends HerobrineEntity {
 	private void tickTurning() {
 		++turningTicks;
 
-		final float newYaw = this.getYaw() + yawTurnPerTick;
-		this.setBodyRotation(newYaw);
+		final float newYaw = lastYaw + yawTurnPerTick;
 		this.setHeadRotation(0, newYaw, 0);
+		lastYaw = newYaw;
 
 		// Start walking away
 		if (turningTicks >= Stalk.stalkTurningTicks) stalkingState = StalkingState.WALKING;
