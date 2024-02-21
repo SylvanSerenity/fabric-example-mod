@@ -26,7 +26,7 @@ public class Stalk {
 	private static int stalkRetryDelay = 1;			// The delay between retrying stalk events in case of failure
 	private static int stalkDistanceMin = 64;		// The minimum distance to summon Herobrine
 	private static int stalkDistanceMax = 96;		// The maximum distance to summon Herobrine
-	private static int stalkClosePlayerDistanceMin = 32;	// The minimum distance from any player before Herobrine vanishes
+	private static int stalkClosePlayerDistanceMin = 48;	// The minimum distance from any player before Herobrine vanishes
 	public static int stalkSeenTicksMax = 20 * 3;		// The number of ticks that Herobrine is looked at before walking off
 	public static int stalkTurningTicks = 20 * 2;		// The number of ticks that it takes Herobrine to turn around after being seen
 	public static double stalkMovementSpeed = 0.2;		// How fast Herobrine moves while walking/running away
@@ -144,10 +144,7 @@ public class Stalk {
 			spawnBlockPos.up().getY(),
 			spawnPos.getZ()
 		);
-		if (
-			!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down()) ||	// Must be a standable block
-			!Algorithms.couldPosBeSeenByEntity(player, spawnPos)						// Must be able to be seen by player
-		) return false;
+		if (!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) return false;
 
 		final StalkingEntity herobrine = new StalkingEntity(world, "classic", player);
 		herobrine.setPosition(spawnPos);

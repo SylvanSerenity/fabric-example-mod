@@ -60,7 +60,7 @@ public class CreepingEntity extends HerobrineEntity {
 		if (!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) return;
 
 		// Set position and look at player
-		this.setPosition(spawnPos);
+		this.moveTo(spawnPos);
 		this.lookAt(trackedPlayer);
 	}
 

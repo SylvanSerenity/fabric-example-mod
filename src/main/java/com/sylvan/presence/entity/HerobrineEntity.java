@@ -187,6 +187,10 @@ public class HerobrineEntity {
 		legsEntity.move(MovementType.SELF, movementOffset);
 	}
 
+	public void moveTo(final Vec3d newPos) {
+		move(newPos.subtract(getPos()));
+	}
+
 	public Vec3d getPos() {
 		return headEntity.getPos();
 	}
