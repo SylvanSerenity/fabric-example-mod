@@ -7,6 +7,7 @@ import com.sylvan.presence.data.PlayerData;
 import com.sylvan.presence.util.Algorithms;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.Vec3d;
 
 public class Attack {
 	public static boolean attackEnabled = true;			// Whether the attack event is active
@@ -18,6 +19,9 @@ public class Attack {
 	public static float attackDamageMax = 4.0f;			// The maximum damage to apply to the player
 	private static boolean attackHealthMinConstraint = true;	// Whether the player must be above a minimum health before attacking
 	private static float attackHealthMin = 10.0f;			// The minimum health a player can before attacking
+	private static float attackPushMin = 0.25f;			// The minimum push distance
+	private static float attackPushMax = 0.5f;			// The maximum push distance
+	private static float attackPushVertical = 0.5f;			// The vertical push distance
 
 	public static void loadConfig() {
 		try {
@@ -30,6 +34,9 @@ public class Attack {
 			attackDamageMax = Presence.config.getOrSetValue("attackDamageMax", attackDamageMax).getAsFloat();
 			attackHealthMinConstraint = Presence.config.getOrSetValue("attackHealthMinConstraint", attackHealthMinConstraint).getAsBoolean();
 			attackHealthMin = Presence.config.getOrSetValue("attackHealthMin", attackHealthMin).getAsFloat();
+			attackPushMin = Presence.config.getOrSetValue("attackPushMin", attackPushMin).getAsFloat();
+			attackPushMax = Presence.config.getOrSetValue("attackPushMax", attackPushMax).getAsFloat();
+			attackPushVertical = Presence.config.getOrSetValue("attackPushVertical", attackPushVertical).getAsFloat();
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for Attack.java. Wiping and using default values.", e);
 			Presence.config.wipe();
@@ -79,7 +86,12 @@ public class Attack {
 
 		if (attackHealthMinConstraint && player.getHealth() < attackHealthMin) return false;
 
+		// Damange player
 		player.damage(player.getWorld().getDamageSources().playerAttack(null), damage);
+
+		// Push player in a random direction
+		final Vec3d randomPush = Algorithms.getRandomDirection().multiply(Algorithms.randomBetween(attackPushMin, attackPushMax));
+		player.addVelocity(randomPush.getX(), attackPushVertical, randomPush.getZ());
 
 		return true;
 	}
