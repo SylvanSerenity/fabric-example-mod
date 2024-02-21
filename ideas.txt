@@ -1,6 +1,7 @@
 General:
 * Track if player is AFK in PlayerData and block server events
 * Remove glow lichen from non-water caves
+* Implement XZ pos-to-pos direction in Creep and Stalk
 
 Events:
 * Herobrine spawns in the distance in caves and vanishes after being seen for 1 second
@@ -15,3 +16,5 @@ Events:
 * Base door open
 * Play a chest opening sound when the player is nearby but cannot see a chest and swap two items
 * Poppy at door (one chance per block)
+* Freeze the player by setting their position/rotation each tick and play a freeze sound
+* Send subtitles to the player
