@@ -99,7 +99,7 @@ public class AmbientSounds {
 		Events.scheduler.schedule(
 			() -> {
 				if (player.isRemoved()) return;
-				if (playAmbientSound(player)) {
+				if (playAmbientSound(player, false)) {
 					scheduleEventWithDelay(
 						player,
 						Algorithms.RANDOM.nextBetween(
@@ -116,10 +116,12 @@ public class AmbientSounds {
 		);
 	}
 
-	public static boolean playAmbientSound(final PlayerEntity player) {
+	public static boolean playAmbientSound(final PlayerEntity player, final boolean overrideHauntLevel) {
 		if (player.isRemoved()) return false;
-		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
-		if (hauntLevel < ambientSoundsHauntLevelMin) return true; // Reset event as if it passed
+		if (!overrideHauntLevel) {
+			final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
+			if (hauntLevel < ambientSoundsHauntLevelMin) return true; // Reset event as if it passed
+		}
 
 		if (
 			(ambientSoundsCaveConstraint && !Algorithms.isEntityInCave(player)) ||							// Player must be in a cave

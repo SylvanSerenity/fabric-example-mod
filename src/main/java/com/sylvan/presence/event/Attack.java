@@ -53,7 +53,7 @@ public class Attack {
 		Events.scheduler.schedule(
 			() -> {
 				if (player.isRemoved()) return;
-				if (attack(player, Algorithms.randomBetween(attackDamageMin, attackDamageMax))) {
+				if (attack(player, Algorithms.randomBetween(attackDamageMin, attackDamageMax), false)) {
 					scheduleEventWithDelay(
 						player,
 						Algorithms.RANDOM.nextBetween(
@@ -70,10 +70,12 @@ public class Attack {
 		);
 	}
 
-	public static boolean attack(final PlayerEntity player, final float damage) {
+	public static boolean attack(final PlayerEntity player, final float damage, final boolean overrideHauntLevel) {
 		if (player.isRemoved()) return false;
-		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
-		if (hauntLevel < attackHauntLevelMin) return true; // Reset event as if it passed
+		if (!overrideHauntLevel) {
+			final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
+			if (hauntLevel < attackHauntLevelMin) return true; // Reset event as if it passed
+		}
 
 		if (attackHealthMinConstraint && player.getHealth() < attackHealthMin) return false;
 

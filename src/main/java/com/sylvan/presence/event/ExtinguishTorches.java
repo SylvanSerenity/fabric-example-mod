@@ -62,7 +62,7 @@ public class ExtinguishTorches {
 		Events.scheduler.schedule(
 			() -> {
 				if (player.isRemoved() || torchPlacementMap.containsKey(player.getUuid())) return;
-				if (!startTrackingTorches(player)) {
+				if (!startTrackingTorches(player, false)) {
 					scheduleTracking(player);
 				}
 			},
@@ -74,11 +74,13 @@ public class ExtinguishTorches {
 		);
 	}
 
-	public static boolean startTrackingTorches(final PlayerEntity player) {
+	public static boolean startTrackingTorches(final PlayerEntity player, final boolean overrideHauntLevel) {
 		if (player.isRemoved() || torchPlacementMap.containsKey(player.getUuid())) return false;
 
-		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
-		if (hauntLevel < extinguishTorchesHauntLevelMin) return false;
+		if (!overrideHauntLevel) {
+			final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
+			if (hauntLevel < extinguishTorchesHauntLevelMin) return true; // Reset event as if it passed
+		}
 
 		torchPlacementMap.put(player.getUuid(), new AbstractMap.SimpleEntry<>(player.getWorld().getDimension(), new Stack<>()));
 		scheduleExtinguish(player);
@@ -118,7 +120,7 @@ public class ExtinguishTorches {
 			if (entry.getKey() != world.getDimension()) {
 				// Restart if not in the same dimension
 				ExtinguishTorches.extinguishTrackedTorches(player);
-				ExtinguishTorches.startTrackingTorches(player);
+				ExtinguishTorches.startTrackingTorches(player, false);
 				return;
 			}
 

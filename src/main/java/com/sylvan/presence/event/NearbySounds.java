@@ -80,7 +80,7 @@ public class NearbySounds {
 		Events.scheduler.schedule(
 			() -> {
 				if (player.isRemoved()) return;
-				playNearbySound(player);
+				playNearbySound(player, false);
 				scheduleEvent(player);
 			},
 			Algorithms.RANDOM.nextBetween(
@@ -90,10 +90,12 @@ public class NearbySounds {
 		);
 	}
 
-	public static void playNearbySound(final PlayerEntity player) {
+	public static void playNearbySound(final PlayerEntity player, final boolean overrideHauntLevel) {
 		if (player.isRemoved()) return;
-		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
-		if (hauntLevel < nearbySoundsHauntLevelMin) return; // Reset event as if it passed
+		if (!overrideHauntLevel) {
+			final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
+			if (hauntLevel < nearbySoundsHauntLevelMin) return; // Reset event as if it passed
+		}
 
 		final World world = player.getWorld();
 		final BlockPos soundPos = Algorithms.getRandomStandableBlockNearEntity(player, nearbySoundsDistanceMin, nearbySoundsDistanceMax, 20);

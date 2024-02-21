@@ -68,7 +68,7 @@ public class WaitBehind {
 		Events.scheduler.schedule(
 			() -> {
 				if (player.isRemoved()) return;
-				if (waitBehind(player)) {
+				if (waitBehind(player, false)) {
 					scheduleEventWithDelay(
 						player,
 						Algorithms.RANDOM.nextBetween(
@@ -161,10 +161,12 @@ public class WaitBehind {
 		herobrineTrackers.clear();
 	}
 
-	public static boolean waitBehind(final PlayerEntity player) {
+	public static boolean waitBehind(final PlayerEntity player, final boolean overrideHauntLevel) {
 		if (player.isRemoved()) return false;
-		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
-		if (hauntLevel < waitBehindHauntLevelMin) return true; // Reset event as if it passed
+		if (!overrideHauntLevel) {
+			final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
+			if (hauntLevel < waitBehindHauntLevelMin) return true; // Reset event as if it passed
+		}
 
 		final World world = player.getWorld();
 		// Get the block behind the player

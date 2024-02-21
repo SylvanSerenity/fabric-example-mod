@@ -35,7 +35,7 @@ public class Commands {
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
 							context.getSource().sendFeedback(() -> Text.literal("Executing ambient sounds event.").withColor(Formatting.BLUE.getColorValue()), false);
-							AmbientSounds.playAmbientSound(context.getSource().getPlayer());
+							AmbientSounds.playAmbientSound(context.getSource().getPlayer(), true);
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute ambient sounds event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
@@ -57,7 +57,7 @@ public class Commands {
 								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							} else {
 								context.getSource().sendFeedback(() -> Text.literal("Executing ambient sounds event for player " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-								AmbientSounds.playAmbientSound(player);
+								AmbientSounds.playAmbientSound(player, true);
 							}
 							return 1;
 						})
@@ -68,7 +68,7 @@ public class Commands {
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
 							context.getSource().sendFeedback(() -> Text.literal("Executing attack event.").withColor(Formatting.BLUE.getColorValue()), false);
-							Attack.attack(context.getSource().getPlayer(), Algorithms.randomBetween(Attack.attackDamageMin, Attack.attackDamageMax));
+							Attack.attack(context.getSource().getPlayer(), Algorithms.randomBetween(Attack.attackDamageMin, Attack.attackDamageMax), true);
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute attack event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
@@ -80,7 +80,7 @@ public class Commands {
 							if (context.getSource().isExecutedByPlayer()) {
 								final float damage = FloatArgumentType.getFloat(context, "damage");
 								context.getSource().sendFeedback(() -> Text.literal("Executing attack event.").withColor(Formatting.BLUE.getColorValue()), false);
-								Attack.attack(context.getSource().getPlayer(), damage);
+								Attack.attack(context.getSource().getPlayer(), damage, true);
 							} else {
 								context.getSource().sendFeedback(() -> Text.literal("Cannot execute attack event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							}
@@ -103,7 +103,7 @@ public class Commands {
 								} else {
 									final float damage = FloatArgumentType.getFloat(context, "damage");
 									context.getSource().sendFeedback(() -> Text.literal("Executing attack event for player " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-									Attack.attack(player, damage);
+									Attack.attack(player, damage, true);
 								}
 								return 1;
 							})
@@ -181,7 +181,7 @@ public class Commands {
 									context.getSource().sendFeedback(() -> Text.literal(
 										"Started tracking torches for " + player.getName().getString() + "."
 									).withColor(Formatting.BLUE.getColorValue()), false);
-									ExtinguishTorches.startTrackingTorches(player);
+									ExtinguishTorches.startTrackingTorches(player, true);
 								}
 							} else {
 								context.getSource().sendFeedback(() -> Text.literal("Cannot track server placement. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
@@ -206,7 +206,7 @@ public class Commands {
 									context.getSource().sendFeedback(() -> Text.literal("Player is already being tracked for torch placements.").withColor(Formatting.DARK_RED.getColorValue()), false);
 								} else {
 									context.getSource().sendFeedback(() -> Text.literal("Started tracking torches for player " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-									ExtinguishTorches.startTrackingTorches(player);
+									ExtinguishTorches.startTrackingTorches(player, true);
 								}
 								return 1;
 							})
@@ -218,7 +218,7 @@ public class Commands {
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
 							context.getSource().sendFeedback(() -> Text.literal("Executing footsteps event.").withColor(Formatting.BLUE.getColorValue()), false);
-							Footsteps.generateFootsteps(context.getSource().getPlayer(), Algorithms.RANDOM.nextBetween(Footsteps.footstepsStepsMin, Footsteps.footstepsStepsMax));
+							Footsteps.generateFootsteps(context.getSource().getPlayer(), Algorithms.RANDOM.nextBetween(Footsteps.footstepsStepsMin, Footsteps.footstepsStepsMax), true);
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute footsteps event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
@@ -230,7 +230,7 @@ public class Commands {
 							if (context.getSource().isExecutedByPlayer()) {
 								final int footstepCount = IntegerArgumentType.getInteger(context, "footstepCount");
 								context.getSource().sendFeedback(() -> Text.literal("Executing footsteps event.").withColor(Formatting.BLUE.getColorValue()), false);
-								Footsteps.generateFootsteps(context.getSource().getPlayer(), footstepCount);
+								Footsteps.generateFootsteps(context.getSource().getPlayer(), footstepCount, true);
 							} else {
 								context.getSource().sendFeedback(() -> Text.literal("Cannot execute footsteps event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							}
@@ -253,7 +253,7 @@ public class Commands {
 								} else {
 									final int footstepCount = IntegerArgumentType.getInteger(context, "footstepCount");
 									context.getSource().sendFeedback(() -> Text.literal("Executing footsteps event for player " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-									Footsteps.generateFootsteps(player, footstepCount);
+									Footsteps.generateFootsteps(player, footstepCount, true);
 								}
 								return 1;
 							})
@@ -265,7 +265,7 @@ public class Commands {
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
 							context.getSource().sendFeedback(() -> Text.literal("Executing nearby sounds event.").withColor(Formatting.BLUE.getColorValue()), false);
-							NearbySounds.playNearbySound(context.getSource().getPlayer());
+							NearbySounds.playNearbySound(context.getSource().getPlayer(), true);
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute nearby sounds event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
@@ -287,7 +287,7 @@ public class Commands {
 								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							} else {
 								context.getSource().sendFeedback(() -> Text.literal("Executing nearby sounds event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-								NearbySounds.playNearbySound(player);
+								NearbySounds.playNearbySound(player, true);
 							}
 							return 1;
 						})
@@ -298,7 +298,7 @@ public class Commands {
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
 							context.getSource().sendFeedback(() -> Text.literal("Executing wait behind event.").withColor(Formatting.BLUE.getColorValue()), false);
-							WaitBehind.waitBehind(context.getSource().getPlayer());
+							WaitBehind.waitBehind(context.getSource().getPlayer(), true);
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute wait behind event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
@@ -320,7 +320,7 @@ public class Commands {
 								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							} else {
 								context.getSource().sendFeedback(() -> Text.literal("Executing wait behind event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-								WaitBehind.waitBehind(player);
+								WaitBehind.waitBehind(player, true);
 							}
 							return 1;
 						})
