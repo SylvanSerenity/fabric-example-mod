@@ -33,7 +33,7 @@ public class Events {
 		ServerLifecycleEvents.SERVER_STOPPING.register((serverStopping) -> {
 			scheduler.shutdown();
 
-			WaitBehind.onShutdown();
+			Creep.onShutdown();
 
 			if (!Presence.config.exists()) {
 				Presence.config.wipe();
@@ -68,7 +68,7 @@ public class Events {
 
 		// Add server tick events for Herobrine
 		ServerTickEvents.END_WORLD_TICK.register(world -> {
-			WaitBehind.onWorldTick(world);
+			Creep.onWorldTick(world);
 		});
 	}
 }

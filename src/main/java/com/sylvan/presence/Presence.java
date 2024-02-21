@@ -14,7 +14,7 @@ import com.sylvan.presence.event.Events;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
-import com.sylvan.presence.event.WaitBehind;
+import com.sylvan.presence.event.Creep;
 import com.sylvan.presence.util.Algorithms;
 import com.sylvan.presence.util.JsonFile;
 
@@ -53,6 +53,6 @@ public class Presence implements ModInitializer {
 		ExtinguishTorches.loadConfig();
 		Footsteps.loadConfig();
 		NearbySounds.loadConfig();
-		WaitBehind.loadConfig();
+		Creep.loadConfig();
 	}
 }

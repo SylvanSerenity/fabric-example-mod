@@ -18,7 +18,7 @@ import com.sylvan.presence.event.Attack;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
-import com.sylvan.presence.event.WaitBehind;
+import com.sylvan.presence.event.Creep;
 import com.sylvan.presence.util.Algorithms;
 
 public class Commands {
@@ -294,13 +294,13 @@ public class Commands {
 					)
 				)
 				.then(
-					literal("waitBehind")
+					literal("creep")
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
-							context.getSource().sendFeedback(() -> Text.literal("Executing wait behind event.").withColor(Formatting.BLUE.getColorValue()), false);
-							WaitBehind.waitBehind(context.getSource().getPlayer(), true);
+							context.getSource().sendFeedback(() -> Text.literal("Executing creep event.").withColor(Formatting.BLUE.getColorValue()), false);
+							Creep.creep(context.getSource().getPlayer(), true);
 						} else {
-							context.getSource().sendFeedback(() -> Text.literal("Cannot execute wait behind event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							context.getSource().sendFeedback(() -> Text.literal("Cannot execute creep event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
 						return 1;
 					})
@@ -319,8 +319,8 @@ public class Commands {
 							if (player == null) {
 								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							} else {
-								context.getSource().sendFeedback(() -> Text.literal("Executing wait behind event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-								WaitBehind.waitBehind(player, true);
+								context.getSource().sendFeedback(() -> Text.literal("Executing creep event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+								Creep.creep(player, true);
 							}
 							return 1;
 						})
