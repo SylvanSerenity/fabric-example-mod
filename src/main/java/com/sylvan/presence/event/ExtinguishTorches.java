@@ -26,6 +26,7 @@ public class ExtinguishTorches {
 
 	// Config
 	public static boolean extinguishTorchesEnabled = true;				// Whether the extinguish torches event is active
+	public static float extinguishTorchesHauntLevelMin = 1.25f;			// The minimum haunt level to play event
 	private static int extinguishTorchesTrackDelayMin = 60 * 30;			// The minimum delay between beginning to track torches
 	private static int extinguishTorchesTrackDelayMax = 60 * 60 * 5;		// The maximum delay between beginning to track torches
 	private static int extinguishTorchesExtinguishRetryDelay = 60 * 10;		// The delay between tries to extinguish tracked torches
@@ -39,6 +40,7 @@ public class ExtinguishTorches {
 	public static void loadConfig() {
 		try {
 			extinguishTorchesEnabled = Presence.config.getOrSetValue("extinguishTorchesEnabled", extinguishTorchesEnabled).getAsBoolean();
+			extinguishTorchesHauntLevelMin = Presence.config.getOrSetValue("extinguishTorchesHauntLevelMin", extinguishTorchesHauntLevelMin).getAsFloat();
 			extinguishTorchesTrackDelayMin = Presence.config.getOrSetValue("extinguishTorchesTrackDelayMin", extinguishTorchesTrackDelayMin).getAsInt();
 			extinguishTorchesTrackDelayMax = Presence.config.getOrSetValue("extinguishTorchesTrackDelayMax", extinguishTorchesTrackDelayMax).getAsInt();
 			extinguishTorchesExtinguishRetryDelay = Presence.config.getOrSetValue("extinguishTorchesExtinguishRetryDelay", extinguishTorchesExtinguishRetryDelay).getAsInt();
@@ -59,8 +61,10 @@ public class ExtinguishTorches {
 		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
 		Events.scheduler.schedule(
 			() -> {
-				if (player.isRemoved()) return;
-				startTrackingTorches(player);
+				if (player.isRemoved() || torchPlacementMap.containsKey(player.getUuid())) return;
+				if (!startTrackingTorches(player)) {
+					scheduleTracking(player);
+				}
 			},
 			Algorithms.RANDOM.nextBetween(
 				Algorithms.divideByFloat(extinguishTorchesTrackDelayMin, hauntLevel),
@@ -70,11 +74,15 @@ public class ExtinguishTorches {
 		);
 	}
 
-	public static void startTrackingTorches(final PlayerEntity player) {
-		if (!player.isRemoved() && !torchPlacementMap.containsKey(player.getUuid())) {
-			torchPlacementMap.put(player.getUuid(), new AbstractMap.SimpleEntry<>(player.getWorld().getDimension(), new Stack<>()));
-			scheduleExtinguish(player);
-		}
+	public static boolean startTrackingTorches(final PlayerEntity player) {
+		if (player.isRemoved() || torchPlacementMap.containsKey(player.getUuid())) return false;
+
+		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
+		if (hauntLevel < extinguishTorchesHauntLevelMin) return false;
+
+		torchPlacementMap.put(player.getUuid(), new AbstractMap.SimpleEntry<>(player.getWorld().getDimension(), new Stack<>()));
+		scheduleExtinguish(player);
+		return true;
 	}
 
 	public static void scheduleExtinguish(final PlayerEntity player) {

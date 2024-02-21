@@ -15,8 +15,9 @@ import net.minecraft.world.World;
 
 public class Footsteps {
 	// Config
-	public static boolean footstepsEnabled = true;	// Whether the footsteps event is active
-	private static int footstepsDelayMin = 60 * 20;		// The minimum delay between footstep events
+	public static boolean footstepsEnabled = true;		// Whether the footsteps event is active
+	public static float footstepsHauntLevelMin = 1.5f;	// The minimum haunt level to play event
+	private static int footstepsDelayMin = 60 * 45;		// The minimum delay between footstep events
 	private static int footstepsDelayMax = 60 * 60 * 4;	// The maximum delay between footstep events
 	private static int footstepsReflexMs = 500;		// The maximum time the footstep event can take (so that the player turns around right after they stop)
 	private static int footstepsMaxReflexVariance = 150;	// The maximum addition to the reflex time (to add randomness to the footstep speed)
@@ -28,6 +29,7 @@ public class Footsteps {
 	public static void loadConfig() {
 		try {
 			footstepsEnabled = Presence.config.getOrSetValue("footstepsEnabled", footstepsEnabled).getAsBoolean();
+			footstepsHauntLevelMin = Presence.config.getOrSetValue("footstepsHauntLevelMin", footstepsHauntLevelMin).getAsFloat();
 			footstepsDelayMin = Presence.config.getOrSetValue("footstepsDelayMin", footstepsDelayMin).getAsInt();
 			footstepsDelayMax = Presence.config.getOrSetValue("footstepsDelayMax", footstepsDelayMax).getAsInt();
 			footstepsReflexMs = Presence.config.getOrSetValue("footstepsReflexMs", footstepsReflexMs).getAsInt();
@@ -49,6 +51,7 @@ public class Footsteps {
 			() -> {
 				if (player.isRemoved()) return;
 				generateFootsteps(player, Math.max(1, Algorithms.RANDOM.nextBetween(footstepsStepsMin, footstepsStepsMax)));
+				scheduleEvent(player);
 			},
 			Algorithms.RANDOM.nextBetween(
 				Algorithms.divideByFloat(footstepsDelayMin, hauntLevel),
@@ -58,8 +61,10 @@ public class Footsteps {
 	}
 
 	public static void generateFootsteps(final PlayerEntity player, final int footstepCount) {
-		if (player.isRemoved()) return;
-		if (footstepCount < 1) return;
+		if (player.isRemoved() || footstepCount < 1) return;
+
+		final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
+		if (hauntLevel < footstepsHauntLevelMin) return; // Reset event as if it passed
 
 		final int msPerStep = (
 			(footstepCount > 2) ?
@@ -83,6 +88,8 @@ public class Footsteps {
 	}
 
 	public static void playFootstep(final PlayerEntity player, BlockPos soundPos) {
+		if (player.isRemoved()) return;
+
 		final World world = player.getWorld();
 		final BlockPos playerPos = player.getBlockPos();
 

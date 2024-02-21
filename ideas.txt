@@ -1,6 +1,5 @@
 General:
 * Track if player is AFK in PlayerData and block server events
-* Events check for minimum haunt level and creative mode
 * Remove glow lichen from non-water caves
 * Add night vision check to if player is in darkness (and move it to Algorithms)
 

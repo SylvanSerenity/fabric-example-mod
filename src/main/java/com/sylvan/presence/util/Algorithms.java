@@ -97,8 +97,16 @@ public class Algorithms {
 	}
 
 	public static boolean couldPosBeSeenByEntity(final Entity entity, final Vec3d pos) {
+		// Check max distance before calculating
 		if (!entity.getBlockPos().isWithinDistance(pos, 128.0)) return false;
-		return castRayFromEye(entity, pos).getType() == HitResult.Type.MISS;
+
+		// Check if behind transparent block
+		final HitResult hitResult = castRayFromEye(entity, pos);
+		if (
+			hitResult.getType() == HitResult.Type.BLOCK &&
+			entity.getWorld().getBlockState(((BlockHitResult) hitResult).getBlockPos()).isOpaque()
+		) return false;
+		return true;
 	}
 
 	public static boolean couldPosBeSeenByPlayers(final List<? extends PlayerEntity> players, final Vec3d pos) {

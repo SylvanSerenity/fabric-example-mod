@@ -77,7 +77,7 @@ public class PlayerData {
 	private String playerDataPath;
 	private LocalDateTime joinTime;
 	private boolean isHaunted = false;
-	private float hauntLevel = defaultHauntLevel;	// Divides delay minima and maxima by hauntLevel, such that events happen more often as time goes on. 1.0 has no effect, and larger numbers increase events
+	private float hauntLevel = defaultHauntLevel;	// Limits events and divides delay minima and maxima by hauntLevel, such that events happen more often as time goes on. 1.0 has no effect, and larger numbers increase events
 
 	// Persistant
 	private float hauntChance = defaultHauntChance;	// Chance of being haunted when joining the server
@@ -159,30 +159,12 @@ public class PlayerData {
 	public void scheduleEvents() {
 		final PlayerEntity player = getPlayer();
 		scheduleHauntLevelCalculation();
-		if (AmbientSounds.ambientSoundsEnabled) AmbientSounds.scheduleEvent(
-			player,
-			Algorithms.RANDOM.nextBetween(
-				Algorithms.divideByFloat(AmbientSounds.ambientSoundsDelayMin, hauntLevel),
-				Algorithms.divideByFloat(AmbientSounds.ambientSoundsDelayMax, hauntLevel)
-			)
-		);
-		if (Attack.attackEnabled) Attack.scheduleEvent(
-			player,
-			Algorithms.RANDOM.nextBetween(
-				Algorithms.divideByFloat(Attack.attackDelayMin, hauntLevel),
-				Algorithms.divideByFloat(Attack.attackDelayMax, hauntLevel)
-			)
-		);
+		if (AmbientSounds.ambientSoundsEnabled) AmbientSounds.scheduleEvent(player);
+		if (Attack.attackEnabled) Attack.scheduleEvent(player);
 		if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);
 		if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
 		if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
-		if (WaitBehind.waitBehindEnabled) WaitBehind.scheduleEvent(
-			player,
-			Algorithms.RANDOM.nextBetween(
-				Algorithms.divideByFloat(WaitBehind.waitBehindDelayMax, hauntLevel),
-				Algorithms.divideByFloat(WaitBehind.waitBehindDelayMax, hauntLevel)
-			)
-		);
+		if (WaitBehind.waitBehindEnabled) WaitBehind.scheduleEvent(player);
 	}
 
 	private void scheduleHauntLevelCalculation() {
