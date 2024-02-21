@@ -124,8 +124,8 @@ public class AmbientSounds {
 		}
 
 		if (
-			(ambientSoundsCaveConstraint && !Algorithms.isEntityInCave(player)) ||							// Player must be in a cave
-			(ambientSoundsDarknessConstraint && player.getWorld().getLightLevel(player.getBlockPos()) > ambientSoundsLightLevelMax)	// Player must be in darkness
+			(ambientSoundsCaveConstraint && !Algorithms.isEntityInCave(player)) ||					// Player must be in a cave
+			(ambientSoundsDarknessConstraint && Algorithms.isEntityInDarkness(player, ambientSoundsLightLevelMax))	// Player must be in darkness
 		) return false;
 
 		final float pitch = Algorithms.randomBetween(ambientSoundsPitchMin, ambientSoundsPitchMax);

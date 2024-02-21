@@ -6,6 +6,9 @@ import java.util.Map;
 import com.sylvan.presence.Presence;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
@@ -295,5 +298,13 @@ public class Algorithms {
 		));
 		float yaw = (float) Math.toDegrees(Math.atan2(direction.getZ(), direction.getX())) - 90.0f;
 		return new EulerAngle(pitch, yaw, 0.0f);
+	}
+
+	public static boolean isEntityInDarkness(final LivingEntity entity, final int maxLightLevel) {
+		if (entity.getWorld().getLightLevel(entity.getBlockPos()) > maxLightLevel) return false;
+		for (final StatusEffectInstance effect : entity.getStatusEffects()) {
+			if (effect.getEffectType() == StatusEffects.NIGHT_VISION) return false;
+		}
+		return true;
 	}
 }

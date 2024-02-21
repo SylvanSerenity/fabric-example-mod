@@ -51,7 +51,7 @@ public class ExtinguishTorches {
 			extinguishTorchesSkyLightLevelMax = Presence.config.getOrSetValue("extinguishTorchesSkyLightLevelMax", extinguishTorchesSkyLightLevelMax).getAsInt();
 			extinguishTorchesSeenConstraint = Presence.config.getOrSetValue("extinguishTorchesSeenConstraint", extinguishTorchesSeenConstraint).getAsBoolean();
 		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for ExtinguishTorches.java. Wiping and using default.", e);
+			Presence.LOGGER.error("Configuration issue for java. Wiping and using default.", e);
 			Presence.config.wipe();
 			Presence.initConfig();
 		}
@@ -110,29 +110,29 @@ public class ExtinguishTorches {
 		if (
 			(player.getMainHandStack().getItem() != Items.TORCH && player.getOffHandStack().getItem() != Items.TORCH) ||	// Player must be holding a torch
 			(
-				ExtinguishTorches.extinguishTorchesMaxSkyLightLevelConstraint &&
-				world.getLightLevel(LightType.SKY, torchPos) > ExtinguishTorches.extinguishTorchesSkyLightLevelMax	// Torch must be underground
+				extinguishTorchesMaxSkyLightLevelConstraint &&
+				world.getLightLevel(LightType.SKY, torchPos) > extinguishTorchesSkyLightLevelMax	// Torch must be underground
 			)
 		) return;
 
-		if (ExtinguishTorches.torchPlacementMap.containsKey(player.getUuid())) {
-			final Map.Entry<DimensionType, Stack<BlockPos>> entry = ExtinguishTorches.torchPlacementMap.get(player.getUuid());
+		if (torchPlacementMap.containsKey(player.getUuid())) {
+			final Map.Entry<DimensionType, Stack<BlockPos>> entry = torchPlacementMap.get(player.getUuid());
 			if (entry.getKey() != world.getDimension()) {
 				// Restart if not in the same dimension
-				ExtinguishTorches.extinguishTrackedTorches(player);
-				ExtinguishTorches.startTrackingTorches(player, false);
+				extinguishTrackedTorches(player);
+				startTrackingTorches(player, false);
 				return;
 			}
 
 			final Stack<BlockPos> torches = entry.getValue();
 			// Torch must be within extinguishTorchesTorchDistanceMax blocks from last torch
 			if (
-				ExtinguishTorches.extinguishTorchesMaxDistanceConstraint &&
+				extinguishTorchesMaxDistanceConstraint &&
 				!torches.empty() &&
-				!torches.peek().isWithinDistance(torchPos, ExtinguishTorches.extinguishTorchesTorchDistanceMax)
+				!torches.peek().isWithinDistance(torchPos, extinguishTorchesTorchDistanceMax)
 			) return;
 
-			if (torches.size() >= ExtinguishTorches.extinguishTorchesTrackedMax) {
+			if (torches.size() >= extinguishTorchesTrackedMax) {
 				// Remove bottom of the stack to make room
 				torches.remove(0);
 			}
