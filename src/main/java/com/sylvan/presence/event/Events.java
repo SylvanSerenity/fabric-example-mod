@@ -34,6 +34,7 @@ public class Events {
 			scheduler.shutdown();
 
 			Creep.onShutdown();
+			Stalk.onShutdown();
 
 			if (!Presence.config.exists()) {
 				Presence.config.wipe();

@@ -88,8 +88,8 @@ public class AmbientSounds {
 		scheduleEventWithDelay(
 			player,
 			Algorithms.RANDOM.nextBetween(
-				Algorithms.divideByFloat(AmbientSounds.ambientSoundsDelayMin, hauntLevel),
-				Algorithms.divideByFloat(AmbientSounds.ambientSoundsDelayMax, hauntLevel)
+				Algorithms.divideByFloat(ambientSoundsDelayMin, hauntLevel),
+				Algorithms.divideByFloat(ambientSoundsDelayMax, hauntLevel)
 			)
 		);
 	}
@@ -125,7 +125,7 @@ public class AmbientSounds {
 
 		if (
 			(ambientSoundsCaveConstraint && !Algorithms.isEntityInCave(player)) ||					// Player must be in a cave
-			(ambientSoundsDarknessConstraint && Algorithms.isEntityInDarkness(player, ambientSoundsLightLevelMax))	// Player must be in darkness
+			(ambientSoundsDarknessConstraint && !Algorithms.isEntityInDarkness(player, ambientSoundsLightLevelMax))	// Player must be in darkness
 		) return false;
 
 		final float pitch = Algorithms.randomBetween(ambientSoundsPitchMin, ambientSoundsPitchMax);

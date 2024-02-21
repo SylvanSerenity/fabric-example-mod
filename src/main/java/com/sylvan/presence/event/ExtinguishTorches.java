@@ -51,7 +51,7 @@ public class ExtinguishTorches {
 			extinguishTorchesSkyLightLevelMax = Presence.config.getOrSetValue("extinguishTorchesSkyLightLevelMax", extinguishTorchesSkyLightLevelMax).getAsInt();
 			extinguishTorchesSeenConstraint = Presence.config.getOrSetValue("extinguishTorchesSeenConstraint", extinguishTorchesSeenConstraint).getAsBoolean();
 		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for java. Wiping and using default.", e);
+			Presence.LOGGER.error("Configuration issue for ExtinguishTorches.java. Wiping and using default.", e);
 			Presence.config.wipe();
 			Presence.initConfig();
 		}

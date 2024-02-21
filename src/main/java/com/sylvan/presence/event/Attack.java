@@ -49,8 +49,8 @@ public class Attack {
 		scheduleEventWithDelay(
 			player,
 			Algorithms.RANDOM.nextBetween(
-				Algorithms.divideByFloat(Attack.attackDelayMin, hauntLevel),
-				Algorithms.divideByFloat(Attack.attackDelayMax, hauntLevel)
+				Algorithms.divideByFloat(attackDelayMin, hauntLevel),
+				Algorithms.divideByFloat(attackDelayMax, hauntLevel)
 			)
 		);
 	}

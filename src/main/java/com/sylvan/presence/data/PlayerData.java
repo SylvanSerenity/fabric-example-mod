@@ -15,6 +15,7 @@ import com.sylvan.presence.event.Events;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
+import com.sylvan.presence.event.Stalk;
 import com.sylvan.presence.event.Creep;
 import com.sylvan.presence.util.Algorithms;
 import com.sylvan.presence.util.JsonFile;
@@ -161,10 +162,11 @@ public class PlayerData {
 		scheduleHauntLevelCalculation();
 		if (AmbientSounds.ambientSoundsEnabled) AmbientSounds.scheduleEvent(player);
 		if (Attack.attackEnabled) Attack.scheduleEvent(player);
+		if (Creep.creepEnabled) Creep.scheduleEvent(player);
 		if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);
 		if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
 		if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
-		if (Creep.creepEnabled) Creep.scheduleEvent(player);
+		if (Stalk.stalkEnabled) Stalk.scheduleEvent(player);
 	}
 
 	private void scheduleHauntLevelCalculation() {

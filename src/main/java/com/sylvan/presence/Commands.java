@@ -18,6 +18,7 @@ import com.sylvan.presence.event.Attack;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
+import com.sylvan.presence.event.Stalk;
 import com.sylvan.presence.event.Creep;
 import com.sylvan.presence.util.Algorithms;
 
@@ -108,6 +109,39 @@ public class Commands {
 								return 1;
 							})
 						)
+					)
+				)
+				.then(
+					literal("creep")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							context.getSource().sendFeedback(() -> Text.literal("Executing creep event.").withColor(Formatting.BLUE.getColorValue()), false);
+							Creep.creep(context.getSource().getPlayer(), true);
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot execute creep event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("player", StringArgumentType.word())
+						.suggests((context, builder) -> {
+							final Iterable<String> playerNames = context.getSource().getPlayerNames();
+							for (final String playerName : playerNames) {
+								builder.suggest(playerName);
+							}
+							return builder.buildFuture();
+						})
+						.executes(context -> {
+							final String playerName = StringArgumentType.getString(context, "player");
+							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+							if (player == null) {
+								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Executing creep event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+								Creep.creep(player, true);
+							}
+							return 1;
+						})
 					)
 				)
 				.then(
@@ -294,13 +328,13 @@ public class Commands {
 					)
 				)
 				.then(
-					literal("creep")
+					literal("stalk")
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
-							context.getSource().sendFeedback(() -> Text.literal("Executing creep event.").withColor(Formatting.BLUE.getColorValue()), false);
-							Creep.creep(context.getSource().getPlayer(), true);
+							context.getSource().sendFeedback(() -> Text.literal("Executing stalk event.").withColor(Formatting.BLUE.getColorValue()), false);
+							Stalk.stalk(context.getSource().getPlayer(), true);
 						} else {
-							context.getSource().sendFeedback(() -> Text.literal("Cannot execute creep event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							context.getSource().sendFeedback(() -> Text.literal("Cannot execute stalk event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
 						return 1;
 					})
@@ -319,8 +353,8 @@ public class Commands {
 							if (player == null) {
 								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							} else {
-								context.getSource().sendFeedback(() -> Text.literal("Executing creep event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-								Creep.creep(player, true);
+								context.getSource().sendFeedback(() -> Text.literal("Executing stalk event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+								Stalk.stalk(player, true);
 							}
 							return 1;
 						})

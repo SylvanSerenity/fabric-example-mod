@@ -1,14 +1,13 @@
 package com.sylvan.presence.event;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.sylvan.presence.Presence;
 import com.sylvan.presence.data.PlayerData;
-import com.sylvan.presence.entity.HerobrineEntity;
+import com.sylvan.presence.entity.CreepingEntity;
 import com.sylvan.presence.util.Algorithms;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,17 +20,17 @@ import net.minecraft.world.World;
 public class Creep {
 	// Config
 	public static boolean creepEnabled = true;		// Whether the creep event is active
-	private static float creepHauntLevelMin = 2.0f;	// The minimum haunt level to play event
-	private static int creepDelayMin = 60 * 45;	// The minimum delay between creep events
-	private static int creepDelayMax = 60 * 60 * 3;	// The maximum delay between creep events
-	private static int creepRetryDelay = 1;		// The delay between retrying creep events in case of failure
-	private static int creepDistanceMin = 1;		// The minimum distance behind the player to summon Herobrine
-	private static int creepDistanceMax = 1;		// The maximum distance behind the player to summon Herobrine
-	private static int creepVerticleDistanceMax = 3;	// The maximum distance Herobrine can be above/below the player
-	private static int creepReflexMs = 0;		// The time in milliseconds before Herobrine vanishes
-	private static double creepLookAtThreshold = 0.2;	// The threshold at which the player will be considered looking at Herobrine. -1.0 is directly oppsotie, 1.0 is directly towards
+	private static float creepHauntLevelMin = 2.0f;		// The minimum haunt level to play event
+	private static int creepDelayMin = 60 * 45;		// The minimum delay between creep events
+	private static int creepDelayMax = 60 * 60 * 3;		// The maximum delay between creep events
+	private static int creepRetryDelay = 1;			// The delay between retrying creep events in case of failure
+	public static int creepDistanceMin = 1;		// The minimum distance behind the player to summon Herobrine
+	public static int creepDistanceMax = 1;		// The maximum distance behind the player to summon Herobrine
+	public static int creepVerticleDistanceMax = 3;	// The maximum distance Herobrine can be above/below the player
+	private static int creepReflexMs = 0;			// The time in milliseconds before Herobrine vanishes
+	private static double creepLookAtThreshold = 0.25;	// The threshold at which the player will be considered looking at Herobrine. -1.0 is directly oppsotie, 1.0 is directly towards
 
-	public static final Map<HerobrineEntity, PlayerEntity> herobrineTrackers = new HashMap<>();
+	public static final List<CreepingEntity> creepingEntities = new ArrayList<>();
 
 	public static void loadConfig() {
 		try {
@@ -46,7 +45,7 @@ public class Creep {
 			creepReflexMs = Presence.config.getOrSetValue("creepReflexMs", creepReflexMs).getAsInt();
 			creepLookAtThreshold = Presence.config.getOrSetValue("creepLookAtThreshold", creepLookAtThreshold).getAsDouble();
 		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for Footsteps.java. Wiping and using default values.", e);
+			Presence.LOGGER.error("Configuration issue for Creep.java. Wiping and using default values.", e);
 			Presence.config.wipe();
 			Presence.initConfig();
 		}
@@ -57,8 +56,8 @@ public class Creep {
 		scheduleEventWithDelay(
 			player,
 			Algorithms.RANDOM.nextBetween(
-				Algorithms.divideByFloat(Creep.creepDelayMax, hauntLevel),
-				Algorithms.divideByFloat(Creep.creepDelayMax, hauntLevel)
+				Algorithms.divideByFloat(creepDelayMax, hauntLevel),
+				Algorithms.divideByFloat(creepDelayMax, hauntLevel)
 			)
 		);
 	}
@@ -85,16 +84,23 @@ public class Creep {
 		);
 	}
 
+	public static void onShutdown() {
+		for (final CreepingEntity herobrine : creepingEntities) {
+			herobrine.remove();
+		}
+		creepingEntities.clear();
+	}
+
 	public static void onWorldTick(final ServerWorld world) {
-		if (herobrineTrackers.isEmpty()) return;
+		if (creepingEntities.isEmpty()) return;
 		final List<ServerPlayerEntity> players = world.getPlayers();
 		if (players.isEmpty()) return;
 
-		Iterator<HerobrineEntity> it = herobrineTrackers.keySet().iterator();
-		HerobrineEntity herobrine;
+		Iterator<CreepingEntity> it = creepingEntities.iterator();
+		CreepingEntity herobrine;
 		while (it.hasNext()) {
 			herobrine = it.next();
-			final PlayerEntity player = herobrineTrackers.get(herobrine);
+			final PlayerEntity player = herobrine.getTrackedPlayer();
 			// Remove if player leaves or is in another dimension
 			if (player.isRemoved() || player.getWorld().getDimension() != world.getDimension()) {
 				herobrine.remove();
@@ -110,55 +116,8 @@ public class Creep {
 				continue;
 			}
 
-			// Inch forward toward player
-			// Pretend player and Herobrine are on the same block to prevent direction from being dependent on Y-axis
-			final Vec3d playerXZ = new Vec3d(
-				player.getPos().getX(),
-				0,
-				player.getPos().getZ()
-			);
-			final Vec3d herobrineXZ = new Vec3d(
-				herobrine.getPos().getX(),
-				0,
-				herobrine.getPos().getZ()
-			);
-			final double playerDistanceXZ = playerXZ.distanceTo(herobrineXZ);
-			final Vec3d towardsPlayer = Algorithms.getDirectionPostoPos(
-				herobrineXZ,
-				playerXZ
-			);
-
-			// Calculate spawn position
-			Vec3d spawnPos = Algorithms.getPosOffsetInDirection(
-				herobrine.getPos(),
-				towardsPlayer,
-				(float) Math.max(
-					0,
-					playerDistanceXZ - Algorithms.RANDOM.nextBetween(creepDistanceMin, creepDistanceMax)
-				)
-			);
-			final BlockPos spawnBlockPos = Algorithms.getNearestStandableBlockPos(
-				world,
-				Algorithms.getBlockPosFromVec3d(spawnPos),
-				player.getBlockPos().getY() - creepVerticleDistanceMax,
-				player.getBlockPos().getY() + creepVerticleDistanceMax
-			);
-			spawnPos = new Vec3d(
-				spawnPos.getX(),
-				spawnBlockPos.getY() + 1, // Spawn on block while keeping X/Z offset
-				spawnPos.getZ()
-			);
-			if (!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) continue;
-			herobrine.setPosition(spawnPos);
-			herobrine.lookAt(player);
+			herobrine.tick();
 		}
-	}
-
-	public static void onShutdown() {
-		for (final HerobrineEntity herobrine : herobrineTrackers.keySet()) {
-			herobrine.remove();
-		}
-		herobrineTrackers.clear();
 	}
 
 	public static boolean creep(final PlayerEntity player, final boolean overrideHauntLevel) {
@@ -184,16 +143,16 @@ public class Creep {
 		);
 		spawnPos = new Vec3d(
 			spawnPos.getX(),
-			spawnBlockPos.getY() + 1, // Keep X/Z offset
+			spawnBlockPos.up().getY(), // Keep X/Z offset
 			spawnPos.getZ()
 		);
 		if (!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) return false;
 
-		final HerobrineEntity herobrine = new HerobrineEntity(world, "smile");
+		final CreepingEntity herobrine = new CreepingEntity(world, "smile", player);
 		herobrine.setPosition(spawnPos);
 		herobrine.lookAt(player);
 		herobrine.summon();
-		herobrineTrackers.put(herobrine, player);
+		creepingEntities.add(herobrine);
 
 		return true;
 	}

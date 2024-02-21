@@ -11,6 +11,7 @@ import com.sylvan.presence.util.Algorithms;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.MovementType;
 import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -168,6 +169,21 @@ public class HerobrineEntity {
 			}
 		}
 		return false;
+	}
+
+	public boolean isWithinDistanceOfPlayers(final float distance) {
+		final List<ServerPlayerEntity> players = headEntity.getServer().getPlayerManager().getPlayerList();
+		for (final PlayerEntity player : players) {
+			if (player.getPos().distanceTo(headEntity.getPos()) < distance) return true;
+		}
+		return false;
+	}
+
+	public void move(final Vec3d movementOffset) {
+		headEntity.move(MovementType.SELF, movementOffset);
+		bodyEntity.move(MovementType.SELF, movementOffset);
+		armsEntity.move(MovementType.SELF, movementOffset);
+		legsEntity.move(MovementType.SELF, movementOffset);
 	}
 
 	public Vec3d getPos() {
