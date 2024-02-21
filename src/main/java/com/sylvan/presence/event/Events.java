@@ -70,6 +70,7 @@ public class Events {
 		// Add server tick events for Herobrine
 		ServerTickEvents.END_WORLD_TICK.register(world -> {
 			Creep.onWorldTick(world);
+			Stalk.onWorldTick(world);
 		});
 	}
 }
