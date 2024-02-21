@@ -30,7 +30,7 @@ public class Stalk {
 	public static int stalkSeenTicksMax = 20 * 3;		// The number of ticks that Herobrine is looked at before walking off
 	public static int stalkTurningTicks = 20 * 2;		// The number of ticks that it takes Herobrine to turn around after being seen
 	public static int stalkVanishDistance = 192;		// How far away from the player to walk before vanishing
-	public static double stalkMovementSpeed = 0.05;		// How fast Herobrine moves while walking/running away
+	public static double stalkMovementSpeed = 0.2;		// How fast Herobrine moves while walking/running away
 	public static double stalkLookAtThreshold = 0.999;	// The threshold at which the player will be considered looking at Herobrine. -1.0 is directly oppsotie, 1.0 is directly towards
 
 	public static final List<StalkingEntity> stalkingEntities = new ArrayList<>();

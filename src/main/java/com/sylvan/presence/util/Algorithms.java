@@ -3,8 +3,11 @@ package com.sylvan.presence.util;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import com.sylvan.presence.Presence;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -308,26 +311,36 @@ public class Algorithms {
 		return true;
 	}
 
+	@Nullable
 	public static BlockPos getNearestBlockToEntity(final Entity entity, final Block blockType, final int range) {
 		final World world = entity.getWorld();
-		final BlockPos entityPos = entity.getBlcokPos();
-		double closestBlockDistance, checkDistance;
-		BlockPos closestBlockPos, checkPos;
+		final BlockPos entityBlockPos = entity.getBlockPos();
+		final Vec3d entityPos = entity.getPos();
+		double closestBlockDistance = 0, checkDistance;
+		BlockPos closestBlockPos = null, checkPos;
 		for (int x = -range; x < range; ++x) {
 			for (int y = -range; y < range; ++y) {
 				for (int z = -range; z < range; ++z) {
-					checkPos = entityPos.add(x, y, z);
-					checkDistance = entityPos.distanceTo(closestBlockPos);
-					if (
-						world.getBlockState(checkPos).getBlock() == blockType &&
-						checkDistance < closestBlockDistance
-					) {
-						closestBlockDistance = checkDistance;
-						closestBlockPos = checkPos;
+					checkPos = entityBlockPos.add(x, y, z);
+					if (world.getBlockState(checkPos).getBlock() == blockType) {
+						// Set first check to closestBlockPos
+						if (closestBlockPos == null) {
+							closestBlockPos = checkPos;
+							closestBlockDistance = entityPos.distanceTo(closestBlockPos.toCenterPos());
+							continue;
+						}
+
+						// Check if this block is closer than the previous one
+						checkDistance = entityPos.distanceTo(closestBlockPos.toCenterPos());
+						if (checkDistance < closestBlockDistance) {
+							checkDistance = entityPos.distanceTo(closestBlockPos.toCenterPos());
+							closestBlockDistance = checkDistance;
+							closestBlockPos = checkPos;
+						}
 					}
 				}
-			}	
-		}	
+			}
+		}
 		return closestBlockPos;
 	}
 }
