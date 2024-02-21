@@ -280,7 +280,7 @@ public class Algorithms {
 		return true;
 	}
 	
-	public static Vec3d getDirectionPostoPos(final Vec3d pos1, final Vec3d pos2) {
+	public static Vec3d getDirectionPosToPos(final Vec3d pos1, final Vec3d pos2) {
 		return pos2.subtract(pos1).normalize();
 	}
 
@@ -290,7 +290,7 @@ public class Algorithms {
 		return pos.add(offsetVector);
 	}
 
-	public static EulerAngle directionToAngles(final Entity entity, final Vec3d direction) {
+	public static EulerAngle directionToAngles(final Vec3d direction) {
 		final float pitch = (float) -Math.toDegrees(Math.atan2(
 			direction.getY(),
 			Math.sqrt((direction.getX() * direction.getX()) + (direction.getZ() * direction.getZ()))

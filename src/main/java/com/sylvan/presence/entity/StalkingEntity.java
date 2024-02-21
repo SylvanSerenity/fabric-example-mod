@@ -4,6 +4,7 @@ import com.sylvan.presence.event.Stalk;
 import com.sylvan.presence.util.Algorithms;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class StalkingEntity extends HerobrineEntity {
@@ -55,11 +56,10 @@ public class StalkingEntity extends HerobrineEntity {
 				0,
 				this.getPos().getZ()
 			);
-			final double playerDistanceXZ = playerXZ.distanceTo(herobrineXZ);
 	
 			if (ticksSeen > Stalk.stalkSeenTicksMax) {
 				stalkingState = StalkingState.TURNING;
-				final Vec3d towardsPlayer = Algorithms.getDirectionPostoPos(playerXZ, herobrineXZ);
+				final Vec3d towardsPlayer = Algorithms.getDirectionPosToPos(playerXZ, herobrineXZ);
 				final float startYaw = (float) this.getYaw();
 				final float yawGoal = (float) Algorithms.directionToAngles(towardsPlayer).getYaw();
 				yawTurnPerTick = (yawGoal - startYaw) / Stalk.stalkTurningTicks;
@@ -84,7 +84,7 @@ public class StalkingEntity extends HerobrineEntity {
 	private void tickWalking() {
 		// TODO Walk away from player until unseen
 		// TODO Set walk animation
-		final float awayFromPlayerYaw = (float) Algorithms.getDirectionPostoPos(trackedPlayer.getEyePos(), this.getEyePos()).getY();
+		final float awayFromPlayerYaw = (float) Algorithms.getDirectionPosToPos(trackedPlayer.getEyePos(), this.getEyePos()).getY();
 		this.move(this.getRotationVector().multiply(Stalk.stalkMovementSpeed));
 		this.setBodyRotation(awayFromPlayerYaw); // TODO Get direction from player to entity
 		this.setHeadRotation(0, awayFromPlayerYaw, 0);

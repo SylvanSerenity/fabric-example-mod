@@ -32,7 +32,7 @@ public class CreepingEntity extends HerobrineEntity {
 			this.getPos().getZ()
 		);
 		final double playerDistanceXZ = playerXZ.distanceTo(herobrineXZ);
-		final Vec3d towardsPlayer = Algorithms.getDirectionPostoPos(
+		final Vec3d towardsPlayer = Algorithms.getDirectionPosToPos(
 			herobrineXZ,
 			playerXZ
 		);
