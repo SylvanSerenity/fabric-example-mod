@@ -61,8 +61,8 @@ public class StalkingEntity extends HerobrineEntity {
 			if (ticksSeen > Stalk.stalkSeenTicksMax) {
 				stalkingState = StalkingState.TURNING;
 				final Vec3d awayFromPlayer = Algorithms.getDirectionPosToPos(playerXZ, herobrineXZ);
-				lastYaw = (float) this.getYaw();
 				final float yawGoal = (float) Algorithms.directionToAngles(awayFromPlayer).getYaw();
+				lastYaw = yawGoal + 180; // Should be looking away, so reverse the yaw
 				yawTurnPerTick = (yawGoal - lastYaw) / Stalk.stalkTurningTicks;
 			}
 		} else {
