@@ -194,6 +194,10 @@ public class HerobrineEntity {
 		return headEntity.getEyePos();
 	}
 
+	public float getYaw() {
+		return headEntity.getYaw();
+	}
+
 	public Vec3d getRotationVector() {
 		return headEntity.getRotationVector();
 	}
