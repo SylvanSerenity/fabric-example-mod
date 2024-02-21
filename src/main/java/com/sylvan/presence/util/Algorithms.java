@@ -124,8 +124,9 @@ public class Algorithms {
 
 	public static boolean isPositionLookedAtByEntity(final Entity entity, final Vec3d pos, final double dotProductThreshold) {
 		if (!couldPosBeSeenByEntity(entity, pos)) return false;
-		final Vec3d lookDirectionVector = entity.getRotationVector();
-		final double dotProduct = lookDirectionVector.dotProduct(getLookAtDirection(entity, pos));
+		final Vec3d lookingDirection = entity.getRotationVector(); // Where entity is actually looking
+		final Vec3d lookAtDirection = getDirectionPosToPos(entity.getEyePos(), pos); // Where entity should be looking
+		final double dotProduct = lookingDirection.dotProduct(lookAtDirection);
 		return dotProduct > dotProductThreshold;
 	}
 
@@ -278,12 +279,9 @@ public class Algorithms {
 		if (((float) nonCaveBlockCount / (float) Math.max(1, algorithmsCaveDetectionRays + 6)) > algorithmsCaveDetectionMaxNonCaveaveBlockPercent) return false;
 		return true;
 	}
+	
 	public static Vec3d getDirectionPostoPos(final Vec3d pos1, final Vec3d pos2) {
 		return pos2.subtract(pos1).normalize();
-	}
-
-	public static Vec3d getLookAtDirection(final Entity entity, final Vec3d pos) {
-		return getDirectionPostoPos(entity.getEyePos(), pos);
 	}
 
 	public static Vec3d getPosOffsetInDirection(final Vec3d pos, final Vec3d rotation, final float distance) {
@@ -292,14 +290,12 @@ public class Algorithms {
 		return pos.add(offsetVector);
 	}
 
-	public static EulerAngle getLookAtDirectionRotation(final Entity entity, final Vec3d pos) {
-		final Vec3d direction = getLookAtDirection(entity, pos);
-
-		float pitch = (float) -Math.toDegrees(Math.atan2(
+	public static EulerAngle directionToAngles(final Entity entity, final Vec3d direction) {
+		final float pitch = (float) -Math.toDegrees(Math.atan2(
 			direction.getY(),
 			Math.sqrt((direction.getX() * direction.getX()) + (direction.getZ() * direction.getZ()))
 		));
-		float yaw = (float) Math.toDegrees(Math.atan2(direction.getZ(), direction.getX())) - 90.0f;
+		final float yaw = (float) Math.toDegrees(Math.atan2(direction.getZ(), direction.getX())) - 90.0f;	
 		return new EulerAngle(pitch, yaw, 0.0f);
 	}
 

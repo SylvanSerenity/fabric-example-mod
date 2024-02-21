@@ -40,18 +40,33 @@ public class StalkingEntity extends HerobrineEntity {
 	}
 
 	private void tickWatching() {
-		// Look at player
-		this.lookAt(trackedPlayer);
-
 		// Turn and walk away if seen for too long
 		if (this.isSeenByPlayers(Stalk.stalkLookAtThreshold)) {
 			++ticksSeen;
+		
+			// Pretend player and Herobrine are on the same block to prevent direction from being dependent on Y-axis
+			final Vec3d playerXZ = new Vec3d(
+				trackedPlayer.getPos().getX(),
+				0,
+				trackedPlayer.getPos().getZ()
+			);
+			final Vec3d herobrineXZ = new Vec3d(
+				this.getPos().getX(),
+				0,
+				this.getPos().getZ()
+			);
+			final double playerDistanceXZ = playerXZ.distanceTo(herobrineXZ);
+	
 			if (ticksSeen > Stalk.stalkSeenTicksMax) {
 				stalkingState = StalkingState.TURNING;
-				final float startTurningYaw = (float) this.getRotationVector().getY();
-				final float turningYawGoal = (float) Algorithms.getDirectionPostoPos(trackedPlayer.getEyePos(), this.getEyePos()).getY();
-				yawTurnPerTick = (turningYawGoal - startTurningYaw) / Stalk.stalkTurningTicks;
+				final Vec3d towardsPlayer = Algorithms.getDirectionPostoPos(playerXZ, herobrineXZ);
+				final float startYaw = (float) this.getYaw();
+				final float yawGoal = (float) Algorithms.directionToAngles(towardsPlayer).getYaw();
+				yawTurnPerTick = (yawGoal - startYaw) / Stalk.stalkTurningTicks;
 			}
+		} else {
+			// Look at player
+			this.lookAt(trackedPlayer);
 		}
 	}
 
