@@ -1,5 +1,6 @@
 package com.sylvan.presence.entity;
 
+import com.sylvan.presence.Presence;
 import com.sylvan.presence.event.Stalk;
 import com.sylvan.presence.util.Algorithms;
 
@@ -59,10 +60,13 @@ public class StalkingEntity extends HerobrineEntity {
 	
 			if (ticksSeen > Stalk.stalkSeenTicksMax) {
 				stalkingState = StalkingState.TURNING;
-				final Vec3d towardsPlayer = Algorithms.getDirectionPosToPos(playerXZ, herobrineXZ);
-				final float startYaw = (float) this.getYaw();
-				final float yawGoal = (float) Algorithms.directionToAngles(towardsPlayer).getYaw();
-				yawTurnPerTick = (yawGoal - startYaw) / Stalk.stalkTurningTicks;
+				final Vec3d awayFromPlayer = Algorithms.getDirectionPosToPos(playerXZ, herobrineXZ);
+				final float yawStart = (float) this.getYaw();
+				final float yawGoal = (float) Algorithms.directionToAngles(awayFromPlayer).getYaw();
+				yawTurnPerTick = (yawGoal - yawStart) / Stalk.stalkTurningTicks; // TODO Fix
+				Presence.LOGGER.info("Start yaw:" + yawStart);
+				Presence.LOGGER.info("Yaw goal:" + yawGoal);
+				Presence.LOGGER.info("Yaw turn per tick:" + yawTurnPerTick);
 			}
 		} else {
 			// Look at player
@@ -82,13 +86,28 @@ public class StalkingEntity extends HerobrineEntity {
 	}
 
 	private void tickWalking() {
-		// TODO Walk away from player until unseen
 		// TODO Set walk animation
-		final float awayFromPlayerYaw = (float) Algorithms.getDirectionPosToPos(trackedPlayer.getEyePos(), this.getEyePos()).getY();
-		this.move(this.getRotationVector().multiply(Stalk.stalkMovementSpeed));
-		this.setBodyRotation(awayFromPlayerYaw); // TODO Get direction from player to entity
+		final Vec3d playerXZ = new Vec3d(
+			trackedPlayer.getPos().getX(),
+			0,
+			trackedPlayer.getPos().getZ()
+		);
+		final Vec3d herobrineXZ = new Vec3d(
+			this.getPos().getX(),
+			0,
+			this.getPos().getZ()
+		);
+
+		// Continue looking away
+		final Vec3d awayFromPlayer = Algorithms.getDirectionPosToPos(playerXZ, herobrineXZ);
+		final float awayFromPlayerYaw = Algorithms.directionToAngles(awayFromPlayer).getYaw();
+		this.setBodyRotation(awayFromPlayerYaw);
 		this.setHeadRotation(0, awayFromPlayerYaw, 0);
-		if (this.getPos().distanceTo(trackedPlayer.getPos()) > Stalk.stalkVanishDistance) {
+
+		// Move away until unseen
+		// TODO Jump up blocks
+		this.move(awayFromPlayer.multiply(Stalk.stalkMovementSpeed));
+		if (!this.isSeenByPlayers(Stalk.stalkLookAtThresholdVanish)) {
 			shouldRemove = true;
 		}
 	}

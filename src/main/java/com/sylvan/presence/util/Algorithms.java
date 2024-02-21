@@ -104,7 +104,7 @@ public class Algorithms {
 
 	public static boolean couldPosBeSeenByEntity(final Entity entity, final Vec3d pos) {
 		// Check max distance before calculating
-		if (!entity.getBlockPos().isWithinDistance(pos, 128.0)) return false;
+		if (!entity.getBlockPos().isWithinDistance(pos, 512.0)) return false;
 
 		// Check if behind transparent block
 		final HitResult hitResult = castRayFromEye(entity, pos);
