@@ -307,4 +307,27 @@ public class Algorithms {
 		}
 		return true;
 	}
+
+	public static BlockPos getNearestBlockToEntity(final Entity entity, final Block blockType, final int range) {
+		final World world = entity.getWorld();
+		final BlockPos entityPos = entity.getBlcokPos();
+		double closestBlockDistance, checkDistance;
+		BlockPos closestBlockPos, checkPos;
+		for (int x = -range; x < range; ++x) {
+			for (int y = -range; y < range; ++y) {
+				for (int z = -range; z < range; ++z) {
+					checkPos = entityPos.add(x, y, z);
+					checkDistance = entityPos.distanceTo(closestBlockPos);
+					if (
+						world.getBlockState(checkPos).getBlock() == blockType &&
+						checkDistance < closestBlockDistance
+					) {
+						closestBlockDistance = checkDistance;
+						closestBlockPos = checkPos;
+					}
+				}
+			}	
+		}	
+		return closestBlockPos;
+	}
 }
