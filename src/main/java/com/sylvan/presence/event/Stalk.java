@@ -27,10 +27,9 @@ public class Stalk {
 	private static int stalkDistanceMin = 64;		// The minimum distance to summon Herobrine
 	private static int stalkDistanceMax = 96;		// The maximum distance to summon Herobrine
 	private static int stalkClosePlayerDistanceMin = 48;	// The minimum distance from any player before Herobrine vanishes
-	public static int stalkSeenTicksMax = 20 * 3;		// The number of ticks that Herobrine is looked at before turning around
-	public static int stalkTurningTicks = 20 * 2;		// The number of ticks that it takes Herobrine to turn around after being seen
+	public static int stalkSeenTicksMax = 20 * 3;		// The number of ticks that Herobrine is looked at before waiting to vanish
 	public static double stalkLookAtThreshold = 0.999;	// The threshold at which the player will be considered looking at Herobrine. -1.0 is directly oppsotie, 1.0 is directly towards
-	public static double stalkLookAtThresholdVanish = 0.2;	// The threshold at which to remove Herobrine after he finishes turning around
+	public static double stalkLookAtThresholdVanish = 0.2;	// The threshold at which to remove Herobrine after being seen for the maximum time
 
 	public static final List<StalkingEntity> stalkingEntities = new ArrayList<>();
 
@@ -45,7 +44,6 @@ public class Stalk {
 			stalkDistanceMax = Presence.config.getOrSetValue("stalkDistanceMax", stalkDistanceMax).getAsInt();
 			stalkClosePlayerDistanceMin = Presence.config.getOrSetValue("stalkClosePlayerDistanceMin", stalkClosePlayerDistanceMin).getAsInt();
 			stalkSeenTicksMax = Presence.config.getOrSetValue("stalkSeenTicksMax", stalkSeenTicksMax).getAsInt();
-			stalkTurningTicks = Presence.config.getOrSetValue("stalkTurningTicks", stalkTurningTicks).getAsInt();
 			stalkLookAtThreshold = Presence.config.getOrSetValue("stalkLookAtThreshold", stalkLookAtThreshold).getAsDouble();
 			stalkLookAtThresholdVanish = Presence.config.getOrSetValue("stalkLookAtThresholdVanish", stalkLookAtThresholdVanish).getAsDouble();
 		} catch (UnsupportedOperationException e) {
