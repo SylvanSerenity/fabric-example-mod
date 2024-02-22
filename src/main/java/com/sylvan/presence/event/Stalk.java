@@ -125,7 +125,8 @@ public class Stalk {
 		final World world = player.getWorld();
 		Vec3d spawnPos;
 		final BlockPos playerBlockPos = player.getBlockPos();
-		if (Algorithms.isPlayerInCave(player)) {
+		if (Algorithms.isEntityInCave(player)) {
+			spawnPos = player.getPos();
 			// TODO Query if player is going deeper into cave, then spawn at earlier position
 		} else {
 			spawnPos = Algorithms.getRandomPosNearEntity(player, stalkDistanceMin, stalkDistanceMax);
@@ -142,7 +143,7 @@ public class Stalk {
 			);
 		}
 
-		if (!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) return false;
+		if (!Algorithms.couldPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) return false;
 	
 		final StalkingEntity herobrine = new StalkingEntity(world, "classic", player);
 		herobrine.setPosition(spawnPos);

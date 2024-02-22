@@ -146,7 +146,7 @@ public class Creep {
 			spawnBlockPos.up().getY(), // Keep X/Z offset
 			spawnPos.getZ()
 		);
-		if (!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) return false;
+		if (!Algorithms.couldPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) return false;
 
 		final CreepingEntity herobrine = new CreepingEntity(world, "smile", player);
 		herobrine.setPosition(spawnPos);

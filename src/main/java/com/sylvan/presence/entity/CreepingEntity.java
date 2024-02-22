@@ -57,7 +57,7 @@ public class CreepingEntity extends HerobrineEntity {
 			spawnBlockPos.up().getY(), // Spawn on block while keeping X/Z offset
 			spawnPos.getZ()
 		);
-		if (!Algorithms.canPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) return;
+		if (!Algorithms.couldPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) return;
 
 		// Set position and look at player
 		this.moveTo(spawnPos);

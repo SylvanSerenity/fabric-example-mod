@@ -102,7 +102,7 @@ public class Footsteps {
 			playerPos.getY() - footstepsStepsMax,
 			playerPos.getY() + footstepsStepsMax
 		);
-		if (!Algorithms.canPlayerStandOnBlock(world, soundPos)) return;
+		if (!Algorithms.couldPlayerStandOnBlock(world, soundPos)) return;
 
 		// Play the sound of the block the foot steps on
 		final SoundEvent stepSound = world.getBlockState(soundPos).getSoundGroup().getStepSound();
