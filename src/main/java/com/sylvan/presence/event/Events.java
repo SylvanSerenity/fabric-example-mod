@@ -20,6 +20,7 @@ public class Events {
 	public static void initEvents() {
 		AmbientSounds.initEvent();
 		NearbySounds.initEvent();
+		OpenDoor.initEvent();
 	}
 
 	public static void registerEvents() {

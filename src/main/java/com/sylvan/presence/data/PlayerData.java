@@ -15,6 +15,7 @@ import com.sylvan.presence.event.Events;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
+import com.sylvan.presence.event.OpenDoor;
 import com.sylvan.presence.event.Stalk;
 import com.sylvan.presence.event.Creep;
 import com.sylvan.presence.util.Algorithms;
@@ -166,6 +167,7 @@ public class PlayerData {
 		if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);
 		if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
 		if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
+		if (OpenDoor.openDoorEnabled) OpenDoor.scheduleEvent(player);
 		if (Stalk.stalkEnabled) Stalk.scheduleEvent(player);
 	}
 

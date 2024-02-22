@@ -51,7 +51,7 @@ public class Stalk {
 			stalkLookAtThreshold = Presence.config.getOrSetValue("stalkLookAtThreshold", stalkLookAtThreshold).getAsDouble();
 			stalkLookAtThresholdVanish = Presence.config.getOrSetValue("stalkLookAtThresholdVanish", stalkLookAtThresholdVanish).getAsDouble();
 		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for Footsteps.java. Wiping and using default values.", e);
+			Presence.LOGGER.error("Configuration issue for Stalk.java. Wiping and using default values.", e);
 			Presence.config.wipe();
 			Presence.initConfig();
 		}

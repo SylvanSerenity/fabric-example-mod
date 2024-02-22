@@ -339,4 +339,44 @@ public class Algorithms {
 		}
 		return closestBlockPos;
 	}
+
+	public static boolean isBlockOfBlockTypes(final Block block, final List<Block> blockTypes) {
+		for (final Block blockType : blockTypes) {
+			if (block == blockType) return true;
+		}
+		return false;
+	}
+
+	@Nullable
+	public static BlockPos getNearestBlockToEntity(final Entity entity, final List<Block> blockTypes, final int range) {
+		final World world = entity.getWorld();
+		final BlockPos entityBlockPos = entity.getBlockPos();
+		final Vec3d entityPos = entity.getPos();
+		double closestBlockDistance = 0, checkDistance;
+		BlockPos closestBlockPos = null, checkPos;
+		for (int x = -range; x < range; ++x) {
+			for (int y = -range; y < range; ++y) {
+				for (int z = -range; z < range; ++z) {
+					checkPos = entityBlockPos.add(x, y, z);
+					if (isBlockOfBlockTypes(world.getBlockState(checkPos).getBlock(), blockTypes)) {
+						// Set first check to closestBlockPos
+						if (closestBlockPos == null) {
+							closestBlockPos = checkPos;
+							closestBlockDistance = entityPos.distanceTo(closestBlockPos.toCenterPos());
+							continue;
+						}
+
+						// Check if this block is closer than the previous one
+						checkDistance = entityPos.distanceTo(closestBlockPos.toCenterPos());
+						if (checkDistance < closestBlockDistance) {
+							checkDistance = entityPos.distanceTo(closestBlockPos.toCenterPos());
+							closestBlockDistance = checkDistance;
+							closestBlockPos = checkPos;
+						}
+					}
+				}
+			}
+		}
+		return closestBlockPos;
+	}
 }

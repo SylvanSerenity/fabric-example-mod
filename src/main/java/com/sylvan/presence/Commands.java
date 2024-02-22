@@ -18,6 +18,7 @@ import com.sylvan.presence.event.Attack;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
+import com.sylvan.presence.event.OpenDoor;
 import com.sylvan.presence.event.Stalk;
 import com.sylvan.presence.event.Creep;
 import com.sylvan.presence.util.Algorithms;
@@ -322,6 +323,39 @@ public class Commands {
 							} else {
 								context.getSource().sendFeedback(() -> Text.literal("Executing nearby sounds event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
 								NearbySounds.playNearbySound(player, true);
+							}
+							return 1;
+						})
+					)
+				)
+				.then(
+					literal("openDoor")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							context.getSource().sendFeedback(() -> Text.literal("Executing open door event.").withColor(Formatting.BLUE.getColorValue()), false);
+							OpenDoor.openDoor(context.getSource().getPlayer(), true);
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot execute open door event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("player", StringArgumentType.word())
+						.suggests((context, builder) -> {
+							final Iterable<String> playerNames = context.getSource().getPlayerNames();
+							for (final String playerName : playerNames) {
+								builder.suggest(playerName);
+							}
+							return builder.buildFuture();
+						})
+						.executes(context -> {
+							final String playerName = StringArgumentType.getString(context, "player");
+							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+							if (player == null) {
+								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Executing open door event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+								OpenDoor.openDoor(player, true);
 							}
 							return 1;
 						})
