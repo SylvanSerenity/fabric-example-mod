@@ -27,9 +27,7 @@ public class Stalk {
 	private static int stalkDistanceMin = 64;		// The minimum distance to summon Herobrine
 	private static int stalkDistanceMax = 96;		// The maximum distance to summon Herobrine
 	private static int stalkClosePlayerDistanceMin = 48;	// The minimum distance from any player before Herobrine vanishes
-	public static int stalkSeenTicksMax = 20 * 3;		// The number of ticks that Herobrine is looked at before waiting to vanish
-	public static double stalkLookAtThreshold = 0.999;	// The threshold at which the player will be considered looking at Herobrine. -1.0 is directly oppsotie, 1.0 is directly towards
-	public static double stalkLookAtThresholdVanish = 0.2;	// The threshold at which to remove Herobrine after being seen for the maximum time
+	public static double stalkLookAtThresholdVanish = 0.2;	// The threshold at which to remove Herobrine after being seen
 
 	public static final List<StalkingEntity> stalkingEntities = new ArrayList<>();
 
@@ -43,8 +41,6 @@ public class Stalk {
 			stalkDistanceMin = Presence.config.getOrSetValue("stalkDistanceMin", stalkDistanceMin).getAsInt();
 			stalkDistanceMax = Presence.config.getOrSetValue("stalkDistanceMax", stalkDistanceMax).getAsInt();
 			stalkClosePlayerDistanceMin = Presence.config.getOrSetValue("stalkClosePlayerDistanceMin", stalkClosePlayerDistanceMin).getAsInt();
-			stalkSeenTicksMax = Presence.config.getOrSetValue("stalkSeenTicksMax", stalkSeenTicksMax).getAsInt();
-			stalkLookAtThreshold = Presence.config.getOrSetValue("stalkLookAtThreshold", stalkLookAtThreshold).getAsDouble();
 			stalkLookAtThresholdVanish = Presence.config.getOrSetValue("stalkLookAtThresholdVanish", stalkLookAtThresholdVanish).getAsDouble();
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for Stalk.java. Wiping and using default values.", e);
