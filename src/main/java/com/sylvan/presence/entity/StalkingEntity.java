@@ -11,7 +11,7 @@ public class StalkingEntity extends HerobrineEntity {
 	private enum StalkingState {
 		WATCHING,
 		TURNING,
-		WALKING
+		WAITING
 	};
 
 	private PlayerEntity trackedPlayer;
@@ -35,14 +35,14 @@ public class StalkingEntity extends HerobrineEntity {
 			case TURNING: {
 				tickTurning();
 			} break;
-			case WALKING: {
-				tickWalking();
+			case WAITING: {
+				tickWaiting();
 			} break;
 		}
 	}
 
 	private void tickWatching() {
-		// Turn and walk away if seen for too long
+		// Turn away if seen for too long
 		if (this.isSeenByPlayers(Stalk.stalkLookAtThreshold)) {
 			++ticksSeen;
 		
@@ -78,12 +78,11 @@ public class StalkingEntity extends HerobrineEntity {
 		this.setHeadRotation(0, newYaw, 0);
 		lastYaw = newYaw;
 
-		// Start walking away
-		if (turningTicks >= Stalk.stalkTurningTicks) stalkingState = StalkingState.WALKING;
+		// Start waiting for player to lose sight before vanishing
+		if (turningTicks >= Stalk.stalkTurningTicks) stalkingState = StalkingState.WAITING;
 	}
 
-	private void tickWalking() {
-		// TODO Set walk animation
+	private void tickWaiting() {
 		final Vec3d playerXZ = new Vec3d(
 			trackedPlayer.getPos().getX(),
 			0,
@@ -98,11 +97,9 @@ public class StalkingEntity extends HerobrineEntity {
 		// Continue looking away
 		final Vec3d awayFromPlayer = Algorithms.getDirectionPosToPos(playerXZ, herobrineXZ);
 		final float awayFromPlayerYaw = Algorithms.directionToAngles(awayFromPlayer).getYaw();
-		this.setBodyRotation(awayFromPlayerYaw);
 		this.setHeadRotation(0, awayFromPlayerYaw, 0);
 
-		// Move away until unseen
-		this.setPosition(this.getPos().add(awayFromPlayer.multiply(Stalk.stalkMovementSpeed)));
+		// Vanish when unseen
 		if (!this.isSeenByPlayers(Stalk.stalkLookAtThresholdVanish)) {
 			shouldRemove = true;
 		}
