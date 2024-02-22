@@ -26,8 +26,7 @@ public class OpenDoor {
 	private static int openDoorDelayMin = 60 * 60;			// The minimum delay between open door events
 	private static int openDoorDelayMax = 60 * 60 * 4;		// The maximum delay between open door events
 	private static int openDoorRetryDelay = 60;			// The delay between retrying an attack if the previous attempt failed
-	private static int openDoorDistanceMin = 5;			// The minimum distance of the door to open
-	private static int openDoorDistanceMax = 100;			// The maximum distance of the door to open
+	private static int openDoorDistanceMax = 32;			// The maximum distance of the door to open
 	private static boolean openDoorNotSeenConstraint = true;	// Whether the constraint for making the door open only when not seen is active
 	private static boolean openDoorPlaySound = true;		// Whether or not to play the door open sound
 
@@ -40,7 +39,6 @@ public class OpenDoor {
 			openDoorDelayMin = Presence.config.getOrSetValue("openDoorDelayMin", openDoorDelayMin).getAsInt();
 			openDoorDelayMax = Presence.config.getOrSetValue("openDoorDelayMax", openDoorDelayMax).getAsInt();
 			openDoorRetryDelay = Presence.config.getOrSetValue("openDoorRetryDelay", openDoorRetryDelay).getAsInt();
-			openDoorDistanceMin = Presence.config.getOrSetValue("openDoorDistanceMin", openDoorDistanceMin).getAsInt();
 			openDoorDistanceMax = Presence.config.getOrSetValue("openDoorDistanceMax", openDoorDistanceMax).getAsInt();
 			openDoorNotSeenConstraint = Presence.config.getOrSetValue("openDoorNotSeenConstraint", openDoorNotSeenConstraint).getAsBoolean();
 			openDoorPlaySound = Presence.config.getOrSetValue("openDoorPlaySound", openDoorPlaySound).getAsBoolean();
@@ -106,7 +104,7 @@ public class OpenDoor {
 		}
 
 		// Get nearest door position
-		BlockPos nearestDoorPos = Algorithms.getNearestBlockToEntity(player, doorBlocks, openDoorDelayMax);
+		BlockPos nearestDoorPos = Algorithms.getNearestBlockToEntity(player, doorBlocks, openDoorDistanceMax);
 		if (nearestDoorPos == null) return false;
 
 		// Players must not see door open

@@ -367,7 +367,7 @@ public class Algorithms {
 						}
 
 						// Check if this block is closer than the previous one
-						checkDistance = entityPos.distanceTo(closestBlockPos.toCenterPos());
+						checkDistance = entityPos.distanceTo(checkPos.toCenterPos());
 						if (checkDistance < closestBlockDistance) {
 							checkDistance = entityPos.distanceTo(closestBlockPos.toCenterPos());
 							closestBlockDistance = checkDistance;

@@ -102,8 +102,7 @@ public class StalkingEntity extends HerobrineEntity {
 		this.setHeadRotation(0, awayFromPlayerYaw, 0);
 
 		// Move away until unseen
-		// TODO Jump up blocks
-		this.move(awayFromPlayer.multiply(Stalk.stalkMovementSpeed));
+		this.setPosition(this.getPos().add(awayFromPlayer.multiply(Stalk.stalkMovementSpeed)));
 		if (!this.isSeenByPlayers(Stalk.stalkLookAtThresholdVanish)) {
 			shouldRemove = true;
 		}
