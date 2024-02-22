@@ -1,6 +1,7 @@
 package com.sylvan.presence.event;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.sylvan.presence.Presence;
@@ -25,7 +26,7 @@ public class OpenDoor {
 	private static int openDoorDelayMin = 60 * 60;			// The minimum delay between open door events
 	private static int openDoorDelayMax = 60 * 60 * 4;		// The maximum delay between open door events
 	private static int openDoorRetryDelay = 60;			// The delay between retrying an attack if the previous attempt failed
-	private static int openDoorDistanceMin = 32;			// The minimum distance of the door to open
+	private static int openDoorDistanceMin = 5;			// The minimum distance of the door to open
 	private static int openDoorDistanceMax = 100;			// The maximum distance of the door to open
 	private static boolean openDoorNotSeenConstraint = true;	// Whether the constraint for making the door open only when not seen is active
 	private static boolean openDoorPlaySound = true;		// Whether or not to play the door open sound
@@ -108,22 +109,23 @@ public class OpenDoor {
 		BlockPos nearestDoorPos = Algorithms.getNearestBlockToEntity(player, doorBlocks, openDoorDelayMax);
 		if (nearestDoorPos == null) return false;
 
-		// Player must not see door open
+		// Players must not see door open
+		final World world = player.getWorld();
+		final List<? extends PlayerEntity> players = world.getPlayers();
 		if (
 			openDoorNotSeenConstraint && (
-				Algorithms.couldPosBeSeenByEntity(player, nearestDoorPos.toCenterPos()) ||
-				Algorithms.couldPosBeSeenByEntity(player, nearestDoorPos.up().toCenterPos())
+				Algorithms.couldPosBeSeenByPlayers(players, nearestDoorPos.toCenterPos()) ||
+				Algorithms.couldPosBeSeenByPlayers(players, nearestDoorPos.up().toCenterPos())
 			)
 		) return false;
 
-		final World world = player.getWorld();
 		final BlockState currentBlockState = world.getBlockState(nearestDoorPos);
 		world.setBlockState(nearestDoorPos, currentBlockState.with(DoorBlock.OPEN, true));
 		if (openDoorPlaySound) {
-			if (currentBlockState.getSoundGroup() == BlockSoundGroup.BAMBOO_WOOD) player.playSound(SoundEvents.BLOCK_BAMBOO_WOOD_DOOR_OPEN, SoundCategory.BLOCKS, 1, 1);
-			else if (currentBlockState.getSoundGroup() == BlockSoundGroup.CHERRY_WOOD) player.playSound(SoundEvents.BLOCK_CHERRY_WOOD_DOOR_OPEN, SoundCategory.BLOCKS, 1, 1);
-			else if (currentBlockState.getSoundGroup() == BlockSoundGroup.NETHER_WOOD) player.playSound(SoundEvents.BLOCK_NETHER_WOOD_DOOR_OPEN, SoundCategory.BLOCKS, 1, 1);
-			else player.playSound(SoundEvents.BLOCK_WOODEN_DOOR_OPEN, SoundCategory.BLOCKS, 1, 1);
+			if (currentBlockState.getSoundGroup() == BlockSoundGroup.BAMBOO_WOOD) world.playSound(null, nearestDoorPos, SoundEvents.BLOCK_BAMBOO_WOOD_DOOR_OPEN, SoundCategory.BLOCKS);
+			else if (currentBlockState.getSoundGroup() == BlockSoundGroup.CHERRY_WOOD) world.playSound(null, nearestDoorPos, SoundEvents.BLOCK_CHERRY_WOOD_DOOR_OPEN, SoundCategory.BLOCKS);
+			else if (currentBlockState.getSoundGroup() == BlockSoundGroup.NETHER_WOOD) world.playSound(null, nearestDoorPos, SoundEvents.BLOCK_NETHER_WOOD_DOOR_OPEN, SoundCategory.BLOCKS);
+			else world.playSound(null, nearestDoorPos, SoundEvents.BLOCK_WOODEN_DOOR_OPEN, SoundCategory.BLOCKS);
 		}
 
 		return true;
