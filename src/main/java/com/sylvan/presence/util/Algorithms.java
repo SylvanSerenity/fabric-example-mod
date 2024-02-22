@@ -122,6 +122,30 @@ public class Algorithms {
 		return false;
 	}
 
+	public static boolean couldBlockBeSeenByPlayers(final List<? extends PlayerEntity> players, final BlockPos pos) {
+		Vec3d towardsPlayerDirection;
+		BlockPos towardsPlayerPos;
+		double absX, absY, absZ;
+		for (final PlayerEntity player : players) {
+			// Move one block towards player to prevent the block itself from blocking raycast
+			towardsPlayerDirection = getDirectionPosToPos(player.getEyePos(), pos.toCenterPos());
+	
+			absX = Math.abs(towardsPlayerDirection.getX());
+			absY = Math.abs(towardsPlayerDirection.getY());
+			absZ = Math.abs(towardsPlayerDirection.getZ());
+			if (absX >= absY && absX >= absZ) {
+				towardsPlayerPos = pos.add(Math.signum(towardsPlayerDirection.getX(), 0, 0);
+			} else if (absY >= absX && absY >= absZ) {
+				towardsPlayerPos = pos.add(0, Math.signum(towardsPlayerDirection.getY(), 0);
+			} else if (absZ >= absX && absZ >= absY) {
+				towardsPlayerPos = pos.add(0, 0, Math.signum(towardsPlayerDirection.getZ());
+			} // Else maintain position
+	
+			if (couldPosBeSeenByEntity(player, towardsPlayerPos)) return true;
+		}
+		return false;
+	}
+
 	public static boolean isPositionLookedAtByEntity(final Entity entity, final Vec3d pos, final double dotProductThreshold) {
 		if (!couldPosBeSeenByEntity(entity, pos)) return false;
 		final Vec3d lookingDirection = entity.getRotationVector(); // Where entity is actually looking
@@ -130,12 +154,14 @@ public class Algorithms {
 		return dotProduct > dotProductThreshold;
 	}
 
-	public static boolean canPlayerStandOnBlock(final World world, final BlockPos blockPos) {
-		return (
-			world.getBlockState(blockPos).isOpaque() &&
-			!world.getBlockState(blockPos.up()).isOpaque() &&
-			!world.getBlockState(blockPos.up(2)).isOpaque()
-		);
+	public static boolean couldPlayerStandOnBlock(final World world, final BlockPos blockPos) {
+		if (
+			!world.getBlockState(blockPos).isOpaque() ||
+			world.getBlockState(blockPos.up()).isOpaque() ||
+			world.getBlockState(blockPos.up(2)).isOpaque()
+		) return false;
+		// TODO Raycast from center to see if it is blocked somehow
+		return true;
 	}
 
 	public static BlockPos getNearestStandableBlockPos(final World world, BlockPos blockPos, final int minY, final int maxY) {

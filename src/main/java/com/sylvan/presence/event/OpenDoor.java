@@ -114,8 +114,8 @@ public class OpenDoor {
 		final List<? extends PlayerEntity> players = world.getPlayers();
 		if (
 			openDoorNotSeenConstraint && (
-				Algorithms.couldPosBeSeenByPlayers(players, nearestDoorPos.toCenterPos()) ||
-				Algorithms.couldPosBeSeenByPlayers(players, nearestDoorPos.up().toCenterPos())
+				Algorithms.couldBlockBeSeenByPlayers(players, nearestDoorPos) ||
+				Algorithms.couldBlockBeSeenByPlayers(players, nearestDoorPos.up())
 			)
 		) return false;
 
