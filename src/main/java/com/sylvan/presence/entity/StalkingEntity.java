@@ -24,6 +24,10 @@ public class StalkingEntity extends HerobrineEntity {
 			if (!this.isSeenByPlayers(Stalk.stalkLookAtThresholdVanish)) {
 				shouldRemove = true;
 			}
+		} else {
+			if (!this.isSeenByPlayers(Stalk.stalkLookAtThresholdVanish)) {
+				hasBeenSeen = true;
+			}
 		}
 	}
 
