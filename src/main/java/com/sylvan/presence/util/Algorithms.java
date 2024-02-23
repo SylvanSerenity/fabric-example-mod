@@ -126,23 +126,15 @@ public class Algorithms {
 	public static boolean couldBlockBeSeenByPlayers(final List<? extends PlayerEntity> players, final BlockPos pos) {
 		Vec3d towardsPlayerDirection;
 		BlockPos towardsPlayerPos;
-		double absX, absY, absZ;
 		for (final PlayerEntity player : players) {
 			// Move one block towards player to prevent the block itself from blocking raycast
-			towardsPlayerDirection = getDirectionPosToPos(player.getEyePos(), pos.toCenterPos());
+			towardsPlayerDirection = getDirectionPosToPos(pos.toCenterPos(), player.getEyePos());
 	
-			absX = Math.abs(towardsPlayerDirection.getX());
-			absY = Math.abs(towardsPlayerDirection.getY());
-			absZ = Math.abs(towardsPlayerDirection.getZ());
-			if (absX >= absY && absX >= absZ) {
-				towardsPlayerPos = pos.add((int) Math.signum(towardsPlayerDirection.getX()), 0, 0);
-			} else if (absY >= absX && absY >= absZ) {
-				towardsPlayerPos = pos.add(0, (int) Math.signum(towardsPlayerDirection.getY()), 0);
-			} else if (absZ >= absX && absZ >= absY) {
-				towardsPlayerPos = pos.add(0, 0, (int) Math.signum(towardsPlayerDirection.getZ()));
-			} else {
-				towardsPlayerPos = pos;
-			}
+			towardsPlayerPos = pos.add(
+				(int) Math.signum(towardsPlayerDirection.getX()),
+				(int) Math.signum(towardsPlayerDirection.getY()),
+				(int) Math.signum(towardsPlayerDirection.getZ())
+			);
 	
 			if (couldPosBeSeenByEntity(player, towardsPlayerPos.toCenterPos())) return true;
 		}
