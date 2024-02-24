@@ -6,13 +6,12 @@ Events:
 * Herobrine spawns in the distance in caves and vanishes after being seen for 1 second
 * Blocks place when player is going deeper into a cave, blocking the player in. They can hear it and if they return to the source, it stops, otherwise they come back to being blocked off with either stone or cobblestone, at least 2 layers deep
 * Crops randomly get removed/trampled
-* Play trobbing/ticking/scrathing/door bang sound when player is AFK
+* Play throbbing/ticking/scrathing/door bang sound when player is AFK
 * Send server message to single players (no other player on the server)
 * Random block placement (crafting table, sign, etc). Check for whether nearby chunks already had this happen.
 * Add 1x1/1x2 strip mines
 * Flash open/close doors when player opens a door
 * Play a chest opening sound when the player is nearby but cannot see a chest and swap two items
-* Poppy at door (one chance per block)
 * Freeze the player by setting their position/rotation each tick and play a freeze sound
 * Send subtitles to the player
 * Play entity.warden.heartbeat where player's heart beats increasingly fast
