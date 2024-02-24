@@ -15,8 +15,8 @@ public class SubtitleWarning {
 	// Config
 	public static boolean subtitleWarningEnabled = true;		// Whether the subtitle warning event is active
 	private static float subtitleWarningHauntLevelMin = 1.75f;	// The minimum haunt level to play event
-	private static int subtitleWarningDelayMin = 60 * 30;		// The minimum delay between attack events
-	private static int subtitleWarningDelayMax = 60 * 60 * 2;	// The maximum delay between attack events
+	private static int subtitleWarningDelayMin = 60 * 30;		// The minimum delay between subtitle warning events
+	private static int subtitleWarningDelayMax = 60 * 60 * 2;	// The maximum delay between subtitle warning events
 
 	public static void loadConfig() {
 		try {
@@ -25,7 +25,7 @@ public class SubtitleWarning {
 			subtitleWarningDelayMin = Presence.config.getOrSetValue("subtitleWarningDelayMin", subtitleWarningDelayMin).getAsInt();
 			subtitleWarningDelayMax = Presence.config.getOrSetValue("subtitleWarningDelayMax", subtitleWarningDelayMax).getAsInt();
 		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for Attack.java. Wiping and using default values.", e);
+			Presence.LOGGER.error("Configuration issue for SubtitleWarning.java. Wiping and using default values.", e);
 			Presence.config.wipe();
 			Presence.initConfig();
 		}
@@ -36,7 +36,7 @@ public class SubtitleWarning {
 		Events.scheduler.schedule(
 			() -> {
 				if (player.isRemoved()) return;
-				subtitleWarning(player, true);
+				subtitleWarning(player, false);
 				scheduleEvent(player);
 			},
 			Algorithms.RANDOM.nextBetween(

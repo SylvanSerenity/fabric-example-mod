@@ -15,6 +15,7 @@ import com.sylvan.presence.data.PlayerData;
 import com.sylvan.presence.entity.HerobrineEntity;
 import com.sylvan.presence.event.AmbientSounds;
 import com.sylvan.presence.event.Attack;
+import com.sylvan.presence.event.ChatMessage;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.FlowerGift;
 import com.sylvan.presence.event.Footsteps;
@@ -42,7 +43,7 @@ public class Commands {
 							if (AmbientSounds.playAmbientSound(context.getSource().getPlayer(), true)) {
 								context.getSource().sendFeedback(() -> Text.literal("Successfully executed ambient sounds event.").withColor(Formatting.BLUE.getColorValue()), false);
 							} else {
-								context.getSource().sendFeedback(() -> Text.literal("Conditions to execute ambient souinds not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								context.getSource().sendFeedback(() -> Text.literal("Conditions to execute ambient sounds not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							}
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute ambient sounds event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
@@ -67,7 +68,7 @@ public class Commands {
 								if (AmbientSounds.playAmbientSound(player, true)) {
 									context.getSource().sendFeedback(() -> Text.literal("Successfully executed ambient sounds event.").withColor(Formatting.BLUE.getColorValue()), false);
 								} else {
-									context.getSource().sendFeedback(() -> Text.literal("Conditions to execute ambient souinds not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+									context.getSource().sendFeedback(() -> Text.literal("Conditions to execute ambient sounds not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
 								}
 							}
 							return 1;
@@ -125,6 +126,39 @@ public class Commands {
 								return 1;
 							})
 						)
+					)
+				)
+				.then(
+					literal("chatMessage")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							ChatMessage.chatMessage(context.getSource().getPlayer(), true, true);
+							context.getSource().sendFeedback(() -> Text.literal("Successfully executed chat message event.").withColor(Formatting.BLUE.getColorValue()), false);
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot execute chat message event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("player", StringArgumentType.word())
+						.suggests((context, builder) -> {
+							final Iterable<String> playerNames = context.getSource().getPlayerNames();
+							for (final String playerName : playerNames) {
+								builder.suggest(playerName);
+							}
+							return builder.buildFuture();
+						})
+						.executes(context -> {
+							final String playerName = StringArgumentType.getString(context, "player");
+							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+							if (player == null) {
+								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							} else {
+								ChatMessage.chatMessage(player, true, true);
+								context.getSource().sendFeedback(() -> Text.literal("Successfully executed chat message event.").withColor(Formatting.BLUE.getColorValue()), false);
+							}
+							return 1;
+						})
 					)
 				)
 				.then(

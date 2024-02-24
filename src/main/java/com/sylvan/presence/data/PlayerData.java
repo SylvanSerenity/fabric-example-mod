@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.sylvan.presence.Presence;
 import com.sylvan.presence.event.AmbientSounds;
 import com.sylvan.presence.event.Attack;
+import com.sylvan.presence.event.ChatMessage;
 import com.sylvan.presence.event.Events;
 import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.FlowerGift;
@@ -166,6 +167,7 @@ public class PlayerData {
 		scheduleHauntLevelCalculation();
 		if (AmbientSounds.ambientSoundsEnabled) AmbientSounds.scheduleEvent(player);
 		if (Attack.attackEnabled) Attack.scheduleEvent(player);
+		if (ChatMessage.chatMessageEnabled) ChatMessage.scheduleEvent(player);
 		if (Creep.creepEnabled) Creep.scheduleEvent(player);
 		if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);
 		if (FlowerGift.flowerGiftEnabled) FlowerGift.scheduleEvent(player);
