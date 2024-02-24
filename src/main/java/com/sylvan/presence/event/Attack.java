@@ -90,7 +90,7 @@ public class Attack {
 		player.damage(player.getWorld().getDamageSources().playerAttack(null), damage);
 
 		// Push player in a random direction
-		final Vec3d randomPush = Algorithms.getRandomDirection().multiply(Algorithms.randomBetween(attackPushMin, attackPushMax));
+		final Vec3d randomPush = Algorithms.getRandomDirection(false).multiply(Algorithms.randomBetween(attackPushMin, attackPushMax));
 		player.addVelocity(randomPush.getX(), attackPushVertical, randomPush.getZ());
 
 		return true;
