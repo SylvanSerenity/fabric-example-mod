@@ -11,7 +11,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class Attack {
 	public static boolean attackEnabled = true;			// Whether the attack event is active
-	private static float attackHauntLevelMin = 1.75f;		// The minimum haunt level to play event
+	private static float attackHauntLevelMin = 2.0f;		// The minimum haunt level to play event
 	private static int attackDelayMin = 60 * 60;			// The minimum delay between attack events
 	private static int attackDelayMax = 60 * 60 * 3;		// The maximum delay between attack events
 	private static int attackRetryDelay = 60;			// The delay between retrying an attack if the previous attempt failed

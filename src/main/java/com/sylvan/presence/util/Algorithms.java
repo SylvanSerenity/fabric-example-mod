@@ -202,12 +202,12 @@ public class Algorithms {
 		final BlockPos entityPos = entity.getBlockPos();
 		if (blockPos.getY() > entityPos.getY()) {
 			// Above player, try moving down
-			while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() > minY)) {
+			while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() >= minY)) {
 				blockPos = blockPos.down();
 			}
 		} else {
 			// Below player, try moving up
-			while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() < maxY)) {
+			while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() <= maxY)) {
 				blockPos = blockPos.up();
 			}
 		}

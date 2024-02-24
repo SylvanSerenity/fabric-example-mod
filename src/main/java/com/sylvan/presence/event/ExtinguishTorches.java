@@ -26,7 +26,7 @@ public class ExtinguishTorches {
 
 	// Config
 	public static boolean extinguishTorchesEnabled = true;				// Whether the extinguish torches event is active
-	public static float extinguishTorchesHauntLevelMin = 1.25f;			// The minimum haunt level to play event
+	public static float extinguishTorchesHauntLevelMin = 1.5f;			// The minimum haunt level to play event
 	private static int extinguishTorchesTrackDelayMin = 60 * 30;			// The minimum delay between beginning to track torches
 	private static int extinguishTorchesTrackDelayMax = 60 * 60 * 5;		// The maximum delay between beginning to track torches
 	private static int extinguishTorchesExtinguishRetryDelay = 60 * 10;		// The delay between tries to extinguish tracked torches

@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public class Creep {
 	// Config
 	public static boolean creepEnabled = true;		// Whether the creep event is active
-	private static float creepHauntLevelMin = 2.0f;		// The minimum haunt level to play event
+	private static float creepHauntLevelMin = 2.5f;		// The minimum haunt level to play event
 	private static int creepDelayMin = 60 * 45;		// The minimum delay between creep events
 	private static int creepDelayMax = 60 * 60 * 3;		// The maximum delay between creep events
 	private static int creepRetryDelay = 1;			// The delay between retrying creep events in case of failure
