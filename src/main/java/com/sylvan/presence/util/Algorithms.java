@@ -220,10 +220,10 @@ public class Algorithms {
 		return blockPos;
 	}
 
-	public static Vec3d getRandomDirection() {
+	public static Vec3d getRandomDirection(final boolean randomY) {
 		return new Vec3d(
 			RANDOM.nextDouble() * 2 - 1,
-			RANDOM.nextDouble() * 2 - 1,
+			randomY ? (RANDOM.nextDouble() * 2 - 1) : 0,
 			RANDOM.nextDouble() * 2 - 1
 		).normalize();
 	}
@@ -242,8 +242,8 @@ public class Algorithms {
 		);
 	}
 
-	public static Vec3d getRandomPosNearEntity(final Entity entity, final int distanceMin, final int distanceMax) {
-		final Vec3d randomDirection = getRandomDirection();
+	public static Vec3d getRandomPosNearEntity(final Entity entity, final int distanceMin, final int distanceMax, final boolean randomY) {
+		final Vec3d randomDirection = getRandomDirection(randomY);
 		final int distance = RANDOM.nextBetween(distanceMin, distanceMax);
 
 		// Scale the direction vector by the random distance magnitude
@@ -251,21 +251,21 @@ public class Algorithms {
 		return entity.getPos().add(randomOffset);
 	}
 
-	public static BlockPos getRandomStandableBlockNearEntity(final Entity entity, final int distanceMin, final int distanceMax, final int maxAttempts) {
+	public static BlockPos getRandomStandableBlockNearEntity(final Entity entity, final int distanceMin, final int distanceMax, final int maxAttempts, final boolean randomY) {
 		final BlockPos entityPos = entity.getBlockPos();
 		final int moveDistance = Math.max(distanceMin, distanceMax - distanceMin);
 		final int maxDistanceDown = entityPos.getY() - moveDistance;
 		final int maxDistanceUp = entityPos.getY() + moveDistance;
 
 		// Start with random block and check maxAttempt times
-		BlockPos blockPos = getBlockPosFromVec3d(getRandomPosNearEntity(entity, distanceMin, distanceMax));
+		BlockPos blockPos = getBlockPosFromVec3d(getRandomPosNearEntity(entity, distanceMin, distanceMax, randomY));
 		for (int i = 0; i < maxAttempts; ++i) {
 			// Move to nearest standable block
 			blockPos = getNearestStandableBlockPosTowardsEntity(entity, blockPos, maxDistanceDown, maxDistanceUp);
 			// Return if blockPos is within constraints
 			if (!blockPos.isWithinDistance(entityPos, distanceMin) && blockPos.isWithinDistance(entityPos, distanceMax)) return blockPos;
 			// Try again
-			blockPos = getBlockPosFromVec3d(getRandomPosNearEntity(entity, distanceMin, distanceMax));
+			blockPos = getBlockPosFromVec3d(getRandomPosNearEntity(entity, distanceMin, distanceMax, randomY));
 		}
 
 		// If nothing is found in 50 attempts, just select a block in the wall
@@ -324,7 +324,7 @@ public class Algorithms {
 		HitResult hit;
 		BlockSoundGroup hitBlockSound;
 		for (int i = 0; i < algorithmsCaveDetectionRays; ++i) {
-			hit = castRayFromEye(entity, getRandomPosNearEntity(entity, 128, 128));
+			hit = castRayFromEye(entity, getRandomPosNearEntity(entity, 128, 128, true));
 			if (hit.getType() != HitResult.Type.BLOCK) return false;
 			hitBlockSound = world.getBlockState(((BlockHitResult) hit).getBlockPos()).getSoundGroup();
 			if (!isCaveBlockSound(hitBlockSound)) ++nonCaveBlockCount;

@@ -123,7 +123,7 @@ public class Stalk {
 		};
 
 		final World world = player.getWorld();
-		Vec3d spawnPos = Algorithms.getRandomPosNearEntity(player, stalkDistanceMin, stalkDistanceMax);
+		Vec3d spawnPos = Algorithms.getRandomPosNearEntity(player, stalkDistanceMin, stalkDistanceMax, false);
 		final BlockPos playerBlockPos = player.getBlockPos();
 		final BlockPos spawnBlockPos = Algorithms.getNearestStandableBlockPos(
 			world,
