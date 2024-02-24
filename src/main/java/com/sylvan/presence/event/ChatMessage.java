@@ -12,7 +12,7 @@ import net.minecraft.text.Text;
 public class ChatMessage {
 	// Config
 	public static boolean chatMessageEnabled = true;		// Whether the chat message event is active
-	private static float chatMessageHauntLevelMin = 1.75f;		// The minimum haunt level to play event
+	private static float chatMessageHauntLevelMin = 2.0f;		// The minimum haunt level to play event
 	private static int chatMessageDelayMin = 60 * 60;		// The minimum delay between chat message events
 	private static int chatMessageDelayMax = 60 * 60 * 4;		// The maximum delay between chat message events
 	private static boolean chatMessageAloneConstraint = true;	// Whether there must be only one player one the server to send a message

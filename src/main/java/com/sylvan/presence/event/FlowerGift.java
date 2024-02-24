@@ -25,8 +25,8 @@ public class FlowerGift {
 	private static int flowerGiftDelayMin = 60 * 60;		// The minimum delay between flower gift events
 	private static int flowerGiftDelayMax = 60 * 60 * 8;		// The maximum delay between flower gift events
 	private static int flowerGiftRetryDelay = 60;			// The delay between retrying to place flower if the previous attempt failed
-	private static int flowerGiftSearchRadius = 32;			// The search radius of finding doors to open. Higher values have exponential lag during the tick performing the search
-	private static boolean flowerGiftNotSeenConstraint = true;	// Whether the constraint for making the door open only when not seen is active
+	private static int flowerGiftSearchRadius = 32;			// The search radius of finding doors to plant a flower at. Higher values have exponential lag during the tick performing the search
+	private static boolean flowerGiftNotSeenConstraint = true;	// Whether the constraint for making the flower plant only when not seen is active
 
 	public static final ArrayList<Block> plantableBlocks = new ArrayList<>();
 

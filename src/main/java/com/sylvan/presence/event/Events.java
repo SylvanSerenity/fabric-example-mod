@@ -23,6 +23,7 @@ public class Events {
 		NearbySounds.initEvent();
 		OpenChest.initEvent();
 		OpenDoor.initEvent();
+		TrampleCrops.initEvent();
 	}
 
 	public static void registerEvents() {
