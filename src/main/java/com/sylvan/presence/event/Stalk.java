@@ -25,7 +25,7 @@ public class Stalk {
 	private static int stalkDelayMax = 60 * 60 * 3;		// The maximum delay between stalk events
 	private static int stalkRetryDelay = 1;			// The delay between retrying stalk events in case of failure
 	private static int stalkDistanceMin = 64;		// The minimum distance to summon Herobrine
-	private static int stalkDistanceMax = 96;		// The maximum distance to summon Herobrine
+	private static int stalkDistanceMax = 120;		// The maximum distance to summon Herobrine
 	private static int stalkClosePlayerDistanceMin = 48;	// The minimum distance from any player before Herobrine vanishes
 	public static double stalkLookAtThresholdVanish = 0.2;	// The threshold at which to remove Herobrine after being seen
 

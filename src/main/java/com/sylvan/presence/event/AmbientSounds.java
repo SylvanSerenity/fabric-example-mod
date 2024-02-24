@@ -58,6 +58,7 @@ public class AmbientSounds {
 			ambientSoundsLightLevelMax = Presence.config.getOrSetValue("ambientSoundsLightLevelMax", ambientSoundsLightLevelMax).getAsInt();
 			ambientSoundsPitchMin = Presence.config.getOrSetValue("ambientSoundsPitchMin", ambientSoundsPitchMin).getAsFloat();
 			ambientSoundsPitchMax = Presence.config.getOrSetValue("ambientSoundsPitchMax", ambientSoundsPitchMax).getAsFloat();
+			ambientSoundsSoundWeights = Presence.config.getOrSetValue("ambientSoundsSoundWeights", ambientSoundsSoundWeights).getAsJsonObject();
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for AmbientSounds.java. Wiping and using default values.", e);
 			Presence.config.wipe();
