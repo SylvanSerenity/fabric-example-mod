@@ -4,7 +4,7 @@
 		"sounds": [
 			{
 				"name": "presence:warning",
-				"volume": 0.8
+				"volume": 0.25
 			}
 		]
 	},

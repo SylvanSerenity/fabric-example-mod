@@ -19,6 +19,7 @@ import com.sylvan.presence.event.NearbySounds;
 import com.sylvan.presence.event.OpenChest;
 import com.sylvan.presence.event.OpenDoor;
 import com.sylvan.presence.event.Stalk;
+import com.sylvan.presence.event.SubtitleWarning;
 import com.sylvan.presence.event.Creep;
 import com.sylvan.presence.util.Algorithms;
 import com.sylvan.presence.util.JsonFile;
@@ -173,6 +174,7 @@ public class PlayerData {
 		if (OpenChest.openChestEnabled) OpenChest.scheduleEvent(player);
 		if (OpenDoor.openDoorEnabled) OpenDoor.scheduleEvent(player);
 		if (Stalk.stalkEnabled) Stalk.scheduleEvent(player);
+		if (SubtitleWarning.subtitleWarningEnabled) SubtitleWarning.scheduleEvent(player);
 	}
 
 	private void scheduleHauntLevelCalculation() {
