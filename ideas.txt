@@ -15,3 +15,4 @@ Events:
 * Poppy at door (one chance per block)
 * Freeze the player by setting their position/rotation each tick and play a freeze sound
 * Send subtitles to the player
+* Play entity.warden.heartbeat where player's heart beats increasingly fast
