@@ -12,5 +12,4 @@ Events:
 * Add 1x1/1x2 strip mines
 * Flash open/close doors when player opens a door
 * Freeze the player by setting their position/rotation each tick and play a freeze sound
-* Send subtitles to the player
 * Play entity.warden.heartbeat where player's heart beats increasingly fast
