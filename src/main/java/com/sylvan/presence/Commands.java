@@ -36,8 +36,11 @@ public class Commands {
 					literal("ambientSounds")
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
-							context.getSource().sendFeedback(() -> Text.literal("Executing ambient sounds event.").withColor(Formatting.BLUE.getColorValue()), false);
-							AmbientSounds.playAmbientSound(context.getSource().getPlayer(), true);
+							if (AmbientSounds.playAmbientSound(context.getSource().getPlayer(), true)) {
+								context.getSource().sendFeedback(() -> Text.literal("Successfully executed ambient sounds event.").withColor(Formatting.BLUE.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Conditions to execute ambient souinds not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							}
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute ambient sounds event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
@@ -58,8 +61,11 @@ public class Commands {
 							if (player == null) {
 								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							} else {
-								context.getSource().sendFeedback(() -> Text.literal("Executing ambient sounds event for player " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-								AmbientSounds.playAmbientSound(player, true);
+								if (AmbientSounds.playAmbientSound(player, true)) {
+									context.getSource().sendFeedback(() -> Text.literal("Successfully executed ambient sounds event.").withColor(Formatting.BLUE.getColorValue()), false);
+								} else {
+									context.getSource().sendFeedback(() -> Text.literal("Conditions to execute ambient souinds not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								}
 							}
 							return 1;
 						})
@@ -81,8 +87,11 @@ public class Commands {
 						.executes(context -> {
 							if (context.getSource().isExecutedByPlayer()) {
 								final float damage = FloatArgumentType.getFloat(context, "damage");
-								context.getSource().sendFeedback(() -> Text.literal("Executing attack event.").withColor(Formatting.BLUE.getColorValue()), false);
-								Attack.attack(context.getSource().getPlayer(), damage, true);
+								if (Attack.attack(context.getSource().getPlayer(), damage, true)) {
+									context.getSource().sendFeedback(() -> Text.literal("Successfully executed attack event.").withColor(Formatting.BLUE.getColorValue()), false);
+								} else {
+									context.getSource().sendFeedback(() -> Text.literal("Conditions to execute attack not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								}
 							} else {
 								context.getSource().sendFeedback(() -> Text.literal("Cannot execute attack event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							}
@@ -104,8 +113,11 @@ public class Commands {
 									context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
 								} else {
 									final float damage = FloatArgumentType.getFloat(context, "damage");
-									context.getSource().sendFeedback(() -> Text.literal("Executing attack event for player " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-									Attack.attack(player, damage, true);
+									if (Attack.attack(player, damage, true)) {
+										context.getSource().sendFeedback(() -> Text.literal("Successfully executed attack event for player " + player.getName().toString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+									} else {
+										context.getSource().sendFeedback(() -> Text.literal("Conditions to execute attack not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+									}
 								}
 								return 1;
 							})
@@ -116,8 +128,11 @@ public class Commands {
 					literal("creep")
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
-							context.getSource().sendFeedback(() -> Text.literal("Executing creep event.").withColor(Formatting.BLUE.getColorValue()), false);
-							Creep.creep(context.getSource().getPlayer(), true);
+							if (Creep.creep(context.getSource().getPlayer(), true)) {
+								context.getSource().sendFeedback(() -> Text.literal("Successfully executed creep event.").withColor(Formatting.BLUE.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Conditions to execute creep not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							}
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute creep event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
@@ -138,8 +153,11 @@ public class Commands {
 							if (player == null) {
 								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							} else {
-								context.getSource().sendFeedback(() -> Text.literal("Executing creep event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-								Creep.creep(player, true);
+								if (Creep.creep(player, true)) {
+									context.getSource().sendFeedback(() -> Text.literal("Successfully executed creep event for player " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+								} else {
+									context.getSource().sendFeedback(() -> Text.literal("Conditions to execute creep event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								}
 							}
 							return 1;
 						})
@@ -332,8 +350,11 @@ public class Commands {
 					literal("openDoor")
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
-							context.getSource().sendFeedback(() -> Text.literal("Executing open door event.").withColor(Formatting.BLUE.getColorValue()), false);
-							OpenDoor.openDoor(context.getSource().getPlayer(), true);
+							if (OpenDoor.openDoor(context.getSource().getPlayer(), true)) {
+								context.getSource().sendFeedback(() -> Text.literal("Successfully executed open door event.").withColor(Formatting.BLUE.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Conditions to execute door event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							}
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute open door event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
@@ -354,8 +375,11 @@ public class Commands {
 							if (player == null) {
 								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							} else {
-								context.getSource().sendFeedback(() -> Text.literal("Executing open door event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-								OpenDoor.openDoor(player, true);
+								if (OpenDoor.openDoor(player, true)) {
+									context.getSource().sendFeedback(() -> Text.literal("Successfully executed open door event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+								} else {
+									context.getSource().sendFeedback(() -> Text.literal("Conditions to execute open door event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								}
 							}
 							return 1;
 						})
@@ -365,8 +389,11 @@ public class Commands {
 					literal("stalk")
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
-							context.getSource().sendFeedback(() -> Text.literal("Executing stalk event.").withColor(Formatting.BLUE.getColorValue()), false);
-							Stalk.stalk(context.getSource().getPlayer(), true);
+							if (Stalk.stalk(context.getSource().getPlayer(), true)) {
+								context.getSource().sendFeedback(() -> Text.literal("Successfully executed stalk event.").withColor(Formatting.BLUE.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Conditions to execute stalk event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							}
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute stalk event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
@@ -387,8 +414,11 @@ public class Commands {
 							if (player == null) {
 								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							} else {
-								context.getSource().sendFeedback(() -> Text.literal("Executing stalk event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
-								Stalk.stalk(player, true);
+								if (Stalk.stalk(player, true)) {
+									context.getSource().sendFeedback(() -> Text.literal("Successfully executed stalk event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+								} else {
+									context.getSource().sendFeedback(() -> Text.literal("Conditions to execute stalk event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								}
 							}
 							return 1;
 						})

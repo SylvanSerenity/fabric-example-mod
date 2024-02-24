@@ -1,7 +1,6 @@
 General:
 * Track if player is AFK in PlayerData and block server events
 * Remove glow lichen from non-water caves
-* Add failure reason to commands
 
 Events:
 * Herobrine spawns in the distance in caves and vanishes after being seen for 1 second
