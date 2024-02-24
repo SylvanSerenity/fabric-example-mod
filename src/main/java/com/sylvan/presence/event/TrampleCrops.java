@@ -99,7 +99,7 @@ public class TrampleCrops {
 		if (trampleCropsNotSeenConstraint && Algorithms.couldBlockBeSeenByPlayers(players, nearestCropPos)) return false;
 
 		// Plant poppy
-		world.removeBlockEntity(nearestCropPos);
+		world.removeBlock(nearestCropPos, false);
 
 		return true;
 	}
