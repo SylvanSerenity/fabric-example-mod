@@ -25,12 +25,12 @@ public class OpenDoor {
 	public static float openDoorHauntLevelMin = 1.25f;		// The minimum haunt level to play event
 	private static int openDoorDelayMin = 60 * 60;			// The minimum delay between open door events
 	private static int openDoorDelayMax = 60 * 60 * 4;		// The maximum delay between open door events
-	private static int openDoorRetryDelay = 60;			// The delay between retrying an attack if the previous attempt failed
-	private static int openDoorDistanceMax = 32;			// The maximum distance of the door to open
+	private static int openDoorRetryDelay = 60;			// The delay between retrying to open a door if the previous attempt failed
+	private static int openDoorSearchRadius = 32;			// The search radius of finding doors to open. Higher values have exponential lag during the tick performing the search
 	private static boolean openDoorNotSeenConstraint = true;	// Whether the constraint for making the door open only when not seen is active
 	private static boolean openDoorPlaySound = true;		// Whether or not to play the door open sound
 
-	private static final ArrayList<Block> doorBlocks = new ArrayList<>();
+	public static final ArrayList<Block> doorBlocks = new ArrayList<>();
 
 	public static void loadConfig() {
 		try {
@@ -39,7 +39,7 @@ public class OpenDoor {
 			openDoorDelayMin = Presence.config.getOrSetValue("openDoorDelayMin", openDoorDelayMin).getAsInt();
 			openDoorDelayMax = Presence.config.getOrSetValue("openDoorDelayMax", openDoorDelayMax).getAsInt();
 			openDoorRetryDelay = Presence.config.getOrSetValue("openDoorRetryDelay", openDoorRetryDelay).getAsInt();
-			openDoorDistanceMax = Presence.config.getOrSetValue("openDoorDistanceMax", openDoorDistanceMax).getAsInt();
+			openDoorSearchRadius = Presence.config.getOrSetValue("openDoorSearchRadius", openDoorSearchRadius).getAsInt();
 			openDoorNotSeenConstraint = Presence.config.getOrSetValue("openDoorNotSeenConstraint", openDoorNotSeenConstraint).getAsBoolean();
 			openDoorPlaySound = Presence.config.getOrSetValue("openDoorPlaySound", openDoorPlaySound).getAsBoolean();
 		} catch (UnsupportedOperationException e) {
@@ -104,7 +104,7 @@ public class OpenDoor {
 		}
 
 		// Get nearest door position
-		BlockPos nearestDoorPos = Algorithms.getNearestBlockToEntity(player, doorBlocks, openDoorDistanceMax);
+		BlockPos nearestDoorPos = Algorithms.getNearestBlockToEntity(player, doorBlocks, openDoorSearchRadius);
 		if (nearestDoorPos == null) return false;
 
 		// Players must not see door open
@@ -117,8 +117,11 @@ public class OpenDoor {
 			)
 		) return false;
 
+		// Open door
 		final BlockState currentBlockState = world.getBlockState(nearestDoorPos);
 		world.setBlockState(nearestDoorPos, currentBlockState.with(DoorBlock.OPEN, true));
+
+		// Play open door sound
 		if (openDoorPlaySound) {
 			if (currentBlockState.getSoundGroup() == BlockSoundGroup.BAMBOO_WOOD) world.playSound(null, nearestDoorPos, SoundEvents.BLOCK_BAMBOO_WOOD_DOOR_OPEN, SoundCategory.BLOCKS);
 			else if (currentBlockState.getSoundGroup() == BlockSoundGroup.CHERRY_WOOD) world.playSound(null, nearestDoorPos, SoundEvents.BLOCK_CHERRY_WOOD_DOOR_OPEN, SoundCategory.BLOCKS);

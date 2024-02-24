@@ -19,6 +19,7 @@ public class Events {
 
 	public static void initEvents() {
 		AmbientSounds.initEvent();
+		FlowerGift.initEvent();
 		NearbySounds.initEvent();
 		OpenDoor.initEvent();
 	}

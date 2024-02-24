@@ -129,13 +129,13 @@ public class Algorithms {
 		for (final PlayerEntity player : players) {
 			// Move one block towards player to prevent the block itself from blocking raycast
 			towardsPlayerDirection = getDirectionPosToPos(pos.toCenterPos(), player.getEyePos());
-	
+
 			towardsPlayerPos = pos.add(
 				(int) Math.signum(towardsPlayerDirection.getX()),
 				(int) Math.signum(towardsPlayerDirection.getY()),
 				(int) Math.signum(towardsPlayerDirection.getZ())
 			);
-	
+
 			if (couldPosBeSeenByEntity(player, towardsPlayerPos.toCenterPos())) return true;
 		}
 		return false;
@@ -328,7 +328,7 @@ public class Algorithms {
 		if (((float) nonCaveBlockCount / (float) Math.max(1, algorithmsCaveDetectionRays + 6)) > algorithmsCaveDetectionMaxNonCaveaveBlockPercent) return false;
 		return true;
 	}
-	
+
 	public static Vec3d getDirectionPosToPos(final Vec3d pos1, final Vec3d pos2) {
 		return pos2.subtract(pos1).normalize();
 	}
@@ -344,7 +344,7 @@ public class Algorithms {
 			direction.getY(),
 			Math.sqrt((direction.getX() * direction.getX()) + (direction.getZ() * direction.getZ()))
 		));
-		final float yaw = (float) Math.toDegrees(Math.atan2(direction.getZ(), direction.getX())) - 90.0f;	
+		final float yaw = (float) Math.toDegrees(Math.atan2(direction.getZ(), direction.getX())) - 90.0f;
 		return new EulerAngle(pitch, yaw, 0.0f);
 	}
 

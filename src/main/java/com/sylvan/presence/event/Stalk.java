@@ -138,7 +138,7 @@ public class Stalk {
 		);
 
 		if (!Algorithms.couldPlayerStandOnBlock(world, Algorithms.getBlockPosFromVec3d(spawnPos).down())) return false;
-	
+
 		final StalkingEntity herobrine = new StalkingEntity(world, "classic", player);
 		herobrine.setPosition(spawnPos);
 		herobrine.lookAt(player);

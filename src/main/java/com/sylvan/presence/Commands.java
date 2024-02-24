@@ -16,6 +16,7 @@ import com.sylvan.presence.entity.HerobrineEntity;
 import com.sylvan.presence.event.AmbientSounds;
 import com.sylvan.presence.event.Attack;
 import com.sylvan.presence.event.ExtinguishTorches;
+import com.sylvan.presence.event.FlowerGift;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
 import com.sylvan.presence.event.OpenDoor;
@@ -267,6 +268,45 @@ public class Commands {
 					)
 				)
 				.then(
+					literal("flowerGift")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							if (FlowerGift.flowerGift(context.getSource().getPlayer(), true)) {
+								context.getSource().sendFeedback(() -> Text.literal("Successfully executed flower gift event.").withColor(Formatting.BLUE.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Conditions to execute flower gift event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							}
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot execute flower gift event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("player", StringArgumentType.word())
+						.suggests((context, builder) -> {
+							final Iterable<String> playerNames = context.getSource().getPlayerNames();
+							for (final String playerName : playerNames) {
+								builder.suggest(playerName);
+							}
+							return builder.buildFuture();
+						})
+						.executes(context -> {
+							final String playerName = StringArgumentType.getString(context, "player");
+							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+							if (player == null) {
+								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							} else {
+								if (FlowerGift.flowerGift(player, true)) {
+									context.getSource().sendFeedback(() -> Text.literal("Successfully executed flower gift event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+								} else {
+									context.getSource().sendFeedback(() -> Text.literal("Conditions to execute flower gift event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								}
+							}
+							return 1;
+						})
+					)
+				)
+				.then(
 					literal("footsteps")
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
@@ -353,7 +393,7 @@ public class Commands {
 							if (OpenDoor.openDoor(context.getSource().getPlayer(), true)) {
 								context.getSource().sendFeedback(() -> Text.literal("Successfully executed open door event.").withColor(Formatting.BLUE.getColorValue()), false);
 							} else {
-								context.getSource().sendFeedback(() -> Text.literal("Conditions to execute door event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								context.getSource().sendFeedback(() -> Text.literal("Conditions to execute open door event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							}
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute open door event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
