@@ -3,7 +3,7 @@ General:
 * Remove glow lichen from non-water caves
 
 Events:
-* Herobrine spawns in the distance in caves and vanishes after being seen for 1 second
+* Herobrine eyes spawns in the distance in caves and vanishes after being seen for 1 second
 * Blocks place when player is going deeper into a cave, blocking the player in. They can hear it and if they return to the source, it stops, otherwise they come back to being blocked off with either stone or cobblestone, at least 2 layers deep
 * Crops randomly get removed/trampled
 * Play throbbing/ticking/scrathing/door bang sound when player is AFK
