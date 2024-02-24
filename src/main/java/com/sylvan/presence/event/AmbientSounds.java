@@ -34,17 +34,17 @@ public class AmbientSounds {
 	private static JsonObject ambientSoundsSoundWeights = new JsonObject();	// A set of sound ID keys with weight values to play during the event
 
 	public static void loadConfig() {
-		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_CAVE.value().getId().toString(), 40.0f);
-		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_BASALT_DELTAS_ADDITIONS.value().getId().toString(), 10.0f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_CAVE.value().getId().toString(), 35.0f);
 		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_CRIMSON_FOREST_ADDITIONS.value().getId().toString(), 15.0f);
 		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_NETHER_WASTES_ADDITIONS.value().getId().toString(), 15.0f);
-		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_ADDITIONS.value().getId().toString(), 7.0f);
-		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_WARPED_FOREST_ADDITIONS.value().getId().toString(), 2.0f);
-		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_RARE.getId().toString(), 9.0f);
-		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE.getId().toString(), 1.0f);
-		ambientSoundsSoundWeights.addProperty(SoundEvents.ENTITY_ENDERMAN_STARE.getId().toString(), 0.5f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_BASALT_DELTAS_ADDITIONS.value().getId().toString(), 10.0f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_SOUL_SAND_VALLEY_ADDITIONS.value().getId().toString(), 10.0f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_RARE.getId().toString(), 7.0f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_WARPED_FOREST_ADDITIONS.value().getId().toString(), 4.0f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE.getId().toString(), 2.5f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.ENTITY_ENDERMAN_STARE.getId().toString(), 0.8f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.ENTITY_WARDEN_AMBIENT.getId().toString(), 0.4f);
 		ambientSoundsSoundWeights.addProperty(SoundEvents.BLOCK_SCULK_SHRIEKER_SHRIEK.getId().toString(), 0.2f);
-		ambientSoundsSoundWeights.addProperty(SoundEvents.ENTITY_WARDEN_AMBIENT.getId().toString(), 0.2f);
 		ambientSoundsSoundWeights.addProperty(SoundEvents.ENTITY_WARDEN_ROAR.getId().toString(), 0.1f);
 
 		try {
