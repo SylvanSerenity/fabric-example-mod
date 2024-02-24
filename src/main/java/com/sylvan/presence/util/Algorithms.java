@@ -188,10 +188,10 @@ public class Algorithms {
 	}
 
 	public static BlockPos getNearestStandableBlockPos(final World world, BlockPos blockPos, final int minY, final int maxY) {
-		while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() > minY)) {
+		while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() >= minY)) {
 			blockPos = blockPos.down();
 		}
-		while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() < maxY)) {
+		while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() <= maxY)) {
 			blockPos = blockPos.up();
 		}
 		return blockPos;
@@ -201,14 +201,20 @@ public class Algorithms {
 		final World world = entity.getWorld();
 		final BlockPos entityPos = entity.getBlockPos();
 		if (blockPos.getY() > entityPos.getY()) {
-			// Above player, try moving down
+			// Above player, try moving down first
 			while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() >= minY)) {
 				blockPos = blockPos.down();
 			}
-		} else {
-			// Below player, try moving up
 			while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() <= maxY)) {
 				blockPos = blockPos.up();
+			}
+		} else {
+			// Below player, try moving up first
+			while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() <= maxY)) {
+				blockPos = blockPos.up();
+			}
+			while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() >= minY)) {
+				blockPos = blockPos.down();
 			}
 		}
 		return blockPos;

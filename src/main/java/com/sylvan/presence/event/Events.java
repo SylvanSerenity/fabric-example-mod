@@ -21,6 +21,7 @@ public class Events {
 		AmbientSounds.initEvent();
 		FlowerGift.initEvent();
 		NearbySounds.initEvent();
+		OpenChest.initEvent();
 		OpenDoor.initEvent();
 	}
 

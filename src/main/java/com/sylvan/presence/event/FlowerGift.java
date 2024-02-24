@@ -106,25 +106,21 @@ public class FlowerGift {
 
 		// Get grass block 1 distance in any X/Z block away
 		BlockPos plantablePos = nearestDoorPos.offset(Direction.NORTH);
-		Presence.LOGGER.info("NORTH: " + plantablePos.toShortString());
 		if (!(
 			Algorithms.isBlockOfBlockTypes(world.getBlockState(plantablePos).getBlock(), plantableBlocks) &&
 			Algorithms.couldPlayerStandOnBlock(world, plantablePos)
 		)) {
 			plantablePos = nearestDoorPos.offset(Direction.SOUTH);
-			Presence.LOGGER.info("SOUTH: " + plantablePos.toShortString());
 			if (!(
 				Algorithms.isBlockOfBlockTypes(world.getBlockState(plantablePos).getBlock(), plantableBlocks) &&
 				Algorithms.couldPlayerStandOnBlock(world, plantablePos)
 			)) {
 				plantablePos = nearestDoorPos.offset(Direction.EAST);
-				Presence.LOGGER.info("EAST: " + plantablePos.toShortString());
 				if (!(
 					Algorithms.isBlockOfBlockTypes(world.getBlockState(plantablePos).getBlock(), plantableBlocks) &&
 					Algorithms.couldPlayerStandOnBlock(world, plantablePos)
 				)) {
 					plantablePos = nearestDoorPos.offset(Direction.WEST);
-					Presence.LOGGER.info("WEST: " + plantablePos.toShortString());
 					if (!(
 						Algorithms.isBlockOfBlockTypes(world.getBlockState(plantablePos).getBlock(), plantableBlocks) &&
 						Algorithms.couldPlayerStandOnBlock(world, plantablePos)

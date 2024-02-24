@@ -16,6 +16,7 @@ import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.FlowerGift;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
+import com.sylvan.presence.event.OpenChest;
 import com.sylvan.presence.event.OpenDoor;
 import com.sylvan.presence.event.Stalk;
 import com.sylvan.presence.event.Creep;
@@ -169,6 +170,7 @@ public class PlayerData {
 		if (FlowerGift.flowerGiftEnabled) FlowerGift.scheduleEvent(player);
 		if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
 		if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
+		if (OpenChest.openChestEnabled) OpenChest.scheduleEvent(player);
 		if (OpenDoor.openDoorEnabled) OpenDoor.scheduleEvent(player);
 		if (Stalk.stalkEnabled) Stalk.scheduleEvent(player);
 	}

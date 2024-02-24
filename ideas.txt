@@ -11,7 +11,6 @@ Events:
 * Random block placement (crafting table, sign, etc). Check for whether nearby chunks already had this happen.
 * Add 1x1/1x2 strip mines
 * Flash open/close doors when player opens a door
-* Play a chest opening sound when the player is nearby but cannot see a chest and swap two items
 * Freeze the player by setting their position/rotation each tick and play a freeze sound
 * Send subtitles to the player
 * Play entity.warden.heartbeat where player's heart beats increasingly fast
