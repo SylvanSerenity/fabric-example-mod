@@ -134,6 +134,13 @@ public class HerobrineEntity {
 		legsEntity.remove(RemovalReason.DISCARDED);
 	}
 
+	public void setGraivty(final boolean gravity) {
+		headEntity.setNoGravity(!gravity);
+		bodyEntity.setNoGravity(!gravity);
+		armsEntity.setNoGravity(!gravity);
+		legsEntity.setNoGravity(!gravity);
+	}
+
 	public void setHeadRotation(final float pitch, final float yaw, final float roll) {
 		EulerAngle headRotation = new EulerAngle(pitch, yaw, roll);
 		headEntity.setHeadRotation(headRotation);
