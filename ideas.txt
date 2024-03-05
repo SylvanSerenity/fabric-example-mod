@@ -3,7 +3,6 @@ General:
 * Remove glow lichen from non-water caves
 
 Events:
-* Flash open/close doors when player opens a door
 * Freeze the player by setting their position/rotation each tick and play a freeze sound
 * Herobrine eyes spawns in the distance in caves and vanishes after being seen for 1 second
 * Play throbbing/ticking/scrathing/door bang sound when player is AFK
