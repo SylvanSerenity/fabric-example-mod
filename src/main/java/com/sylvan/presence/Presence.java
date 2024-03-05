@@ -10,11 +10,17 @@ import com.sylvan.presence.data.PlayerData;
 import com.sylvan.presence.entity.Entities;
 import com.sylvan.presence.event.AmbientSounds;
 import com.sylvan.presence.event.Attack;
+import com.sylvan.presence.event.ChatMessage;
 import com.sylvan.presence.event.Events;
 import com.sylvan.presence.event.ExtinguishTorches;
+import com.sylvan.presence.event.FlickerDoor;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
+import com.sylvan.presence.event.OpenChest;
+import com.sylvan.presence.event.OpenDoor;
 import com.sylvan.presence.event.Stalk;
+import com.sylvan.presence.event.SubtitleWarning;
+import com.sylvan.presence.event.TrampleCrops;
 import com.sylvan.presence.event.Creep;
 import com.sylvan.presence.util.Algorithms;
 import com.sylvan.presence.util.JsonFile;
@@ -51,10 +57,16 @@ public class Presence implements ModInitializer {
 		Algorithms.loadConfig();
 		AmbientSounds.loadConfig();
 		Attack.loadConfig();
+		ChatMessage.loadConfig();
 		Creep.loadConfig();
 		ExtinguishTorches.loadConfig();
+		FlickerDoor.loadConfig();
 		Footsteps.loadConfig();
 		NearbySounds.loadConfig();
+		OpenChest.loadConfig();
+		OpenDoor.loadConfig();
 		Stalk.loadConfig();
+		SubtitleWarning.loadConfig();
+		TrampleCrops.loadConfig();
 	}
 }

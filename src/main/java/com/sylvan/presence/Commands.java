@@ -17,6 +17,7 @@ import com.sylvan.presence.event.AmbientSounds;
 import com.sylvan.presence.event.Attack;
 import com.sylvan.presence.event.ChatMessage;
 import com.sylvan.presence.event.ExtinguishTorches;
+import com.sylvan.presence.event.FlickerDoor;
 import com.sylvan.presence.event.FlowerGift;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
@@ -302,6 +303,39 @@ public class Commands {
 								return 1;
 							})
 						)
+					)
+				)
+				.then(
+					literal("flickerDoor")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							FlickerDoor.trackPlayer(context.getSource().getPlayer(), true);
+							context.getSource().sendFeedback(() -> Text.literal("Successfully tracking player for flicker door event.").withColor(Formatting.BLUE.getColorValue()), false);
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot execute flicker door event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("player", StringArgumentType.word())
+						.suggests((context, builder) -> {
+							final Iterable<String> playerNames = context.getSource().getPlayerNames();
+							for (final String playerName : playerNames) {
+								builder.suggest(playerName);
+							}
+							return builder.buildFuture();
+						})
+						.executes(context -> {
+							final String playerName = StringArgumentType.getString(context, "player");
+							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+							if (player == null) {
+								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							} else {
+								FlickerDoor.trackPlayer(player, true);
+								context.getSource().sendFeedback(() -> Text.literal("Successfully tracking player " + player.getName().getString() + "for flicker door event.").withColor(Formatting.BLUE.getColorValue()), false);
+							}
+							return 1;
+						})
 					)
 				)
 				.then(

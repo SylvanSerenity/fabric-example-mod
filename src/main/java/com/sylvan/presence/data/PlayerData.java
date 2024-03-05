@@ -14,6 +14,7 @@ import com.sylvan.presence.event.Attack;
 import com.sylvan.presence.event.ChatMessage;
 import com.sylvan.presence.event.Events;
 import com.sylvan.presence.event.ExtinguishTorches;
+import com.sylvan.presence.event.FlickerDoor;
 import com.sylvan.presence.event.FlowerGift;
 import com.sylvan.presence.event.Footsteps;
 import com.sylvan.presence.event.NearbySounds;
@@ -171,6 +172,7 @@ public class PlayerData {
 		if (ChatMessage.chatMessageEnabled) ChatMessage.scheduleEvent(player);
 		if (Creep.creepEnabled) Creep.scheduleEvent(player);
 		if (ExtinguishTorches.extinguishTorchesEnabled) ExtinguishTorches.scheduleTracking(player);
+		if (FlickerDoor.flickerDoorEnabled) FlickerDoor.scheduleTracking(player);
 		if (FlowerGift.flowerGiftEnabled) FlowerGift.scheduleEvent(player);
 		if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
 		if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);

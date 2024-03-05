@@ -67,6 +67,7 @@ public class Events {
 		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
 			if (world.isClient()) {
 				ExtinguishTorches.onUseBlock(player, world, hitResult);
+				FlickerDoor.onUseBlock(player, world, hitResult);
 			}
 			return ActionResult.PASS;
 		});
