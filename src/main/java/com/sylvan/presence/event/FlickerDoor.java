@@ -12,9 +12,6 @@ import com.sylvan.presence.util.Algorithms;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -105,24 +102,9 @@ public class FlickerDoor {
 
 		final World world = player.getWorld();
 		final BlockState currentBlockState = world.getBlockState(doorPos);
-		if (currentBlockState.get(DoorBlock.OPEN)) {
-			// Close door
-			world.setBlockState(doorPos, currentBlockState.with(DoorBlock.OPEN, false));
+		final DoorBlock doorBlock = (DoorBlock) currentBlockState.getBlock();
 
-			// Play flicker door sound
-			if (currentBlockState.getSoundGroup() == BlockSoundGroup.BAMBOO_WOOD) world.playSound(null, doorPos, SoundEvents.BLOCK_BAMBOO_WOOD_DOOR_CLOSE, SoundCategory.BLOCKS);
-			else if (currentBlockState.getSoundGroup() == BlockSoundGroup.CHERRY_WOOD) world.playSound(null, doorPos, SoundEvents.BLOCK_CHERRY_WOOD_DOOR_CLOSE, SoundCategory.BLOCKS);
-			else if (currentBlockState.getSoundGroup() == BlockSoundGroup.NETHER_WOOD) world.playSound(null, doorPos, SoundEvents.BLOCK_NETHER_WOOD_DOOR_CLOSE, SoundCategory.BLOCKS);
-			else world.playSound(null, doorPos, SoundEvents.BLOCK_WOODEN_DOOR_CLOSE, SoundCategory.BLOCKS);
-		} else {
-			// Open door
-			world.setBlockState(doorPos, currentBlockState.with(DoorBlock.OPEN, true));
-
-			// Play flicker door sound
-			if (currentBlockState.getSoundGroup() == BlockSoundGroup.BAMBOO_WOOD) world.playSound(null, doorPos, SoundEvents.BLOCK_BAMBOO_WOOD_DOOR_OPEN, SoundCategory.BLOCKS);
-			else if (currentBlockState.getSoundGroup() == BlockSoundGroup.CHERRY_WOOD) world.playSound(null, doorPos, SoundEvents.BLOCK_CHERRY_WOOD_DOOR_OPEN, SoundCategory.BLOCKS);
-			else if (currentBlockState.getSoundGroup() == BlockSoundGroup.NETHER_WOOD) world.playSound(null, doorPos, SoundEvents.BLOCK_NETHER_WOOD_DOOR_OPEN, SoundCategory.BLOCKS);
-			else world.playSound(null, doorPos, SoundEvents.BLOCK_WOODEN_DOOR_OPEN, SoundCategory.BLOCKS);
-		}
+		// Set to opposite of current open state
+		doorBlock.setOpen(null, world, currentBlockState, doorPos, !doorBlock.isOpen(currentBlockState));
 	}
 }

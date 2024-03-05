@@ -11,11 +11,11 @@ import com.sylvan.presence.util.Algorithms;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.block.ChestBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -59,7 +59,6 @@ public class OpenChest {
 	public static void initEvent() {
 		chestBlocks.add(Blocks.CHEST);
 		chestBlocks.add(Blocks.TRAPPED_CHEST);
-		chestBlocks.add(Blocks.BARREL);
 	}
 
 	public static void scheduleEvent(final PlayerEntity player) {
@@ -110,29 +109,30 @@ public class OpenChest {
 		final World world = player.getWorld();
 		final List<? extends PlayerEntity> players = world.getPlayers();
 		if (openChestNotSeenConstraint && (Algorithms.couldBlockBeSeenByPlayers(players, nearestChestPos))) return false;
+		final BlockState chestBlockState = world.getBlockState(nearestChestPos);
 
 		// Swap two random items
 		if (openChestSwapItems) {
-			// Get chest block entity
-			final ChestBlockEntity chestBlockEntity = (ChestBlockEntity) world.getBlockEntity(nearestChestPos);
+			// Get chest block inventory
+			final Inventory chestInventory = ChestBlock.getInventory((ChestBlock) chestBlockState.getBlock(), chestBlockState, world, nearestChestPos, true);
 
 			// Get two random slots
-			final int slot1 = Algorithms.RANDOM.nextBetween(0, chestBlockEntity.size() - 1);
-			final ItemStack stack1 = chestBlockEntity.getStack(slot1);
-			int slot2 = Algorithms.RANDOM.nextBetween(0, chestBlockEntity.size() - 1);
+			final int slot1 = Algorithms.RANDOM.nextBetween(0, chestInventory.size() - 1);
+			final ItemStack stack1 = chestInventory.getStack(slot1);
+			int slot2 = Algorithms.RANDOM.nextBetween(0, chestInventory.size() - 1);
 			ItemStack stack2;
 	
 			// Make sure slots are different
 			if (slot1 == slot2) {
-				if (slot2 < chestBlockEntity.size() - 1) ++slot2;
+				if (slot2 < chestInventory.size() - 1) ++slot2;
 				else --slot2;
 			}
 	
 			// Make sure to have at least one item
 			final int startSlot = slot2;
-			while ((stack2 = chestBlockEntity.getStack(slot2)) == ItemStack.EMPTY) {
+			while ((stack2 = chestInventory.getStack(slot2)) == ItemStack.EMPTY) {
 				// Increase slot number or reset to first
-				if (slot2 < chestBlockEntity.size() - 1) ++slot2;
+				if (slot2 < chestInventory.size() - 1) ++slot2;
 				else slot2 = 0;
 	
 				// Continue if the slots are the same
@@ -143,26 +143,17 @@ public class OpenChest {
 			}
 	
 			// Swap slots
-			chestBlockEntity.setStack(slot1, stack2);
-			chestBlockEntity.setStack(slot2, stack1);
-			chestBlockEntity.markDirty();
+			chestInventory.setStack(slot1, stack2);
+			chestInventory.setStack(slot2, stack1);
+			chestInventory.markDirty();
 		}
 
 		// Play open chest sound
 		if (openChestPlaySound) {
-			final BlockState currentBlockState = world.getBlockState(nearestChestPos);
-			SoundEvent openSound, closeSound;
-			if (currentBlockState.getBlock() == Blocks.BARREL) {
-				openSound = SoundEvents.BLOCK_BARREL_OPEN;
-				closeSound = SoundEvents.BLOCK_BARREL_CLOSE;
-			} else {
-				openSound = SoundEvents.BLOCK_CHEST_OPEN;
-				closeSound = SoundEvents.BLOCK_CHEST_CLOSE;
-			}
-			world.playSound(null, nearestChestPos, openSound, SoundCategory.BLOCKS);
+			world.playSound(null, nearestChestPos, SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS);
 			Events.scheduler.schedule(
 				() -> {
-					world.playSound(null, nearestChestPos, closeSound, SoundCategory.BLOCKS);
+					world.playSound(null, nearestChestPos, SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS);
 				}, Algorithms.RANDOM.nextBetween(openChestCloseSoundMsMin, openChestCloseSoundMsMax), TimeUnit.MILLISECONDS
 			);
 		}

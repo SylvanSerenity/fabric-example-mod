@@ -13,9 +13,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -28,7 +25,6 @@ public class OpenDoor {
 	private static int openDoorRetryDelay = 60;			// The delay between retrying to open a door if the previous attempt failed
 	private static int openDoorSearchRadius = 32;			// The search radius of finding doors to open. Higher values have exponential lag during the tick performing the search
 	private static boolean openDoorNotSeenConstraint = true;	// Whether the constraint for making the door open only when not seen is active
-	private static boolean openDoorPlaySound = true;		// Whether or not to play the door open sound
 
 	public static final ArrayList<Block> doorBlocks = new ArrayList<>();
 
@@ -41,7 +37,6 @@ public class OpenDoor {
 			openDoorRetryDelay = Presence.config.getOrSetValue("openDoorRetryDelay", openDoorRetryDelay).getAsInt();
 			openDoorSearchRadius = Presence.config.getOrSetValue("openDoorSearchRadius", openDoorSearchRadius).getAsInt();
 			openDoorNotSeenConstraint = Presence.config.getOrSetValue("openDoorNotSeenConstraint", openDoorNotSeenConstraint).getAsBoolean();
-			openDoorPlaySound = Presence.config.getOrSetValue("openDoorPlaySound", openDoorPlaySound).getAsBoolean();
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for OpenDoor.java. Wiping and using default values.", e);
 			Presence.config.wipe();
@@ -119,16 +114,8 @@ public class OpenDoor {
 
 		// Open door
 		final BlockState currentBlockState = world.getBlockState(nearestDoorPos);
-		world.setBlockState(nearestDoorPos, currentBlockState.with(DoorBlock.OPEN, true));
-
-		// Play open door sound
-		if (openDoorPlaySound) {
-			if (currentBlockState.getSoundGroup() == BlockSoundGroup.BAMBOO_WOOD) world.playSound(null, nearestDoorPos, SoundEvents.BLOCK_BAMBOO_WOOD_DOOR_OPEN, SoundCategory.BLOCKS);
-			else if (currentBlockState.getSoundGroup() == BlockSoundGroup.CHERRY_WOOD) world.playSound(null, nearestDoorPos, SoundEvents.BLOCK_CHERRY_WOOD_DOOR_OPEN, SoundCategory.BLOCKS);
-			else if (currentBlockState.getSoundGroup() == BlockSoundGroup.NETHER_WOOD) world.playSound(null, nearestDoorPos, SoundEvents.BLOCK_NETHER_WOOD_DOOR_OPEN, SoundCategory.BLOCKS);
-			else world.playSound(null, nearestDoorPos, SoundEvents.BLOCK_WOODEN_DOOR_OPEN, SoundCategory.BLOCKS);
-		}
-
+		final DoorBlock doorBlock = (DoorBlock) currentBlockState.getBlock();
+		doorBlock.setOpen(null, world, currentBlockState, nearestDoorPos, true);
 		return true;
 	}
 }
