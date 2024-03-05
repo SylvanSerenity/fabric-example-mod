@@ -17,6 +17,7 @@ import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.FlickerDoor;
 import com.sylvan.presence.event.FlowerGift;
 import com.sylvan.presence.event.Footsteps;
+import com.sylvan.presence.event.Freeze;
 import com.sylvan.presence.event.NearbySounds;
 import com.sylvan.presence.event.OpenChest;
 import com.sylvan.presence.event.OpenDoor;
@@ -175,6 +176,7 @@ public class PlayerData {
 		if (FlickerDoor.flickerDoorEnabled) FlickerDoor.scheduleTracking(player);
 		if (FlowerGift.flowerGiftEnabled) FlowerGift.scheduleEvent(player);
 		if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
+		if (Freeze.freezeEnabled) Freeze.scheduleEvent(player);
 		if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
 		if (OpenChest.openChestEnabled) OpenChest.scheduleEvent(player);
 		if (OpenDoor.openDoorEnabled) OpenDoor.scheduleEvent(player);

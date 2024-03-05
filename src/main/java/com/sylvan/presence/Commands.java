@@ -20,6 +20,7 @@ import com.sylvan.presence.event.ExtinguishTorches;
 import com.sylvan.presence.event.FlickerDoor;
 import com.sylvan.presence.event.FlowerGift;
 import com.sylvan.presence.event.Footsteps;
+import com.sylvan.presence.event.Freeze;
 import com.sylvan.presence.event.NearbySounds;
 import com.sylvan.presence.event.OpenChest;
 import com.sylvan.presence.event.OpenDoor;
@@ -310,7 +311,7 @@ public class Commands {
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
 							FlickerDoor.trackPlayer(context.getSource().getPlayer(), true);
-							context.getSource().sendFeedback(() -> Text.literal("Successfully tracking player for flicker door event.").withColor(Formatting.BLUE.getColorValue()), false);
+							context.getSource().sendFeedback(() -> Text.literal("Tracking player for flicker door event.").withColor(Formatting.BLUE.getColorValue()), false);
 						} else {
 							context.getSource().sendFeedback(() -> Text.literal("Cannot execute flicker door event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
 						}
@@ -332,7 +333,7 @@ public class Commands {
 								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
 							} else {
 								FlickerDoor.trackPlayer(player, true);
-								context.getSource().sendFeedback(() -> Text.literal("Successfully tracking player " + player.getName().getString() + "for flicker door event.").withColor(Formatting.BLUE.getColorValue()), false);
+								context.getSource().sendFeedback(() -> Text.literal("Tracking player " + player.getName().getString() + "for flicker door event.").withColor(Formatting.BLUE.getColorValue()), false);
 							}
 							return 1;
 						})
@@ -422,6 +423,39 @@ public class Commands {
 								return 1;
 							})
 						)
+					)
+				)
+				.then(
+					literal("freeze")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							Freeze.freeze(context.getSource().getPlayer(), true);
+							context.getSource().sendFeedback(() -> Text.literal("Executing freeze event.").withColor(Formatting.BLUE.getColorValue()), false);
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot execute freeze event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("player", StringArgumentType.word())
+						.suggests((context, builder) -> {
+							final Iterable<String> playerNames = context.getSource().getPlayerNames();
+							for (final String playerName : playerNames) {
+								builder.suggest(playerName);
+							}
+							return builder.buildFuture();
+						})
+						.executes(context -> {
+							final String playerName = StringArgumentType.getString(context, "player");
+							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+							if (player == null) {
+								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							} else {
+								Freeze.freeze(player, true);
+								context.getSource().sendFeedback(() -> Text.literal("Executing freeze event for player " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+							}
+							return 1;
+						})
 					)
 				)
 				.then(
@@ -745,44 +779,6 @@ public class Commands {
 			.then(
 				literal("query")
 				.then(
-					literal("trackingTorches")
-					.executes(context -> {
-						if (context.getSource().isExecutedByPlayer()) {
-							final PlayerEntity player = context.getSource().getPlayer();
-							if (ExtinguishTorches.torchPlacementMap.containsKey(player.getUuid())) {
-								context.getSource().sendFeedback(() -> Text.literal("You are being tracked for torch placements.").withColor(Formatting.BLUE.getColorValue()), false);
-							} else {
-								context.getSource().sendFeedback(() -> Text.literal("You are not being tracked for torch placements.").withColor(Formatting.RED.getColorValue()), false);
-							}
-						} else {
-							context.getSource().sendFeedback(() -> Text.literal("Cannot query server torch placement. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
-						}
-						return 1;
-					})
-					.then(
-						argument("player", StringArgumentType.word())
-						.suggests((context, builder) -> {
-							final Iterable<String> playerNames = context.getSource().getPlayerNames();
-							for (final String playerName : playerNames) {
-								builder.suggest(playerName);
-							}
-							return builder.buildFuture();
-						})
-						.executes(context -> {
-							final String playerName = StringArgumentType.getString(context, "player");
-							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
-							if (player == null) {
-								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
-							} else if (ExtinguishTorches.torchPlacementMap.containsKey(player.getUuid())) {
-								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is being tracked for torch placements.").withColor(Formatting.BLUE.getColorValue()), false);
-							} else {
-								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is not being tracked for torch placements.").withColor(Formatting.RED.getColorValue()), false);
-							}
-							return 1;
-						})
-					)
-				)
-				.then(
 					literal("haunted")
 					.executes(context -> {
 						if (context.getSource().isExecutedByPlayer()) {
@@ -855,6 +851,82 @@ public class Commands {
 								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is in a cave.").withColor(Formatting.BLUE.getColorValue()), false);
 							} else {
 								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is not in a cave.").withColor(Formatting.RED.getColorValue()), false);
+							}
+							return 1;
+						})
+					)
+				)
+				.then(
+					literal("trackingFlickerDoor")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							final PlayerEntity player = context.getSource().getPlayer();
+							if (FlickerDoor.trackedPlayers.contains(player.getUuid())) {
+								context.getSource().sendFeedback(() -> Text.literal("You are being tracked for flicker door event.").withColor(Formatting.BLUE.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("You are not being tracked for flicker door event.").withColor(Formatting.RED.getColorValue()), false);
+							}
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot query server torch placement. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("player", StringArgumentType.word())
+						.suggests((context, builder) -> {
+							final Iterable<String> playerNames = context.getSource().getPlayerNames();
+							for (final String playerName : playerNames) {
+								builder.suggest(playerName);
+							}
+							return builder.buildFuture();
+						})
+						.executes(context -> {
+							final String playerName = StringArgumentType.getString(context, "player");
+							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+							if (player == null) {
+								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							} else if (FlickerDoor.trackedPlayers.contains(player.getUuid())) {
+								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is being tracked for flicker door event.").withColor(Formatting.BLUE.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is not being tracked for flicker door event.").withColor(Formatting.RED.getColorValue()), false);
+							}
+							return 1;
+						})
+					)
+				)
+				.then(
+					literal("trackingTorches")
+					.executes(context -> {
+						if (context.getSource().isExecutedByPlayer()) {
+							final PlayerEntity player = context.getSource().getPlayer();
+							if (ExtinguishTorches.torchPlacementMap.containsKey(player.getUuid())) {
+								context.getSource().sendFeedback(() -> Text.literal("You are being tracked for torch placements.").withColor(Formatting.BLUE.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("You are not being tracked for torch placements.").withColor(Formatting.RED.getColorValue()), false);
+							}
+						} else {
+							context.getSource().sendFeedback(() -> Text.literal("Cannot query server torch placement. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+						}
+						return 1;
+					})
+					.then(
+						argument("player", StringArgumentType.word())
+						.suggests((context, builder) -> {
+							final Iterable<String> playerNames = context.getSource().getPlayerNames();
+							for (final String playerName : playerNames) {
+								builder.suggest(playerName);
+							}
+							return builder.buildFuture();
+						})
+						.executes(context -> {
+							final String playerName = StringArgumentType.getString(context, "player");
+							final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+							if (player == null) {
+								context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							} else if (ExtinguishTorches.torchPlacementMap.containsKey(player.getUuid())) {
+								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is being tracked for torch placements.").withColor(Formatting.BLUE.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is not being tracked for torch placements.").withColor(Formatting.RED.getColorValue()), false);
 							}
 							return 1;
 						})

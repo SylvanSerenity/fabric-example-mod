@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 public class FlickerDoor {
 	// Config
 	public static boolean flickerDoorEnabled = true;		// Whether the flicker door event is active
-	public static float flickerDoorHauntLevelMin = 1.25f;		// The minimum haunt level to play event
+	public static float flickerDoorHauntLevelMin = 1.5f;		// The minimum haunt level to play event
 	private static int flickerDoorDelayMin = 60 * 60;		// The minimum delay between flicker door events
 	private static int flickerDoorDelayMax = 60 * 60 * 4;		// The maximum delay between flicker door events
 	private static int flickerDoorFlickerMin = 1;			// The minimum number of times to flicker the door
@@ -30,7 +30,7 @@ public class FlickerDoor {
 	private static int flickerDoorFlickerIntervalMax = 150;		// The maximum interval between flickering the door in milliseconds
 	private static boolean flickerDoorClosedConstraint = true;	// Whether the door should start flickering only when closing the door
 
-	private static final List<UUID> trackedPlayersMap = new ArrayList<>();
+	public static final List<UUID> trackedPlayers = new ArrayList<>();
 
 	public static void loadConfig() {
 		try {
@@ -73,7 +73,7 @@ public class FlickerDoor {
 			if (hauntLevel < flickerDoorHauntLevelMin) return; // Reset event as if it passed
 		}
 
-		if (!trackedPlayersMap.contains(player.getUuid())) trackedPlayersMap.add(player.getUuid());
+		if (!trackedPlayers.contains(player.getUuid())) trackedPlayers.add(player.getUuid());
 	}
 
 	public static void onUseBlock(final PlayerEntity player, final World world, final BlockHitResult hitResult) {
@@ -85,7 +85,7 @@ public class FlickerDoor {
 			(flickerDoorClosedConstraint && !world.getBlockState(doorPos).get(DoorBlock.OPEN))			// Must be closing door
 		) return;
 
-		if (trackedPlayersMap.contains(player.getUuid())) {
+		if (trackedPlayers.contains(player.getUuid())) {
 			int delay = Algorithms.RANDOM.nextBetween(flickerDoorFlickerDelayMin, flickerDoorFlickerDelayMax);
 			for (int flickerCount = Algorithms.RANDOM.nextBetween(flickerDoorFlickerMin, flickerDoorFlickerMax); flickerCount > 0; --flickerCount) {
 				Events.scheduler.schedule(() -> {
@@ -93,7 +93,7 @@ public class FlickerDoor {
 				}, delay, TimeUnit.MILLISECONDS);
 				delay += Algorithms.RANDOM.nextBetween(flickerDoorFlickerIntervalMin, flickerDoorFlickerIntervalMax);
 			}
-			trackedPlayersMap.remove(player.getUuid());
+			trackedPlayers.remove(player.getUuid());
 		}
 	}
 
