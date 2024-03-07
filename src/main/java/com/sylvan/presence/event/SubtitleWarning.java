@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 public class SubtitleWarning {
 	// Config
 	public static boolean subtitleWarningEnabled = true;		// Whether the subtitle warning event is active
-	private static float subtitleWarningHauntLevelMin = 1.75f;	// The minimum haunt level to play event
+	private static float subtitleWarningHauntLevelMin = 2.0f;	// The minimum haunt level to play event
 	private static int subtitleWarningDelayMin = 60 * 30;		// The minimum delay between subtitle warning events
 	private static int subtitleWarningDelayMax = 60 * 60 * 2;	// The maximum delay between subtitle warning events
 

@@ -65,7 +65,7 @@ public class Events {
 
 		// Add block use/place tracker for extinguish torches event
 		UseBlockCallback.EVENT.register((player, world, hand, hitResult) -> {
-			if (world.isClient()) {
+			if (!world.isClient()) {
 				ExtinguishTorches.onUseBlock(player, world, hitResult);
 				FlickerDoor.onUseBlock(player, world, hitResult);
 			}
@@ -74,9 +74,11 @@ public class Events {
 
 		// Add server tick events for Herobrine
 		ServerTickEvents.END_WORLD_TICK.register(world -> {
-			Creep.onWorldTick(world);
-			Freeze.onWorldTick(world);
-			Stalk.onWorldTick(world);
+			if (!world.isClient()) {
+				Creep.onWorldTick(world);
+				Freeze.onWorldTick(world);
+				Stalk.onWorldTick(world);
+			}
 		});
 	}
 }

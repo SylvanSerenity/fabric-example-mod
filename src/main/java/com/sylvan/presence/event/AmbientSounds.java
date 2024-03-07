@@ -22,7 +22,7 @@ public class AmbientSounds {
 
 	// Config
 	public static boolean ambientSoundsEnabled = true;			// Whether the ambient sounds event is active
-	private static float ambientSoundsHauntLevelMin = 0.5f;			// The minimum haunt level to play event
+	private static float ambientSoundsHauntLevelMin = 1.0f;			// The minimum haunt level to play event
 	private static int ambientSoundsDelayMin = 60 * 30;			// The minimum delay between ambient sounds
 	private static int ambientSoundsDelayMax = 60 * 60 * 2;			// The maximum delay between ambient sounds
 	private static int ambientSoundsRetryDelay = 60;			// The delay between tries to play ambient sound

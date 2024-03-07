@@ -19,15 +19,15 @@ import net.minecraft.world.World;
 public class FlickerDoor {
 	// Config
 	public static boolean flickerDoorEnabled = true;		// Whether the flicker door event is active
-	public static float flickerDoorHauntLevelMin = 1.5f;		// The minimum haunt level to play event
-	private static int flickerDoorDelayMin = 60 * 60;		// The minimum delay between flicker door events
-	private static int flickerDoorDelayMax = 60 * 60 * 4;		// The maximum delay between flicker door events
+	public static float flickerDoorHauntLevelMin = 1.25f;		// The minimum haunt level to play event
+	private static int flickerDoorDelayMin = 60 * 30;		// The minimum delay between flicker door events
+	private static int flickerDoorDelayMax = 60 * 60 * 2;		// The maximum delay between flicker door events
 	private static int flickerDoorFlickerMin = 1;			// The minimum number of times to flicker the door
 	private static int flickerDoorFlickerMax = 4;			// The maximum number of times to flicker the door
 	private static int flickerDoorFlickerDelayMin = 100;		// The minimum delay between using the door and it flickering in milliseconds
 	private static int flickerDoorFlickerDelayMax = 1000;		// The maximum delay between using the door and it flickering in milliseconds
 	private static int flickerDoorFlickerIntervalMin = 20;		// The minimum interval between flickering the door in milliseconds
-	private static int flickerDoorFlickerIntervalMax = 150;		// The maximum interval between flickering the door in milliseconds
+	private static int flickerDoorFlickerIntervalMax = 120;		// The maximum interval between flickering the door in milliseconds
 	private static boolean flickerDoorClosedConstraint = true;	// Whether the door should start flickering only when closing the door
 
 	public static final List<UUID> trackedPlayers = new ArrayList<>();
