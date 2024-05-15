@@ -53,6 +53,6 @@ public class SubtitleWarning {
 			if (hauntLevel < subtitleWarningHauntLevelMin) return; // Reset event as if it passed
 		}
 
-		player.playSound(SoundEvent.of(new Identifier("presence", "message.warning")), SoundCategory.PLAYERS, 1, 1);
+		player.playSoundToPlayer(SoundEvent.of(new Identifier("presence", "message.warning")), SoundCategory.PLAYERS, 1, 1);
 	}
 }

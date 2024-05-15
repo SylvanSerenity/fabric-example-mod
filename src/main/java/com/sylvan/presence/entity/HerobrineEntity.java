@@ -8,6 +8,8 @@ import java.util.concurrent.TimeUnit;
 import com.sylvan.presence.event.Events;
 import com.sylvan.presence.util.Algorithms;
 
+import net.minecraft.component.*;
+import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -21,17 +23,18 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class HerobrineEntity {
-	private World world;
-	private ArmorStandEntity headEntity;
-	private ArmorStandEntity bodyEntity;
-	private ArmorStandEntity armsEntity;
-	private ArmorStandEntity legsEntity;
+	private final World world;
+	private final ArmorStandEntity headEntity;
+	private final ArmorStandEntity bodyEntity;
+	private final ArmorStandEntity armsEntity;
+	private final ArmorStandEntity legsEntity;
 
 	private static final NbtCompound headBodyCompound = new NbtCompound();
 	private static final NbtCompound legsCompound = new NbtCompound();
@@ -66,11 +69,9 @@ public class HerobrineEntity {
 		skins.put("smile", 200);
 	}
 
-	private static ItemStack newModelItem(final int skinValue) {
+	private static ItemStack newModelItem(final World world, final int skinValue) {
 		ItemStack itemStack = new ItemStack(Items.STONE_BUTTON);
-		NbtCompound tag = itemStack.hasNbt() ? itemStack.getNbt() : new NbtCompound();
-		tag.putInt("CustomModelData", skinValue);
-		itemStack.setNbt(tag);
+		itemStack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(skinValue));
 		return itemStack;
 	}
 
@@ -82,31 +83,35 @@ public class HerobrineEntity {
 			skinId = skins.get(skin);
 		}
 
-		ItemStack head = newModelItem(skinId);
-		ItemStack body = newModelItem(skinId + 1);
-		ItemStack leftArm = newModelItem(skinId + 2);
-		ItemStack rightArm = newModelItem(skinId + 3);
-		ItemStack leftLeg = newModelItem(skinId + 4);
-		ItemStack rightLeg = newModelItem(skinId + 5);
+		ItemStack head = newModelItem(world, skinId);
+		ItemStack body = newModelItem(world, skinId + 1);
+		ItemStack leftArm = newModelItem(world, skinId + 2);
+		ItemStack rightArm = newModelItem(world, skinId + 3);
+		ItemStack leftLeg = newModelItem(world, skinId + 4);
+		ItemStack rightLeg = newModelItem(world, skinId + 5);
 
 		this.headEntity = EntityType.ARMOR_STAND.create(world);
-		headEntity.readCustomDataFromNbt(headBodyCompound);
+        assert headEntity != null;
+        headEntity.readCustomDataFromNbt(headBodyCompound);
 		headEntity.equipStack(EquipmentSlot.HEAD, head);
 		headEntity.setNoGravity(true);
 
 		this.bodyEntity = EntityType.ARMOR_STAND.create(world);
-		bodyEntity.readCustomDataFromNbt(headBodyCompound);
+        assert bodyEntity != null;
+        bodyEntity.readCustomDataFromNbt(headBodyCompound);
 		bodyEntity.equipStack(EquipmentSlot.HEAD, body);
 		bodyEntity.setNoGravity(true);
 
 		this.armsEntity = EntityType.ARMOR_STAND.create(world);
-		armsEntity.readCustomDataFromNbt(headBodyCompound);
+        assert armsEntity != null;
+        armsEntity.readCustomDataFromNbt(headBodyCompound);
 		armsEntity.equipStack(EquipmentSlot.MAINHAND, rightArm);
 		armsEntity.equipStack(EquipmentSlot.OFFHAND, leftArm);
 		armsEntity.setNoGravity(true);
 
 		this.legsEntity = EntityType.ARMOR_STAND.create(world);
-		legsEntity.readCustomDataFromNbt(legsCompound);
+        assert legsEntity != null;
+        legsEntity.readCustomDataFromNbt(legsCompound);
 		legsEntity.equipStack(EquipmentSlot.MAINHAND, rightLeg);
 		legsEntity.equipStack(EquipmentSlot.OFFHAND, leftLeg);
 		legsEntity.setNoGravity(true);
@@ -134,7 +139,7 @@ public class HerobrineEntity {
 		legsEntity.remove(RemovalReason.DISCARDED);
 	}
 
-	public void setGraivty(final boolean gravity) {
+	public void setGravity(final boolean gravity) {
 		headEntity.setNoGravity(!gravity);
 		bodyEntity.setNoGravity(!gravity);
 		armsEntity.setNoGravity(!gravity);

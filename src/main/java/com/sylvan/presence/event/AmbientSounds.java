@@ -134,7 +134,7 @@ public class AmbientSounds {
 
 		final float pitch = Algorithms.randomBetween(ambientSoundsPitchMin, ambientSoundsPitchMax);
 		final SoundEvent sound = Algorithms.randomKeyFromWeightMap(ambientSounds);
-		player.playSound(sound, SoundCategory.AMBIENT, 256.0f, pitch);
+		player.playSoundToPlayer(sound, SoundCategory.AMBIENT, 256.0f, pitch);
 		return true;
 	}
 }

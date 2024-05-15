@@ -79,7 +79,7 @@ public class Freeze {
 		freezeDataList.add(new FreezeData(player));
 
 		// Play freeze sound
-		player.playSound(SoundEvent.of(new Identifier("presence", "event.freeze")), SoundCategory.MASTER, 1.0f, 1.0f);
+		player.playSoundToPlayer(SoundEvent.of(new Identifier("presence", "event.freeze")), SoundCategory.MASTER, 1.0f, 1.0f);
 	}
 
 	private static class FreezeData {

@@ -13,7 +13,7 @@ public class StalkingEntity extends HerobrineEntity {
 	public StalkingEntity(World world, String skin, final PlayerEntity trackedPlayer) {
 		super(world, skin);
 		this.trackedPlayer = trackedPlayer;
-		this.setGraivty(true);
+		this.setGravity(true);
 	}
 
 	public void tick() {
