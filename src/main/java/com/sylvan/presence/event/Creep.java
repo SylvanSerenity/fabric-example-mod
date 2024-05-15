@@ -26,7 +26,7 @@ public class Creep {
 	private static int creepRetryDelay = 1;			// The delay between retrying creep events in case of failure
 	public static int creepDistanceMin = 1;		// The minimum distance behind the player to summon Herobrine
 	public static int creepDistanceMax = 1;		// The maximum distance behind the player to summon Herobrine
-	public static int creepVerticleDistanceMax = 3;	// The maximum distance Herobrine can be above/below the player
+	public static int creepVerticalDistanceMax = 3;	// The maximum distance Herobrine can be above/below the player
 	private static int creepReflexMs = 0;			// The time in milliseconds before Herobrine vanishes
 	private static double creepLookAtThreshold = 0.25;	// The threshold at which the player will be considered looking at Herobrine. -1.0 is directly oppsotie, 1.0 is directly towards
 
@@ -41,7 +41,7 @@ public class Creep {
 			creepRetryDelay = Presence.config.getOrSetValue("creepRetryDelay", creepRetryDelay).getAsInt();
 			creepDistanceMin = Presence.config.getOrSetValue("creepDistanceMin", creepDistanceMin).getAsInt();
 			creepDistanceMax = Presence.config.getOrSetValue("creepDistanceMax", creepDistanceMax).getAsInt();
-			creepVerticleDistanceMax = Presence.config.getOrSetValue("creepVerticleDistanceMax", creepVerticleDistanceMax).getAsInt();
+			creepVerticalDistanceMax = Presence.config.getOrSetValue("creepVerticalDistanceMax", creepVerticalDistanceMax).getAsInt();
 			creepReflexMs = Presence.config.getOrSetValue("creepReflexMs", creepReflexMs).getAsInt();
 			creepLookAtThreshold = Presence.config.getOrSetValue("creepLookAtThreshold", creepLookAtThreshold).getAsDouble();
 		} catch (UnsupportedOperationException e) {
@@ -138,8 +138,8 @@ public class Creep {
 		final BlockPos spawnBlockPos = Algorithms.getNearestStandableBlockPos(
 			player.getWorld(),
 			Algorithms.getBlockPosFromVec3d(spawnPos),
-			playerBlockPos.getY() - creepVerticleDistanceMax,
-			playerBlockPos.getY() + creepVerticleDistanceMax
+			playerBlockPos.getY() - creepVerticalDistanceMax,
+			playerBlockPos.getY() + creepVerticalDistanceMax
 		);
 		spawnPos = new Vec3d(
 			spawnPos.getX(),

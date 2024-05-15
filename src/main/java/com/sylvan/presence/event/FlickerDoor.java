@@ -88,9 +88,7 @@ public class FlickerDoor {
 		if (trackedPlayers.contains(player.getUuid())) {
 			int delay = Algorithms.RANDOM.nextBetween(flickerDoorFlickerDelayMin, flickerDoorFlickerDelayMax);
 			for (int flickerCount = Algorithms.RANDOM.nextBetween(flickerDoorFlickerMin, flickerDoorFlickerMax); flickerCount > 0; --flickerCount) {
-				Events.scheduler.schedule(() -> {
-					flickerDoor(player, doorPos);
-				}, delay, TimeUnit.MILLISECONDS);
+				Events.scheduler.schedule(() -> flickerDoor(player, doorPos), delay, TimeUnit.MILLISECONDS);
 				delay += Algorithms.RANDOM.nextBetween(flickerDoorFlickerIntervalMin, flickerDoorFlickerIntervalMax);
 			}
 			trackedPlayers.remove(player.getUuid());

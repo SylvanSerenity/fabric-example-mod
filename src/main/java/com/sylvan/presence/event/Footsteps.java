@@ -23,7 +23,7 @@ public class Footsteps {
 	private static int footstepsMaxReflexVariance = 150;	// The maximum addition to the reflex time (to add randomness to the footstep speed)
 	public static int footstepsStepsMin = 1;		// The minimum number of footsteps to play
 	public static int footstepsStepsMax = 5;		// The maximum number of footsteps to play
-	private static int footstepsMsPerStepMax = 300;		// The maximum amount of time of each step in milliseconds (so that it doesn't sound like walking with less footsteps)
+	private static int footstepsMsPerStepMax = 300;		// The maximum amount of time of each step in milliseconds (so that it doesn't sound like walking with fewer footsteps)
 	private static int footstepsStepVarianceMax = 25;	// The maximum amount of time to add between each footstep (so the step cadence has randomness)
 
 	public static void loadConfig() {
@@ -83,9 +83,7 @@ public class Footsteps {
 		for (int distance = footstepCount; distance > 0; --distance) {
 			delay = (footstepCount - distance) * msPerStep + Algorithms.RANDOM.nextBetween(0, footstepsStepVarianceMax);
 			final int blockDistance = distance;
-			Events.scheduler.schedule(() -> {
-				playFootstep(player, blockPos.offset(behindPlayer, blockDistance));
-			}, delay, TimeUnit.MILLISECONDS);
+			Events.scheduler.schedule(() -> playFootstep(player, blockPos.offset(behindPlayer, blockDistance)), delay, TimeUnit.MILLISECONDS);
 		}
 	}
 
@@ -104,7 +102,7 @@ public class Footsteps {
 		);
 		if (!Algorithms.couldPlayerStandOnBlock(world, soundPos)) return;
 
-		// Play the sound of the block the foot steps on
+		// Play the sound of the block the footsteps on
 		final SoundEvent stepSound = world.getBlockState(soundPos).getSoundGroup().getStepSound();
 		world.playSound(null, soundPos, stepSound, SoundCategory.BLOCKS);
 	}

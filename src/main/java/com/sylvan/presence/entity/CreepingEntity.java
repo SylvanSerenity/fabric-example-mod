@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class CreepingEntity extends HerobrineEntity {
-	private PlayerEntity trackedPlayer;
+	private final PlayerEntity trackedPlayer;
 
 	public CreepingEntity(World world, String skin, PlayerEntity trackedPlayer) {
 		super(world, skin);
@@ -49,8 +49,8 @@ public class CreepingEntity extends HerobrineEntity {
 		final BlockPos spawnBlockPos = Algorithms.getNearestStandableBlockPos(
 			world,
 			Algorithms.getBlockPosFromVec3d(spawnPos),
-			trackedPlayer.getBlockPos().getY() - Creep.creepVerticleDistanceMax,
-			trackedPlayer.getBlockPos().getY() + Creep.creepVerticleDistanceMax
+			trackedPlayer.getBlockPos().getY() - Creep.creepVerticalDistanceMax,
+			trackedPlayer.getBlockPos().getY() + Creep.creepVerticalDistanceMax
 		);
 		spawnPos = new Vec3d(
 			spawnPos.getX(),

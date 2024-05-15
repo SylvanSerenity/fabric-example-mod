@@ -6,7 +6,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 
 public class StalkingEntity extends HerobrineEntity {
-	private PlayerEntity trackedPlayer;
+	private final PlayerEntity trackedPlayer;
 	private boolean shouldRemove = false;
 	private boolean hasBeenSeen = false;
 

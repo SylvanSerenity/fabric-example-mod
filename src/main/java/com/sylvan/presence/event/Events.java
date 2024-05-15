@@ -46,16 +46,17 @@ public class Events {
 			}
 
 			try {
-				scheduler.awaitTermination(1000, TimeUnit.MILLISECONDS);
+				if (!scheduler.awaitTermination(1000, TimeUnit.MILLISECONDS)) {
+					Presence.LOGGER.error("Failed to await termination of event scheduler.");
+				}
 			} catch (InterruptedException e) {
 				Presence.LOGGER.error("Failed to await termination of event scheduler.", e);
 			}
 		});
 
 		// Schedule player join events
-		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server) -> {
-			PlayerData.addPlayerData(serverPlayNetworkHandler.getPlayer()).startEvents();
-		});
+		ServerPlayConnectionEvents.JOIN.register((serverPlayNetworkHandler, packetSender, server)
+				-> PlayerData.addPlayerData(serverPlayNetworkHandler.getPlayer()).startEvents());
 
 		// Attempt to remove torches when player disconnects
 		ServerPlayConnectionEvents.DISCONNECT.register((serverPlayNetworkHandler, server) -> {
@@ -76,7 +77,7 @@ public class Events {
 		ServerTickEvents.END_WORLD_TICK.register(world -> {
 			if (!world.isClient()) {
 				Creep.onWorldTick(world);
-				Freeze.onWorldTick(world);
+				Freeze.onWorldTick();
 				Stalk.onWorldTick(world);
 			}
 		});

@@ -31,8 +31,8 @@ public class OpenChest {
 	private static int openChestCloseSoundMsMin = 1000;		// The minimum amount of time in milliseconds to close the chest after opening it
 	private static int openChestCloseSoundMsMax = 3000;		// The maximum amount of time in milliseconds to close the chest after opening it
 	private static boolean openChestNotSeenConstraint = true;	// Whether the constraint for making the chest open only when not seen is active
-	private static boolean openChestSwapItems = true;		// Whether or not to swap two random items in the chest
-	private static boolean openChestPlaySound = true;		// Whether or not to play the chest open sound
+	private static boolean openChestSwapItems = true;		// Whether to swap two random items in the chest
+	private static boolean openChestPlaySound = true;		// Whether to play the chest open sound
 
 	public static final ArrayList<Block> chestBlocks = new ArrayList<>();
 
@@ -117,7 +117,8 @@ public class OpenChest {
 			final Inventory chestInventory = ChestBlock.getInventory((ChestBlock) chestBlockState.getBlock(), chestBlockState, world, nearestChestPos, true);
 
 			// Get two random slots
-			final int slot1 = Algorithms.RANDOM.nextBetween(0, chestInventory.size() - 1);
+            assert chestInventory != null;
+            final int slot1 = Algorithms.RANDOM.nextBetween(0, chestInventory.size() - 1);
 			final ItemStack stack1 = chestInventory.getStack(slot1);
 			int slot2 = Algorithms.RANDOM.nextBetween(0, chestInventory.size() - 1);
 			ItemStack stack2;
@@ -152,9 +153,7 @@ public class OpenChest {
 		if (openChestPlaySound) {
 			world.playSound(null, nearestChestPos, SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS);
 			Events.scheduler.schedule(
-				() -> {
-					world.playSound(null, nearestChestPos, SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS);
-				}, Algorithms.RANDOM.nextBetween(openChestCloseSoundMsMin, openChestCloseSoundMsMax), TimeUnit.MILLISECONDS
+				() -> world.playSound(null, nearestChestPos, SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS), Algorithms.RANDOM.nextBetween(openChestCloseSoundMsMin, openChestCloseSoundMsMax), TimeUnit.MILLISECONDS
 			);
 		}
 

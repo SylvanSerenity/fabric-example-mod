@@ -56,7 +56,7 @@ public class Freeze {
 		);
 	}
 
-	public static void onWorldTick(final ServerWorld world) {
+	public static void onWorldTick() {
 		final Iterator<FreezeData> it = freezeDataList.iterator();
 		FreezeData freezeData;
 		while (it.hasNext()) {
@@ -73,7 +73,7 @@ public class Freeze {
 		if (!overrideHauntLevel) {
 			final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
 			if (hauntLevel < freezeHauntLevelMin) return; // Reset event as if it passed
-		};
+		}
 
 		// Track player for freeze
 		freezeDataList.add(new FreezeData(player));
@@ -83,11 +83,11 @@ public class Freeze {
 	}
 
 	private static class FreezeData {
-		private PlayerEntity frozenPlayer;
+		private final PlayerEntity frozenPlayer;
 		private int freezeTicks = 0;
-		private float pitch;
-		private float yaw;
-		private Vec3d position;
+		private final float pitch;
+		private final float yaw;
+		private final Vec3d position;
 
 		public FreezeData(final PlayerEntity player) {
 			frozenPlayer = player;

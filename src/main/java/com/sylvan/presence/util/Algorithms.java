@@ -31,12 +31,12 @@ public class Algorithms {
 	public static final Random RANDOM = Random.create();
 
 	private static int algorithmsCaveDetectionRays = 30;				// The amount of rays to shoot in random directions to determine whether an entity is in a cave
-	private static float algorithmsCaveDetectionMaxNonCaveaveBlockPercent = 0.0f;	// The percent of blocks a cave detection ray can collide with that are not usually found in a cave before assuming player is in a base
+	private static float algorithmsCaveDetectionMaxNonCaveBlockPercent = 0.0f;	// The percent of blocks a cave detection ray can collide with that are not usually found in a cave before assuming player is in a base
 
 	public static void loadConfig() {
 		try {
 			algorithmsCaveDetectionRays = Presence.config.getOrSetValue("algorithmsCaveDetectionRays", algorithmsCaveDetectionRays).getAsInt();
-			algorithmsCaveDetectionMaxNonCaveaveBlockPercent = Presence.config.getOrSetValue("algorithmsCaveDetectionMaxNonCaveaveBlockPercent", algorithmsCaveDetectionMaxNonCaveaveBlockPercent).getAsFloat();
+			algorithmsCaveDetectionMaxNonCaveBlockPercent = Presence.config.getOrSetValue("algorithmsCaveDetectionMaxNonCaveBlockPercent", algorithmsCaveDetectionMaxNonCaveBlockPercent).getAsFloat();
 		} catch (UnsupportedOperationException e) {
 			Presence.LOGGER.error("Configuration issue for Algorithms.java. Wiping and using default.", e);
 			Presence.config.wipe();
@@ -109,12 +109,9 @@ public class Algorithms {
 
 		// Check if behind transparent block
 		final HitResult hitResult = castRayFromEye(entity, pos);
-		if (
-			hitResult.getType() == HitResult.Type.BLOCK &&
-			entity.getWorld().getBlockState(((BlockHitResult) hitResult).getBlockPos()).isOpaque()
-		) return false;
-		return true;
-	}
+        return hitResult.getType() != HitResult.Type.BLOCK ||
+                !entity.getWorld().getBlockState(((BlockHitResult) hitResult).getBlockPos()).isOpaque();
+    }
 
 	public static boolean couldPosBeSeenByPlayers(final List<? extends PlayerEntity> players, final Vec3d pos) {
 		for (final PlayerEntity player : players) {
@@ -183,9 +180,8 @@ public class Algorithms {
 				ShapeContext.absent()
 			)
 		);
-		if (hitResult.getType() != HitResult.Type.MISS) return false;
-		return true;
-	}
+        return hitResult.getType() == HitResult.Type.MISS;
+    }
 
 	public static BlockPos getNearestStandableBlockPos(final World world, BlockPos blockPos, final int minY, final int maxY) {
 		while (!couldPlayerStandOnBlock(world, blockPos) && (blockPos.getY() >= minY)) {
@@ -331,9 +327,8 @@ public class Algorithms {
 		}
 
 		// If over 5% of hit blocks are not normally found in a cave, assume player is in a base
-		if (((float) nonCaveBlockCount / (float) Math.max(1, algorithmsCaveDetectionRays + 6)) > algorithmsCaveDetectionMaxNonCaveaveBlockPercent) return false;
-		return true;
-	}
+        return !(((float) nonCaveBlockCount / (float) Math.max(1, algorithmsCaveDetectionRays + 6)) > algorithmsCaveDetectionMaxNonCaveBlockPercent);
+    }
 
 	public static Vec3d getDirectionPosToPos(final Vec3d pos1, final Vec3d pos2) {
 		return pos2.subtract(pos1).normalize();

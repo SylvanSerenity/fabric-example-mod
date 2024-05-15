@@ -33,7 +33,7 @@ public class ExtinguishTorches {
 	public static int extinguishTorchesTrackedMax = 16;				// The maximum number of torches to track
 	public static boolean extinguishTorchesMaxDistanceConstraint = true;		// Whether the torch must be within a certain distance of the last torch to be tracked
 	public static int extinguishTorchesTorchDistanceMax = 32;			// The maximum distance between the last tracked torch (so that the torches are in the same cave)
-	public static boolean extinguishTorchesMaxSkyLightLevelConstraint = true;	// Whether torches are not tracked if they are placed on a block over a certain sky light level
+	public static boolean extinguishTorchesMaxSkyLightLevelConstraint = true;	// Whether torches are not tracked if they are placed on a block over a certain skylight level
 	public static int extinguishTorchesSkyLightLevelMax = 6;			// The maximum light level to determine whether to track the placed torch (so that surface torches are not tracked)
 	public static boolean extinguishTorchesSeenConstraint = true;			// Whether torches that are in eyesight of a player are removed
 
@@ -171,7 +171,7 @@ public class ExtinguishTorches {
 
 			torchStack.clear();
 		}
-		if (torchPlacementMap.containsKey(player.getUuid())) torchPlacementMap.remove(player.getUuid());
+		torchPlacementMap.remove(player.getUuid());
 		return true;
 	}
 }

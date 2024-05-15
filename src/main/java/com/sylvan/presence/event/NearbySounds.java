@@ -23,11 +23,11 @@ public class NearbySounds {
 	private static final Map<SoundEvent, Float> nearbySounds = new HashMap<>();
 
 	// Config
-	public static boolean nearbySoundsEnabled = true;			// Whether the naerby sounds event is active
+	public static boolean nearbySoundsEnabled = true;			// Whether the nearby sounds event is active
 	public static float nearbySoundsHauntLevelMin = 1.25f;			// The minimum haunt level to play event
 	private static int nearbySoundsDelayMin = 60 * 5;			// The minimum delay between nearby sounds events
 	private static int nearbySoundsDelayMax = 60 * 60 * 2;			// The maximum delay between nearby sounds events
-	private static int nearbySoundsDistanceMin = 12;			// The minimum distance of the sound from the player. 12 gives a distant-feeling sond to where it is often barely noticeable
+	private static int nearbySoundsDistanceMin = 12;			// The minimum distance of the sound from the player. 12 gives a distant-feeling sound to where it is often barely noticeable
 	private static int nearbySoundsDistanceMax = 16;			// The maximum distance of the sound from the player. 16 is maximum distance to hear sounds
 	private static JsonObject nearbySoundsSoundWeights = new JsonObject();	// A set of sound ID keys with weight values to play during the event
 

@@ -120,9 +120,9 @@ public class Stalk {
 		if (!overrideHauntLevel) {
 			final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();
 			if (hauntLevel < stalkHauntLevelMin) return true; // Reset event as if it passed
-		};
+		}
 
-		final World world = player.getWorld();
+        final World world = player.getWorld();
 		Vec3d spawnPos = Algorithms.getRandomPosNearEntity(player, stalkDistanceMin, stalkDistanceMax, false);
 		final BlockPos playerBlockPos = player.getBlockPos();
 		final BlockPos spawnBlockPos = Algorithms.getNearestStandableBlockPos(

@@ -1,20 +1,14 @@
 package com.sylvan.presence.entity;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import com.sylvan.presence.event.Events;
 import com.sylvan.presence.util.Algorithms;
-
-import net.minecraft.component.*;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.Entity.RemovalReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -23,11 +17,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class HerobrineEntity {
 	private final World world;
@@ -69,7 +67,7 @@ public class HerobrineEntity {
 		skins.put("smile", 200);
 	}
 
-	private static ItemStack newModelItem(final World world, final int skinValue) {
+	private static ItemStack newModelItem(final int skinValue) {
 		ItemStack itemStack = new ItemStack(Items.STONE_BUTTON);
 		itemStack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(skinValue));
 		return itemStack;
@@ -83,12 +81,12 @@ public class HerobrineEntity {
 			skinId = skins.get(skin);
 		}
 
-		ItemStack head = newModelItem(world, skinId);
-		ItemStack body = newModelItem(world, skinId + 1);
-		ItemStack leftArm = newModelItem(world, skinId + 2);
-		ItemStack rightArm = newModelItem(world, skinId + 3);
-		ItemStack leftLeg = newModelItem(world, skinId + 4);
-		ItemStack rightLeg = newModelItem(world, skinId + 5);
+		ItemStack head = newModelItem(skinId);
+		ItemStack body = newModelItem(skinId + 1);
+		ItemStack leftArm = newModelItem(skinId + 2);
+		ItemStack rightArm = newModelItem(skinId + 3);
+		ItemStack leftLeg = newModelItem(skinId + 4);
+		ItemStack rightLeg = newModelItem(skinId + 5);
 
 		this.headEntity = EntityType.ARMOR_STAND.create(world);
         assert headEntity != null;

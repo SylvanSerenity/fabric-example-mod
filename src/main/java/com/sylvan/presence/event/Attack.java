@@ -86,7 +86,7 @@ public class Attack {
 
 		if (attackHealthMinConstraint && player.getHealth() < attackHealthMin) return false;
 
-		// Damange player
+		// Damage player
 		player.damage(player.getWorld().getDamageSources().playerAttack(null), damage);
 
 		// Push player in a random direction

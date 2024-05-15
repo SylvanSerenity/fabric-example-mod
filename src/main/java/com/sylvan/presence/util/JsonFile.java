@@ -14,8 +14,8 @@ import com.google.gson.JsonSyntaxException;
 import com.sylvan.presence.Presence;
 
 public class JsonFile {
-	private String fileName;
-	private File file;
+	private final String fileName;
+	private final File file;
 
 	public JsonFile(final String fileName) {
 		this.fileName = fileName;

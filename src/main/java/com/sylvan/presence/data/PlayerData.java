@@ -81,14 +81,14 @@ public class PlayerData {
 	}
 
 	// Instance
-	private UUID uuid;
+	private final UUID uuid;
 	private PlayerEntity player;
-	private String playerDataPath;
-	private LocalDateTime joinTime;
+	private final String playerDataPath;
+	private final LocalDateTime joinTime;
 	private boolean isHaunted = false;
 	private float hauntLevel = defaultHauntLevel;	// Limits events and divides delay minima and maxima by hauntLevel, such that events happen more often as time goes on. 1.0 has no effect, and larger numbers increase events
 
-	// Persistant
+	// Persistent
 	private float hauntChance = defaultHauntChance;	// Chance of being haunted when joining the server
 	private long playTime = 0;			// Time in minutes that the player has played
 
@@ -132,7 +132,7 @@ public class PlayerData {
 			// Reset haunt chance
 			hauntChance = defaultHauntChance;
 		} else {
-			// Incraese haunt chace based on instance playtime
+			// Increase haunt chance based on instance playtime
 			hauntChance = Math.max(
 				defaultHauntChance,
 				Math.min(

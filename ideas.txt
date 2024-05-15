@@ -4,9 +4,9 @@ General:
 
 Events:
 * Herobrine eyes spawns in the distance in caves and vanishes after being seen for 1 second
-* Play throbbing/ticking/scrathing/door bang sound when player is AFK
+* Play throbbing/ticking/scratching/door bang sound when player is AFK
 * Play entity.warden.heartbeat where player's heart beats increasingly fast
-* Random block placement (crafting table, sign, etc). Check for whether nearby chunks already had this happen.
-* Add 1x1/1x2 strip mines
+* Random block placement (crafting table, sign, etc.). Check for whether nearby chunks already had this happen.
+* Add 1x2/2x2 strip mines
 * Blocks place when player is going deeper into a cave, blocking the player in. They can hear it and if they return to the source, it stops, otherwise they come back to being blocked off with either stone or cobblestone, at least 2 layers deep
 * Mobs (skeletons, zombies, spiders, creepers) disappear when player looks away for a couple seconds
