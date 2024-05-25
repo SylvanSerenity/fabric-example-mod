@@ -3,6 +3,7 @@ package com.sylvan.presence.util;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.block.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import com.sylvan.presence.Presence;
@@ -291,39 +292,49 @@ public class Algorithms {
 
 		// Raycast in cardinal directions
 		int nonCaveBlockCount = 0;
-		final HitResult up = castRayFromEye(entity, entityPos.up(128).toCenterPos());
-		final BlockPos upPos = ((BlockHitResult) up).getBlockPos();
-		if ((up.getType() != HitResult.Type.BLOCK)) return false;
-		if (!isCaveBlockSound(world.getBlockState(upPos).getSoundGroup())) ++nonCaveBlockCount;
-		final HitResult down = castRayFromEye(entity, entityPos.down(128).toCenterPos());
-		final BlockPos downPos = ((BlockHitResult) down).getBlockPos();
-		if ((down.getType() != HitResult.Type.BLOCK)) return false;
-		if (!isCaveBlockSound(world.getBlockState(downPos).getSoundGroup())) ++nonCaveBlockCount;
-		final HitResult north = castRayFromEye(entity, entityPos.north(128).toCenterPos());
-		final BlockPos northPos = ((BlockHitResult) north).getBlockPos();
-		if ((north.getType() != HitResult.Type.BLOCK)) return false;
-		if (!isCaveBlockSound(world.getBlockState(northPos).getSoundGroup())) ++nonCaveBlockCount;
-		final HitResult south = castRayFromEye(entity, entityPos.south(128).toCenterPos());
-		final BlockPos southPos = ((BlockHitResult) south).getBlockPos();
-		if ((south.getType() != HitResult.Type.BLOCK)) return false;
-		if (!isCaveBlockSound(world.getBlockState(southPos).getSoundGroup())) ++nonCaveBlockCount;
-		final HitResult east = castRayFromEye(entity, entityPos.east(128).toCenterPos());
-		final BlockPos eastPos = ((BlockHitResult) east).getBlockPos();
-		if ((east.getType() != HitResult.Type.BLOCK)) return false;
-		if (!isCaveBlockSound(world.getBlockState(eastPos).getSoundGroup())) ++nonCaveBlockCount;
-		final HitResult west = castRayFromEye(entity, entityPos.west(128).toCenterPos());
-		final BlockPos westPos = ((BlockHitResult) west).getBlockPos();
-		if ((west.getType() != HitResult.Type.BLOCK)) return false;
-		if (!isCaveBlockSound(world.getBlockState(westPos).getSoundGroup())) ++nonCaveBlockCount;
+		HitResult ray = castRayFromEye(entity, entityPos.up(128).toCenterPos());
+		BlockPos rayPos = ((BlockHitResult) ray).getBlockPos();
+		BlockState state = world.getBlockState(rayPos);
+		if ((ray.getType() != HitResult.Type.BLOCK)) return false;
+		if (!isCaveBlockSound(state.getSoundGroup())) ++nonCaveBlockCount;
+
+		ray = castRayFromEye(entity, entityPos.down(128).toCenterPos());
+		rayPos = ((BlockHitResult) ray).getBlockPos();
+		state = world.getBlockState(rayPos);
+		if ((ray.getType() != HitResult.Type.BLOCK)) return false;
+		if (!isCaveBlockSound(state.getSoundGroup())) ++nonCaveBlockCount;
+
+		ray = castRayFromEye(entity, entityPos.north(128).toCenterPos());
+		rayPos = ((BlockHitResult) ray).getBlockPos();
+		state = world.getBlockState(rayPos);
+		if ((ray.getType() != HitResult.Type.BLOCK)) return false;
+		if (!isCaveBlockSound(state.getSoundGroup())) ++nonCaveBlockCount;
+
+		ray = castRayFromEye(entity, entityPos.south(128).toCenterPos());
+		rayPos = ((BlockHitResult) ray).getBlockPos();
+		state = world.getBlockState(rayPos);
+		if ((ray.getType() != HitResult.Type.BLOCK)) return false;
+		if (!isCaveBlockSound(state.getSoundGroup())) ++nonCaveBlockCount;
+
+		ray = castRayFromEye(entity, entityPos.east(128).toCenterPos());
+		rayPos = ((BlockHitResult) ray).getBlockPos();
+		state = world.getBlockState(rayPos);
+		if ((ray.getType() != HitResult.Type.BLOCK)) return false;
+		if (!isCaveBlockSound(state.getSoundGroup())) ++nonCaveBlockCount;
+
+		ray = castRayFromEye(entity, entityPos.west(128).toCenterPos());
+		rayPos = ((BlockHitResult) ray).getBlockPos();
+		state = world.getBlockState(rayPos);
+		if ((ray.getType() != HitResult.Type.BLOCK)) return false;
+		if (!isCaveBlockSound(state.getSoundGroup())) ++nonCaveBlockCount;
 
 		// Cast rays in random directions. If they all hit, the sky cannot be seen.
-		HitResult hit;
-		BlockSoundGroup hitBlockSound;
 		for (int i = 0; i < algorithmsCaveDetectionRays; ++i) {
-			hit = castRayFromEye(entity, getRandomPosNearEntity(entity, 128, 128, true));
-			if (hit.getType() != HitResult.Type.BLOCK) return false;
-			hitBlockSound = world.getBlockState(((BlockHitResult) hit).getBlockPos()).getSoundGroup();
-			if (!isCaveBlockSound(hitBlockSound)) ++nonCaveBlockCount;
+			ray = castRayFromEye(entity, getRandomPosNearEntity(entity, 128, 128, true));
+			rayPos = ((BlockHitResult) ray).getBlockPos();
+			state = world.getBlockState(rayPos);
+			if (ray.getType() != HitResult.Type.BLOCK) return false;
+			if (!isCaveBlockSound(state.getSoundGroup())) ++nonCaveBlockCount;
 		}
 
 		// If over 5% of hit blocks are not normally found in a cave, assume player is in a base
