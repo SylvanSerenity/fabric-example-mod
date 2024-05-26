@@ -97,7 +97,7 @@ public class NearbySounds {
 			if (hauntLevel < nearbySoundsHauntLevelMin) return; // Reset event as if it passed
 		}
 
-		final World world = player.getWorld();
+		final World world = player.getEntityWorld();
 		final BlockPos soundPos = Algorithms.getRandomStandableBlockNearEntity(player, nearbySoundsDistanceMin, nearbySoundsDistanceMax, 20, true);
 		final SoundEvent sound = Algorithms.randomKeyFromWeightMap(nearbySounds);
 		world.playSound(null, soundPos, sound, SoundCategory.PLAYERS);

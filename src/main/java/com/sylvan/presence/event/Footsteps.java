@@ -90,7 +90,7 @@ public class Footsteps {
 	public static void playFootstep(final PlayerEntity player, BlockPos soundPos) {
 		if (player.isRemoved()) return;
 
-		final World world = player.getWorld();
+		final World world = player.getEntityWorld();
 		final BlockPos playerPos = player.getBlockPos();
 
 		// Player must be able to stand on source block

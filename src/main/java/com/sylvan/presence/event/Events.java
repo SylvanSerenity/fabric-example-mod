@@ -78,6 +78,7 @@ public class Events {
 			if (!world.isClient()) {
 				Creep.onWorldTick(world);
 				Freeze.onWorldTick();
+				Mine.onWorldTick(world);
 				Stalk.onWorldTick(world);
 			}
 		});

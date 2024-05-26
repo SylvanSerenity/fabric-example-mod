@@ -1,5 +1,6 @@
 package com.sylvan.presence;
 
+import com.sylvan.presence.event.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -8,22 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import com.sylvan.presence.data.PlayerData;
 import com.sylvan.presence.entity.Entities;
-import com.sylvan.presence.event.AmbientSounds;
-import com.sylvan.presence.event.Attack;
-import com.sylvan.presence.event.ChatMessage;
-import com.sylvan.presence.event.Events;
-import com.sylvan.presence.event.ExtinguishTorches;
-import com.sylvan.presence.event.FlickerDoor;
-import com.sylvan.presence.event.FlowerGift;
-import com.sylvan.presence.event.Footsteps;
-import com.sylvan.presence.event.Freeze;
-import com.sylvan.presence.event.NearbySounds;
-import com.sylvan.presence.event.OpenChest;
-import com.sylvan.presence.event.OpenDoor;
-import com.sylvan.presence.event.Stalk;
-import com.sylvan.presence.event.SubtitleWarning;
-import com.sylvan.presence.event.TrampleCrops;
-import com.sylvan.presence.event.Creep;
 import com.sylvan.presence.util.Algorithms;
 import com.sylvan.presence.util.JsonFile;
 
@@ -66,6 +51,7 @@ public class Presence implements ModInitializer {
 		FlowerGift.loadConfig();
 		Footsteps.loadConfig();
 		Freeze.loadConfig();
+		Mine.loadConfig();
 		NearbySounds.loadConfig();
 		OpenChest.loadConfig();
 		OpenDoor.loadConfig();

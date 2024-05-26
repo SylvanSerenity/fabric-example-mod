@@ -220,4 +220,6 @@ public class HerobrineEntity {
 	public BlockPos getBlockPos() {
 		return headEntity.getBlockPos();
 	}
+
+	public World getWorld() { return world; }
 }

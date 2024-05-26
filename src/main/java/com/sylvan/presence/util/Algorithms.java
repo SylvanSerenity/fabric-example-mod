@@ -70,9 +70,9 @@ public class Algorithms {
 
 	public static BlockPos getBlockPosFromVec3d(final Vec3d vec3d) {
 		return new BlockPos(
-			(int) Math.round(vec3d.getX()),
-			(int) Math.round(vec3d.getY()),
-			(int) Math.round(vec3d.getZ())
+			(int) Math.round(vec3d.x),
+			(int) Math.round(vec3d.y),
+			(int) Math.round(vec3d.z)
 		);
 	}
 
@@ -93,7 +93,7 @@ public class Algorithms {
 	}
 
 	public static HitResult castRayFromEye(final Entity entity, final Vec3d pos) {
-		return entity.getWorld().raycast(
+		return entity.getEntityWorld().raycast(
 			new RaycastContext(
 				entity.getEyePos(),
 				pos,
@@ -111,7 +111,7 @@ public class Algorithms {
 		// Check if behind transparent block
 		final HitResult hitResult = castRayFromEye(entity, pos);
         return hitResult.getType() != HitResult.Type.BLOCK ||
-                !entity.getWorld().getBlockState(((BlockHitResult) hitResult).getBlockPos()).isOpaque();
+                !entity.getEntityWorld().getBlockState(((BlockHitResult) hitResult).getBlockPos()).isOpaque();
     }
 
 	public static boolean couldPosBeSeenByPlayers(final List<? extends PlayerEntity> players, final Vec3d pos) {
@@ -129,11 +129,20 @@ public class Algorithms {
 			towardsPlayerDirection = getDirectionPosToPos(pos.toCenterPos(), player.getEyePos());
 
 			towardsPlayerPos = pos.add(
-				(int) Math.signum(towardsPlayerDirection.getX()),
-				(int) Math.signum(towardsPlayerDirection.getY()),
-				(int) Math.signum(towardsPlayerDirection.getZ())
+				(int) Math.signum(towardsPlayerDirection.x),
+				(int) Math.signum(towardsPlayerDirection.y),
+				(int) Math.signum(towardsPlayerDirection.z)
 			);
 
+			if (couldPosBeSeenByEntity(player, towardsPlayerPos.toCenterPos())) return true;
+
+			// Check if feet can see
+			towardsPlayerDirection = getDirectionPosToPos(pos.toCenterPos(), player.getPos());
+			towardsPlayerPos = pos.add(
+					(int) Math.signum(towardsPlayerDirection.x),
+					(int) Math.signum(towardsPlayerDirection.y),
+					(int) Math.signum(towardsPlayerDirection.z)
+			);
 			if (couldPosBeSeenByEntity(player, towardsPlayerPos.toCenterPos())) return true;
 		}
 		return false;
@@ -195,7 +204,7 @@ public class Algorithms {
 	}
 
 	public static BlockPos getNearestStandableBlockPosTowardsEntity(final Entity entity, BlockPos blockPos, final int minY, final int maxY) {
-		final World world = entity.getWorld();
+		final World world = entity.getEntityWorld();
 		final BlockPos entityPos = entity.getBlockPos();
 		if (blockPos.getY() > entityPos.getY()) {
 			// Above player, try moving down first
@@ -228,15 +237,24 @@ public class Algorithms {
 	public static Direction getBlockDirectionFromEntity(final Entity entity, final BlockPos blockPos) {
 		final Vec3d entityPos = entity.getPos();
 		final Vec3d direction = new Vec3d(
-			blockPos.getX() - entityPos.getX(),
-			blockPos.getY() - entityPos.getY(),
-			blockPos.getZ() - entityPos.getZ()
+			blockPos.getX() - entityPos.x,
+			blockPos.getY() - entityPos.y,
+			blockPos.getZ() - entityPos.z
 		).normalize();
-		return Direction.fromVector(
-			(int) direction.getX(),
-			(int) direction.getY(),
-			(int) direction.getZ()
-		);
+
+		// Calculate the absolute values for comparison
+		double absX = Math.abs(direction.x);
+		double absY = Math.abs(direction.y);
+		double absZ = Math.abs(direction.z);
+
+		// Determine the cardinal direction based on the largest component
+		if (absX >= absY && absX >= absZ) {
+			return direction.x > 0 ? Direction.EAST : Direction.WEST;
+		} else if (absY >= absX && absY >= absZ) {
+			return direction.y > 0 ? Direction.UP : Direction.DOWN;
+		} else {
+			return direction.z > 0 ? Direction.SOUTH : Direction.NORTH;
+		}
 	}
 
 	public static Vec3d getRandomPosNearEntity(final Entity entity, final int distanceMin, final int distanceMax, final boolean randomY) {
@@ -246,6 +264,26 @@ public class Algorithms {
 		// Scale the direction vector by the random distance magnitude
 		final Vec3d randomOffset = randomDirection.multiply(distance);
 		return entity.getPos().add(randomOffset);
+	}
+
+	public static BlockPos getRandomCaveBlockNearEntity(final Entity entity, final int distanceMin, final int distanceMax, final int maxAttempts, final boolean randomY) {
+		final World world = entity.getEntityWorld();
+
+		// Start with random block and check maxAttempt times
+		BlockPos blockPos = getBlockPosFromVec3d(getRandomPosNearEntity(entity, distanceMin, distanceMax, randomY));
+		for (int i = 0; i < maxAttempts; ++i) {
+			// Return if blockPos is within constraints
+			if (
+					world.getBlockState(blockPos).isOpaque() &&
+					isCaveBlockSound(world.getBlockState(blockPos).getSoundGroup()) &&
+					!Algorithms.couldBlockBeSeenByPlayers(world.getPlayers(), blockPos)
+			) return blockPos;
+			// Try again
+			else blockPos = getBlockPosFromVec3d(getRandomPosNearEntity(entity, distanceMin, distanceMax, randomY));
+		}
+
+		// If nothing is found in 50 attempts, just select a block in the wall
+		return blockPos;
 	}
 
 	public static BlockPos getRandomStandableBlockNearEntity(final Entity entity, final int distanceMin, final int distanceMax, final int maxAttempts, final boolean randomY) {
@@ -262,7 +300,7 @@ public class Algorithms {
 			// Return if blockPos is within constraints
 			if (!blockPos.isWithinDistance(entityPos, distanceMin) && blockPos.isWithinDistance(entityPos, distanceMax)) return blockPos;
 			// Try again
-			blockPos = getBlockPosFromVec3d(getRandomPosNearEntity(entity, distanceMin, distanceMax, randomY));
+			else blockPos = getBlockPosFromVec3d(getRandomPosNearEntity(entity, distanceMin, distanceMax, randomY));
 		}
 
 		// If nothing is found in 50 attempts, just select a block in the wall
@@ -353,15 +391,15 @@ public class Algorithms {
 
 	public static EulerAngle directionToAngles(final Vec3d direction) {
 		final float pitch = (float) -Math.toDegrees(Math.atan2(
-			direction.getY(),
-			Math.sqrt((direction.getX() * direction.getX()) + (direction.getZ() * direction.getZ()))
+			direction.y,
+			Math.sqrt((direction.x * direction.x) + (direction.z * direction.z))
 		));
-		final float yaw = (float) Math.toDegrees(Math.atan2(direction.getZ(), direction.getX())) - 90.0f;
+		final float yaw = (float) Math.toDegrees(Math.atan2(direction.z, direction.x)) - 90.0f;
 		return new EulerAngle(pitch, yaw, 0.0f);
 	}
 
 	public static boolean isEntityInDarkness(final LivingEntity entity, final int maxLightLevel) {
-		if (entity.getWorld().getLightLevel(entity.getBlockPos()) > maxLightLevel) return false;
+		if (entity.getEntityWorld().getLightLevel(entity.getBlockPos()) > maxLightLevel) return false;
 		for (final StatusEffectInstance effect : entity.getStatusEffects()) {
 			if (effect.getEffectType() == StatusEffects.NIGHT_VISION) return false;
 		}
@@ -370,7 +408,7 @@ public class Algorithms {
 
 	@Nullable
 	public static BlockPos getNearestBlockToEntity(final Entity entity, final Block blockType, final int range) {
-		final World world = entity.getWorld();
+		final World world = entity.getEntityWorld();
 		final BlockPos entityBlockPos = entity.getBlockPos();
 		final Vec3d entityPos = entity.getPos();
 		double closestBlockDistance = 0, checkDistance;
@@ -410,7 +448,7 @@ public class Algorithms {
 
 	@Nullable
 	public static BlockPos getNearestBlockToEntity(final Entity entity, final List<Block> blockTypes, final int range) {
-		final World world = entity.getWorld();
+		final World world = entity.getEntityWorld();
 		final BlockPos entityBlockPos = entity.getBlockPos();
 		final Vec3d entityPos = entity.getPos();
 		double closestBlockDistance = 0, checkDistance;

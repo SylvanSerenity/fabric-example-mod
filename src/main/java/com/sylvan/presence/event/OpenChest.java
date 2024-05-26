@@ -106,7 +106,7 @@ public class OpenChest {
 		if (nearestChestPos == null) return false;
 
 		// Players must not see chest open
-		final World world = player.getWorld();
+		final World world = player.getEntityWorld();
 		final List<? extends PlayerEntity> players = world.getPlayers();
 		if (openChestNotSeenConstraint && (Algorithms.couldBlockBeSeenByPlayers(players, nearestChestPos))) return false;
 		final BlockState chestBlockState = world.getBlockState(nearestChestPos);

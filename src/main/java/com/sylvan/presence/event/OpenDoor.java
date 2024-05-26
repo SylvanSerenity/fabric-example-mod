@@ -103,7 +103,7 @@ public class OpenDoor {
 		if (nearestDoorPos == null) return false;
 
 		// Players must not see door open
-		final World world = player.getWorld();
+		final World world = player.getEntityWorld();
 		final List<? extends PlayerEntity> players = world.getPlayers();
 		if (
 			openDoorNotSeenConstraint && (

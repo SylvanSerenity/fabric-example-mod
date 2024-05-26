@@ -9,22 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.gson.JsonObject;
 import com.sylvan.presence.Presence;
-import com.sylvan.presence.event.AmbientSounds;
-import com.sylvan.presence.event.Attack;
-import com.sylvan.presence.event.ChatMessage;
-import com.sylvan.presence.event.Events;
-import com.sylvan.presence.event.ExtinguishTorches;
-import com.sylvan.presence.event.FlickerDoor;
-import com.sylvan.presence.event.FlowerGift;
-import com.sylvan.presence.event.Footsteps;
-import com.sylvan.presence.event.Freeze;
-import com.sylvan.presence.event.NearbySounds;
-import com.sylvan.presence.event.OpenChest;
-import com.sylvan.presence.event.OpenDoor;
-import com.sylvan.presence.event.Stalk;
-import com.sylvan.presence.event.SubtitleWarning;
-import com.sylvan.presence.event.TrampleCrops;
-import com.sylvan.presence.event.Creep;
+import com.sylvan.presence.event.*;
 import com.sylvan.presence.util.Algorithms;
 import com.sylvan.presence.util.JsonFile;
 
@@ -177,6 +162,7 @@ public class PlayerData {
 		if (FlowerGift.flowerGiftEnabled) FlowerGift.scheduleEvent(player);
 		if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
 		if (Freeze.freezeEnabled) Freeze.scheduleEvent(player);
+		if (Mine.mineEnabled) Mine.scheduleEvent(player);
 		if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
 		if (OpenChest.openChestEnabled) OpenChest.scheduleEvent(player);
 		if (OpenDoor.openDoorEnabled) OpenDoor.scheduleEvent(player);

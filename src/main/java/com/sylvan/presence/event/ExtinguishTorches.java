@@ -82,7 +82,7 @@ public class ExtinguishTorches {
 			if (hauntLevel < extinguishTorchesHauntLevelMin) return true; // Reset event as if it passed
 		}
 
-		torchPlacementMap.put(player.getUuid(), new AbstractMap.SimpleEntry<>(player.getWorld().getDimension(), new Stack<>()));
+		torchPlacementMap.put(player.getUuid(), new AbstractMap.SimpleEntry<>(player.getEntityWorld().getDimension(), new Stack<>()));
 		scheduleExtinguish(player);
 		return true;
 	}
@@ -147,7 +147,7 @@ public class ExtinguishTorches {
 
 			final Map.Entry<DimensionType, Stack<BlockPos>> entry = torchPlacementMap.get(player.getUuid());
 			final Stack<BlockPos> torchStack = entry.getValue();
-			final World world = player.getWorld();
+			final World world = player.getEntityWorld();
 			// Player must be in same dimension
 			if (entry.getKey() != world.getDimension()) {
 				// Quit tracking if dimensions do not match

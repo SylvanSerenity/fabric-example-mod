@@ -98,7 +98,7 @@ public class FlickerDoor {
 	public static void flickerDoor(final PlayerEntity player, final BlockPos doorPos) {
 		if (player.isRemoved()) return;
 
-		final World world = player.getWorld();
+		final World world = player.getEntityWorld();
 		final BlockState currentBlockState = world.getBlockState(doorPos);
 		final DoorBlock doorBlock = (DoorBlock) currentBlockState.getBlock();
 

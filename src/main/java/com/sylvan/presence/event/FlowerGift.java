@@ -99,7 +99,7 @@ public class FlowerGift {
 		if (nearestDoorPos == null) return false;
 
 		// Make sure to select the bottom half of the door
-		final World world = player.getWorld();
+		final World world = player.getEntityWorld();
 		final BlockState currentBlockState = world.getBlockState(nearestDoorPos);
 		if (currentBlockState.get(DoorBlock.HALF) == DoubleBlockHalf.UPPER) nearestDoorPos = nearestDoorPos.down(2);
 		else nearestDoorPos = nearestDoorPos.down();

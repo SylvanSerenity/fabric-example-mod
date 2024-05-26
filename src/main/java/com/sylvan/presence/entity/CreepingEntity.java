@@ -17,7 +17,7 @@ public class CreepingEntity extends HerobrineEntity {
 	}
 
 	public void tick() {
-		final World world = trackedPlayer.getWorld();
+		final World world = trackedPlayer.getEntityWorld();
 
 		// Inch forward toward player
 		// Pretend player and Herobrine are on the same block to prevent direction from being dependent on Y-axis

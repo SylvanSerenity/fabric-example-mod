@@ -87,7 +87,7 @@ public class Attack {
 		if (attackHealthMinConstraint && player.getHealth() < attackHealthMin) return false;
 
 		// Damage player
-		player.damage(player.getWorld().getDamageSources().playerAttack(null), damage);
+		player.damage(player.getEntityWorld().getDamageSources().playerAttack(null), damage);
 
 		// Push player in a random direction
 		final Vec3d randomPush = Algorithms.getRandomDirection(false).multiply(Algorithms.randomBetween(attackPushMin, attackPushMax));

@@ -102,11 +102,12 @@ public class Creep {
 			herobrine = it.next();
 			final PlayerEntity player = herobrine.getTrackedPlayer();
 			// Remove if player leaves or is in another dimension
-			if (player.isRemoved() || player.getWorld().getDimension() != world.getDimension()) {
+			if (player.isRemoved() || player.getEntityWorld().getDimension() != herobrine.getWorld().getDimension()) {
 				herobrine.remove();
 				it.remove();
 				continue;
 			}
+			if (player.getEntityWorld().getDimension() != world.getDimension()) continue;
 
 			// Remove if seen
 			if (herobrine.isSeenByPlayers(creepLookAtThreshold)) {
@@ -127,7 +128,7 @@ public class Creep {
 			if (hauntLevel < creepHauntLevelMin) return true; // Reset event as if it passed
 		}
 
-		final World world = player.getWorld();
+		final World world = player.getEntityWorld();
 		// Get the block behind the player
 		final BlockPos playerBlockPos = player.getBlockPos();
 		Vec3d spawnPos = Algorithms.getPosOffsetInDirection(
@@ -136,7 +137,7 @@ public class Creep {
 			Algorithms.RANDOM.nextBetween(creepDistanceMin, creepDistanceMax)
 		);
 		final BlockPos spawnBlockPos = Algorithms.getNearestStandableBlockPos(
-			player.getWorld(),
+			player.getEntityWorld(),
 			Algorithms.getBlockPosFromVec3d(spawnPos),
 			playerBlockPos.getY() - creepVerticalDistanceMax,
 			playerBlockPos.getY() + creepVerticalDistanceMax

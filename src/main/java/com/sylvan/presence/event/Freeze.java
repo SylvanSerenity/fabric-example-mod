@@ -100,7 +100,7 @@ public class Freeze {
 			++freezeTicks;
 
 			// Freeze rotation and position
-			frozenPlayer.teleport((ServerWorld) frozenPlayer.getWorld(), position.getX(), position.getY(), position.getZ(), PositionFlag.VALUES, yaw, pitch);
+			frozenPlayer.teleport((ServerWorld) frozenPlayer.getEntityWorld(), position.getX(), position.getY(), position.getZ(), PositionFlag.VALUES, yaw, pitch);
 		}
 
 		public int getTicks() {

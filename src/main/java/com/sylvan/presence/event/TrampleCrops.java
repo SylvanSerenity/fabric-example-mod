@@ -94,12 +94,12 @@ public class TrampleCrops {
 		if (nearestCropPos == null) return false;
 
 		// Players must not see flower get placed
-		final World world = player.getWorld();
+		final World world = player.getEntityWorld();
 		final List<? extends PlayerEntity> players = world.getPlayers();
 		if (trampleCropsNotSeenConstraint && Algorithms.couldBlockBeSeenByPlayers(players, nearestCropPos)) return false;
 
 		// Plant poppy
-		world.removeBlock(nearestCropPos, false);
+		world.breakBlock(nearestCropPos, true);
 
 		return true;
 	}
