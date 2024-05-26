@@ -15,18 +15,20 @@ import java.util.concurrent.TimeUnit;
 public class Mine {
 
 	// Config
-	public static boolean mineEnabled = true;			// Whether the nearby sounds event is active
-	public static float mineHauntLevelMin = 1.75f;		// The minimum haunt level to play event
-	private static int mineDelayMin = 60 * 45;			// The minimum delay between nearby sounds events
-	private static int mineDelayMax = 60 * 60 * 3;		// The maximum delay between nearby sounds events
-	private static int mineRetryDelay = 60 * 5;			// The maximum delay between nearby sounds events
-	private static int mineDistanceMin = 3;				// The minimum distance to start mining towards the player.
-	private static int mineDistanceMax = 12;			// The maximum distance to start mining towards the player.
-	public static int mineBlocksMin = 1;				// The minimum number of blocks to mine towards the player.
-	public static int mineBlocksMax = 5;				// The maximum number of blocks to mine towards the player.
-	public static int mineTicksPerBreakProgress = 3;	// The number of ticks per 10% breaking progress.
-	public static boolean mineBreakBlock = true;		// Whether to actually break the block.
-	public static boolean mineLootBlock = true;			// Whether to drop the block's loot when mined.
+	public static boolean mineEnabled = true;				// Whether the nearby sounds event is active
+	public static float mineHauntLevelMin = 1.75f;			// The minimum haunt level to play event
+	private static int mineDelayMin = 60 * 45;				// The minimum delay between nearby sounds events
+	private static int mineDelayMax = 60 * 60 * 3;			// The maximum delay between nearby sounds events
+	private static int mineRetryDelay = 60 * 5;				// The maximum delay between nearby sounds events
+	private static int mineDistanceMin = 3;					// The minimum distance to start mining towards the player.
+	private static int mineDistanceMax = 12;				// The maximum distance to start mining towards the player.
+	public static int mineBlocksMin = 1;					// The minimum number of blocks to mine towards the player.
+	public static int mineBlocksMax = 5;					// The maximum number of blocks to mine towards the player.
+	public static int mineTicksPerBreakProgress = 3;		// The number of ticks per 10% breaking progress.
+	private static boolean mineDarknessConstraint = false;	// Whether the player must be in darkness for the mining to start.
+	private static int mineLightLevelMax = 7;				// The number of ticks per 10% breaking progress.
+	public static boolean mineBreakBlock = true;			// Whether to actually break the block.
+	public static boolean mineLootBlock = true;				// Whether to drop the block's loot when mined.
 
 	private static final List<MiningEntity> miningEntities = new ArrayList<>();
 
@@ -42,6 +44,8 @@ public class Mine {
 			mineBlocksMin = Presence.config.getOrSetValue("mineBlocksMin", mineBlocksMin).getAsInt();
 			mineBlocksMax = Presence.config.getOrSetValue("mineBlocksMax", mineBlocksMax).getAsInt();
 			mineTicksPerBreakProgress = Presence.config.getOrSetValue("mineTicksPerBreakProgress", mineTicksPerBreakProgress).getAsInt();
+			mineDarknessConstraint = Presence.config.getOrSetValue("mineDarknessConstraint", mineDarknessConstraint).getAsBoolean();
+			mineLightLevelMax = Presence.config.getOrSetValue("mineLightLevelMax", mineLightLevelMax).getAsInt();
 			mineBreakBlock = Presence.config.getOrSetValue("mineBreakBlock", mineBreakBlock).getAsBoolean();
 			mineLootBlock = Presence.config.getOrSetValue("mineLootBlock", mineLootBlock).getAsBoolean();
 		} catch (UnsupportedOperationException e) {
@@ -110,7 +114,10 @@ public class Mine {
 			if (hauntLevel < mineHauntLevelMin) return true; // Reset event as if it passed
 		}
 
-		if (!Algorithms.isEntityInCave(player)) return false;
+		if (
+				!Algorithms.isEntityInCave(player) || // Player must be in a cave
+				(mineDarknessConstraint && !Algorithms.isEntityInDarkness(player, mineLightLevelMax))	// Player must be in darkness
+		) return false;
 
 		miningEntities.add(
 			new MiningEntity(
