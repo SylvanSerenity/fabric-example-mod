@@ -20,6 +20,7 @@ public class Lightning {
     private static int lightningRetryDelay = 180;	    		// The delay between retrying lightning event if the previous attempt failed
     private static int lightningDistanceMin = 0;    			// The minimum distance of the lightning strike from the player
     private static int lightningDistanceMax = 10;			    // The maximum distance of the lightning strike from the player
+    private static boolean lightningStormConstraint = true;     // Whether there must be a thunderstorm for the lightning event to pass
     private static boolean lightningOutsideConstraint = true;   // Whether the player must be outside for the lightning event to pass
 
     public static void loadConfig() {
@@ -31,6 +32,7 @@ public class Lightning {
             lightningRetryDelay = Presence.config.getOrSetValue("lightningRetryDelay", lightningRetryDelay).getAsInt();
             lightningDistanceMin = Presence.config.getOrSetValue("lightningDistanceMin", lightningDistanceMin).getAsInt();
             lightningDistanceMax = Presence.config.getOrSetValue("lightningDistanceMax", lightningDistanceMax).getAsInt();
+            lightningStormConstraint = Presence.config.getOrSetValue("lightningStormConstraint", lightningStormConstraint).getAsBoolean();
             lightningOutsideConstraint = Presence.config.getOrSetValue("lightningOutsideConstraint", lightningOutsideConstraint).getAsBoolean();
         } catch (UnsupportedOperationException e) {
             Presence.LOGGER.error("Configuration issue for Lightning.java. Wiping and using default values.", e);
@@ -81,7 +83,7 @@ public class Lightning {
 
         final World world = player.getEntityWorld();
         if (
-                !world.isThundering() ||    // Must be thundering
+                (lightningStormConstraint && !world.isThundering()) ||    // Must be thundering
                 (lightningOutsideConstraint && !Algorithms.isEntityOutside(player)) // Player must be outside
         ) return false;
 
