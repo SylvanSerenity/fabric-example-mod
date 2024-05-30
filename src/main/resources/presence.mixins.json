@@ -2,9 +2,7 @@
 	"required": true,
 	"package": "com.sylvan.presence.mixin",
 	"compatibilityLevel": "JAVA_21",
-	"mixins": [
-		"PresenceMixin"
-	],
+	"mixins": [],
 	"injectors": {
 		"defaultRequire": 1
 	}
