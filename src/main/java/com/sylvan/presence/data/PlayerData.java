@@ -162,6 +162,7 @@ public class PlayerData {
 		if (FlowerGift.flowerGiftEnabled) FlowerGift.scheduleEvent(player);
 		if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
 		if (Freeze.freezeEnabled) Freeze.scheduleEvent(player);
+		if (Lightning.lightningEnabled) Lightning.scheduleEvent(player);
 		if (Mine.mineEnabled) Mine.scheduleEvent(player);
 		if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
 		if (OpenChest.openChestEnabled) OpenChest.scheduleEvent(player);

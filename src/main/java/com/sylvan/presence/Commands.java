@@ -445,39 +445,84 @@ public class Commands {
 						})
 					)
 				)
-					.then(
-						literal("mine")
-							.executes(context -> {
-								if (context.getSource().isExecutedByPlayer()) {
-									Mine.startMiningTowardsPlayer(context.getSource().getPlayer(), true);
-									context.getSource().sendFeedback(() -> Text.literal("Executing mine event.").withColor(Formatting.BLUE.getColorValue()), false);
+				.then(
+					literal("lightning")
+						.executes(context -> {
+							if (context.getSource().isExecutedByPlayer()) {
+								if (Lightning.strike(context.getSource().getPlayer(), true)) {
+									context.getSource().sendFeedback(() -> Text.literal("Successfully executed lightning event.").withColor(Formatting.BLUE.getColorValue()), false);
 								} else {
-									context.getSource().sendFeedback(() -> Text.literal("Cannot execute mine event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+									context.getSource().sendFeedback(() -> Text.literal("Conditions to execute lightning event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
 								}
-								return 1;
-							})
-							.then(
-								argument("player", StringArgumentType.word())
-									.suggests((context, builder) -> {
-										final Iterable<String> playerNames = context.getSource().getPlayerNames();
-										for (final String playerName : playerNames) {
-											builder.suggest(playerName);
-										}
-										return builder.buildFuture();
-									})
-									.executes(context -> {
-										final String playerName = StringArgumentType.getString(context, "player");
-										final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
-										if (player == null) {
-											context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Cannot execute lightning event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							}
+							return 1;
+						})
+						.then(
+							argument("player", StringArgumentType.word())
+								.suggests((context, builder) -> {
+									final Iterable<String> playerNames = context.getSource().getPlayerNames();
+									for (final String playerName : playerNames) {
+										builder.suggest(playerName);
+									}
+									return builder.buildFuture();
+								})
+								.executes(context -> {
+									final String playerName = StringArgumentType.getString(context, "player");
+									final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+									if (player == null) {
+										context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+									} else {
+										if (Lightning.strike(player, true)) {
+											context.getSource().sendFeedback(() -> Text.literal("Successfully executed lightning event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
 										} else {
-											Mine.startMiningTowardsPlayer(player, true);
-											context.getSource().sendFeedback(() -> Text.literal("Executing mine event for player " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+											context.getSource().sendFeedback(() -> Text.literal("Conditions to execute lightning event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
 										}
-										return 1;
-									})
-							)
-					)
+									}
+									return 1;
+								})
+						)
+				)
+				.then(
+					literal("mine")
+						.executes(context -> {
+							if (context.getSource().isExecutedByPlayer()) {
+								if (Mine.startMiningTowardsPlayer(context.getSource().getPlayer(), true)) {
+									context.getSource().sendFeedback(() -> Text.literal("Successfully executed mine event.").withColor(Formatting.BLUE.getColorValue()), false);
+								} else {
+									context.getSource().sendFeedback(() -> Text.literal("Conditions to execute mine event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								}
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Cannot execute mine event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							}
+							return 1;
+						})
+						.then(
+							argument("player", StringArgumentType.word())
+								.suggests((context, builder) -> {
+									final Iterable<String> playerNames = context.getSource().getPlayerNames();
+									for (final String playerName : playerNames) {
+										builder.suggest(playerName);
+									}
+									return builder.buildFuture();
+								})
+								.executes(context -> {
+									final String playerName = StringArgumentType.getString(context, "player");
+									final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+									if (player == null) {
+										context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+									} else {
+										if (Mine.startMiningTowardsPlayer(player, true)) {
+											context.getSource().sendFeedback(() -> Text.literal("Successfully executed mine event for " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+										} else {
+											context.getSource().sendFeedback(() -> Text.literal("Conditions to execute mine event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+										}
+									}
+									return 1;
+								})
+						)
+				)
 				.then(
 					literal("nearbySounds")
 					.executes(context -> {

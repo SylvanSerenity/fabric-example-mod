@@ -20,10 +20,10 @@ public class Mine {
 	private static int mineDelayMin = 60 * 45;				// The minimum delay between nearby sounds events
 	private static int mineDelayMax = 60 * 60 * 3;			// The maximum delay between nearby sounds events
 	private static int mineRetryDelay = 60 * 5;				// The maximum delay between nearby sounds events
-	private static int mineDistanceMin = 3;					// The minimum distance to start mining towards the player.
-	private static int mineDistanceMax = 12;				// The maximum distance to start mining towards the player.
+	private static int mineDistanceMin = 2;					// The minimum distance to start mining towards the player.
+	private static int mineDistanceMax = 6;					// The maximum distance to start mining towards the player.
 	public static int mineBlocksMin = 1;					// The minimum number of blocks to mine towards the player.
-	public static int mineBlocksMax = 5;					// The maximum number of blocks to mine towards the player.
+	public static int mineBlocksMax = 4;					// The maximum number of blocks to mine towards the player.
 	public static int mineTicksPerBreakProgress = 3;		// The number of ticks per 10% breaking progress.
 	private static boolean mineDarknessConstraint = false;	// Whether the player must be in darkness for the mining to start.
 	private static int mineLightLevelMax = 7;				// The number of ticks per 10% breaking progress.
@@ -49,7 +49,7 @@ public class Mine {
 			mineBreakBlock = Presence.config.getOrSetValue("mineBreakBlock", mineBreakBlock).getAsBoolean();
 			mineLootBlock = Presence.config.getOrSetValue("mineLootBlock", mineLootBlock).getAsBoolean();
 		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for mine.java. Wiping and using default values.", e);
+			Presence.LOGGER.error("Configuration issue for Mine.java. Wiping and using default values.", e);
 			Presence.config.wipe();
 			Presence.initConfig();
 		}

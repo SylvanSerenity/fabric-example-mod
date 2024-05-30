@@ -257,6 +257,21 @@ public class Algorithms {
 		}
 	}
 
+	public static BlockPos getTopBlock(final World world, final BlockPos start, final boolean opaque) {
+		// Start from the world height and move down
+		BlockPos position =  new BlockPos(start.getX(), world.getTopY(), start.getZ());
+		if (opaque) {
+			while (!world.getBlockState(position.down()).isOpaque() && (position.getY() > world.getBottomY())) {
+				position = position.down();
+			}
+		} else {
+			while (world.getBlockState(position.down()).isAir() && (position.getY() > world.getBottomY())) {
+				position = position.down();
+			}
+		}
+		return position;
+	}
+
 	public static Vec3d getRandomPosNearEntity(final Entity entity, final int distanceMin, final int distanceMax, final boolean randomY) {
 		final Vec3d randomDirection = getRandomDirection(randomY);
 		final int distance = RANDOM.nextBetween(distanceMin, distanceMax);
@@ -321,6 +336,10 @@ public class Algorithms {
 			sound == BlockSoundGroup.SCULK_SHRIEKER ||
 			sound == BlockSoundGroup.SCULK_SENSOR
 		);
+	}
+
+	public static boolean isEntityOutside(final Entity entity) {
+		return entity.getEntityWorld().getLightLevel(LightType.SKY, entity.getBlockPos().up()) >= 15;
 	}
 
 	public static boolean isEntityInCave(final Entity entity) {
