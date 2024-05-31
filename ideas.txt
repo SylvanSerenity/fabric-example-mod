@@ -3,7 +3,6 @@ General:
 * Remove glow lichen from non-water caves
 
 Events:
-* Lightning strikes from min-max blocks from player
 * Herobrine eyes spawns in the distance in caves and vanishes after being seen for 1 second
 * Play throbbing/ticking/scratching/door bang sound when player is AFK
 * Play entity.warden.heartbeat where player's heart beats increasingly fast
