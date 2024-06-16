@@ -1,5 +1,7 @@
 package com.sylvan.presence.event;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +18,7 @@ import net.minecraft.util.ActionResult;
 
 public class Events {
 	public static ScheduledExecutorService scheduler;
+	public static final Set<PlayerEntity> hauntedPlayers = new HashSet<>();
 
 	public static void initEvents() {
 		AmbientSounds.initEvent();
@@ -80,6 +83,10 @@ public class Events {
 				Freeze.onWorldTick();
 				Mine.onWorldTick(world);
 				Stalk.onWorldTick(world);
+
+				for (final PlayerEntity player : hauntedPlayers) {
+					PlayerData.getPlayerData(player).updateAFK();
+				}
 			}
 		});
 	}

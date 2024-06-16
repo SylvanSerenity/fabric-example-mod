@@ -16,6 +16,7 @@ import com.sylvan.presence.util.JsonFile;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.math.Vec3d;
 
 public class PlayerData {
 	private static final Map<UUID, PlayerData> playerDataMap = new HashMap<>();
@@ -23,12 +24,29 @@ public class PlayerData {
 	private static String playerDataDirectory;
 
 	// Config
-	public static float defaultHauntChance = 0.1f;			// Default chance of being haunted when joining the server. Range: [0.0, 1.0]
-	private static float defaultHauntLevel = 1.0f;			// The default haunt level of each player
-	private static float hauntChanceMaxBeforeReset = 0.8f;		// The maximum haunt chance before haunted players get their haunt chance reset
+	public static float defaultHauntChance = 0.1f;					// Default chance of being haunted when joining the server. Range: [0.0, 1.0]
+	private static float defaultHauntLevel = 1.0f;					// The default haunt level of each player
+	private static float hauntChanceMaxBeforeReset = 0.8f;			// The maximum haunt chance before haunted players get their haunt chance reset
 	private static int minutesToFullyReduceHauntChance = 60 * 24;	// The playtime in minutes that would reduce haunt chance by 100%
-	private static int minutesToIncreaseHauntLevelBy1 = 60 * 2;	// The playtime of minutes that would increase haunt level by 1.0f
-	private static int hauntLevelCalculationDelay = 60;		// The time between haunt level calculations based on playtime
+	private static int minutesToIncreaseHauntLevelBy1 = 60 * 2;		// The playtime of minutes that would increase haunt level by 1.0f
+	private static int hauntLevelCalculationDelay = 60;				// The time between haunt level calculations based on playtime
+	private static int ticksToAFK = 20 * 30;						// The number of ticks until a player goes AFK
+
+	public static void loadConfig() {
+		try {
+			defaultHauntChance = Presence.config.getOrSetValue("defaultHauntChance", defaultHauntChance).getAsFloat();
+			defaultHauntLevel = Presence.config.getOrSetValue("defaultHauntLevel", defaultHauntLevel).getAsFloat();
+			hauntChanceMaxBeforeReset = Presence.config.getOrSetValue("hauntChanceMaxBeforeReset", hauntChanceMaxBeforeReset).getAsFloat();
+			minutesToFullyReduceHauntChance = Presence.config.getOrSetValue("minutesToFullyReduceHauntChance", minutesToFullyReduceHauntChance).getAsInt();
+			minutesToIncreaseHauntLevelBy1 = Presence.config.getOrSetValue("minutesToIncreaseHauntLevelBy1", minutesToIncreaseHauntLevelBy1).getAsInt();
+			hauntLevelCalculationDelay = Presence.config.getOrSetValue("hauntLevelCalculationDelay", hauntLevelCalculationDelay).getAsInt();
+			ticksToAFK = Presence.config.getOrSetValue("ticksToAFK", ticksToAFK).getAsInt();
+		} catch (UnsupportedOperationException e) {
+			Presence.LOGGER.error("Configuration issue for PlayerData.java. Wiping and using default.", e);
+			Presence.config.wipe();
+			Presence.initConfig();
+		}
+	}
 
 	public static PlayerData addPlayerData(final PlayerEntity player) {
 		final PlayerData playerData = new PlayerData(player);
@@ -39,21 +57,6 @@ public class PlayerData {
 	public static PlayerData getPlayerData(final PlayerEntity player) {
 		if (playerDataMap.containsKey(player.getUuid())) return playerDataMap.get(player.getUuid());
 		else return new PlayerData(player);
-	}
-
-	public static void loadConfig() {
-		try {
-			defaultHauntChance = Presence.config.getOrSetValue("defaultHauntChance", defaultHauntChance).getAsFloat();
-			defaultHauntLevel = Presence.config.getOrSetValue("defaultHauntLevel", defaultHauntLevel).getAsFloat();
-			hauntChanceMaxBeforeReset = Presence.config.getOrSetValue("hauntChanceMaxBeforeReset", hauntChanceMaxBeforeReset).getAsFloat();
-			minutesToFullyReduceHauntChance = Presence.config.getOrSetValue("minutesToFullyReduceHauntChance", minutesToFullyReduceHauntChance).getAsInt();
-			minutesToIncreaseHauntLevelBy1 = Presence.config.getOrSetValue("minutesToIncreaseHauntLevelBy1", minutesToIncreaseHauntLevelBy1).getAsInt();
-			hauntLevelCalculationDelay = Presence.config.getOrSetValue("hauntLevelCalculationDelay", hauntLevelCalculationDelay).getAsInt();
-		} catch (UnsupportedOperationException e) {
-			Presence.LOGGER.error("Configuration issue for PlayerData.java. Wiping and using default.", e);
-			Presence.config.wipe();
-			Presence.initConfig();
-		}
 	}
 
 	public static void setInstance(final MinecraftServer minecraftServer) {
@@ -72,6 +75,10 @@ public class PlayerData {
 	private final LocalDateTime joinTime;
 	private boolean isHaunted = false;
 	private float hauntLevel = defaultHauntLevel;	// Limits events and divides delay minima and maxima by hauntLevel, such that events happen more often as time goes on. 1.0 has no effect, and larger numbers increase events
+	private int ticksSinceMoved = 0;
+	private Vec3d lastPosition = Vec3d.ZERO;
+	private Vec3d lastRotation = Vec3d.ZERO;
+	private boolean isAFK = false;
 
 	// Persistent
 	private float hauntChance = defaultHauntChance;	// Chance of being haunted when joining the server
@@ -84,6 +91,7 @@ public class PlayerData {
 		this.joinTime = LocalDateTime.now();
 		load();
 		rollHauntChance();
+		if (isHaunted) Events.hauntedPlayers.add(player);
 	}
 
 	public float getHauntChance() {
@@ -101,6 +109,27 @@ public class PlayerData {
 
 	public boolean isHaunted() {
 		return isHaunted;
+	}
+
+	public boolean isAFK() {
+		return isAFK;
+	}
+
+	public void updateAFK() {
+		final Vec3d position = player.getPos();
+		final Vec3d rotation = player.getRotationVector();
+		if (Algorithms.isEqual(position, lastPosition) && Algorithms.isEqual(rotation, lastRotation)) {
+			++ticksSinceMoved;
+			if (ticksSinceMoved > ticksToAFK) {
+				ticksSinceMoved = ticksToAFK;
+				isAFK = true;
+			}
+		} else {
+			ticksSinceMoved = 0;
+			isAFK = false;
+		}
+		lastPosition = position;
+		lastRotation = rotation;
 	}
 
 	public void setHaunted(boolean haunted) {
@@ -197,6 +226,7 @@ public class PlayerData {
 	public void remove() {
 		calculateHauntChance();
 		save();
+		if (isHaunted) Events.hauntedPlayers.remove(player);
 		playerDataMap.remove(uuid);
 	}
 

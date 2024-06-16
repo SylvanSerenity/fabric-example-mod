@@ -843,6 +843,46 @@ public class Commands {
 			)
 			.then(
 				literal("query")
+					.then(
+						literal("AFK")
+								.executes(context -> {
+									if (context.getSource().isExecutedByPlayer()) {
+										final PlayerEntity player = context.getSource().getPlayer();
+										final PlayerData playerData = PlayerData.getPlayerData(player);
+										if (playerData.isAFK()) {
+											context.getSource().sendFeedback(() -> Text.literal("You are AFK.").withColor(Formatting.BLUE.getColorValue()), false);
+										} else {
+											context.getSource().sendFeedback(() -> Text.literal("You are not AFK.").withColor(Formatting.RED.getColorValue()), false);
+										}
+									} else {
+										context.getSource().sendFeedback(() -> Text.literal("Cannot query server AFK status. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+									}
+									return 1;
+								})
+								.then(
+									argument("player", StringArgumentType.word())
+										.suggests((context, builder) -> {
+											final Iterable<String> playerNames = context.getSource().getPlayerNames();
+											for (final String playerName : playerNames) {
+												builder.suggest(playerName);
+											}
+											return builder.buildFuture();
+										})
+										.executes(context -> {
+											final String playerName = StringArgumentType.getString(context, "player");
+											final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+											final PlayerData playerData = PlayerData.getPlayerData(player);
+											if (player == null) {
+												context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+											} else if (playerData.isAFK()) {
+												context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is AFK.").withColor(Formatting.BLUE.getColorValue()), false);
+											} else {
+												context.getSource().sendFeedback(() -> Text.literal("Player " + player.getName().getString() + " is not AFK.").withColor(Formatting.RED.getColorValue()), false);
+											}
+											return 1;
+										})
+								)
+					)
 				.then(
 					literal("haunted")
 					.executes(context -> {

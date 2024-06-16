@@ -30,7 +30,9 @@ import net.minecraft.world.World;
 
 public class Algorithms {
 	public static final Random RANDOM = Random.create();
+	public static final double EPSILON = 0.0000000001;
 
+	// Config
 	private static int algorithmsCaveDetectionRays = 30;				// The amount of rays to shoot in random directions to determine whether an entity is in a cave
 	private static float algorithmsCaveDetectionMaxNonCaveBlockPercent = 0.0f;	// The percent of blocks a cave detection ray can collide with that are not usually found in a cave before assuming player is in a base
 
@@ -232,6 +234,12 @@ public class Algorithms {
 			randomY ? (RANDOM.nextDouble() * 2 - 1) : 0,
 			RANDOM.nextDouble() * 2 - 1
 		).normalize();
+	}
+
+	public static boolean isEqual(Vec3d a, Vec3d b) {
+		return (a.getX() - b.getX() <= EPSILON) &&
+				(a.getY() - b.getY() <= EPSILON) &&
+				(a.getZ() - b.getZ() <= EPSILON);
 	}
 
 	public static Direction getBlockDirectionFromEntity(final Entity entity, final BlockPos blockPos) {
