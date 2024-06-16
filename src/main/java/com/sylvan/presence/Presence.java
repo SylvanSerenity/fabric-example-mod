@@ -42,6 +42,7 @@ public class Presence implements ModInitializer {
 		// Load config variables
 		PlayerData.loadConfig();
 		Algorithms.loadConfig();
+		AFKSounds.loadConfig();
 		AmbientSounds.loadConfig();
 		Attack.loadConfig();
 		ChatMessage.loadConfig();

@@ -76,6 +76,7 @@ public class Intruder {
     }
 
     public static boolean intrude(final PlayerEntity player, final boolean overrideHauntLevel) {
+        // Stop when player leaves or is no longer AFK
         if (player.isRemoved() || !PlayerData.getPlayerData(player).isAFK()) return false;
         if (!overrideHauntLevel) {
             final float hauntLevel = PlayerData.getPlayerData(player).getHauntLevel();

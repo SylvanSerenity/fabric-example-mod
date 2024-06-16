@@ -183,6 +183,7 @@ public class PlayerData {
 	public void scheduleEvents() {
 		final PlayerEntity player = getPlayer();
 		scheduleHauntLevelCalculation();
+		if (AFKSounds.afkSoundsEnabled) AFKSounds.scheduleEvent(player);
 		if (AmbientSounds.ambientSoundsEnabled) AmbientSounds.scheduleEvent(player);
 		if (Attack.attackEnabled) Attack.scheduleEvent(player);
 		if (ChatMessage.chatMessageEnabled) ChatMessage.scheduleEvent(player);

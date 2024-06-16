@@ -4,7 +4,6 @@ General:
 
 Events:
 * Herobrine eyes spawns in the distance in caves and vanishes after being seen for 1 second
-* Play throbbing/ticking/scratching when player is AFK
 * Play entity.warden.heartbeat where player's heart beats increasingly fast
 * Random block placement (crafting table, sign, etc.). Check for whether nearby chunks already had this happen.
 * Add 1x2/2x2 strip mines

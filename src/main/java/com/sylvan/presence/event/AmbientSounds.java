@@ -42,10 +42,12 @@ public class AmbientSounds {
 		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_RARE.getId().toString(), 7.0f);
 		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_WARPED_FOREST_ADDITIONS.value().getId().toString(), 4.0f);
 		ambientSoundsSoundWeights.addProperty(SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE.getId().toString(), 2.5f);
-		ambientSoundsSoundWeights.addProperty(SoundEvents.ENTITY_ENDERMAN_STARE.getId().toString(), 0.8f);
-		ambientSoundsSoundWeights.addProperty(SoundEvents.ENTITY_WARDEN_AMBIENT.getId().toString(), 0.4f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.ENTITY_CAT_BEG_FOR_FOOD.getId().toString(), 0.5f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.ENTITY_ENDERMAN_STARE.getId().toString(), 0.3f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.ENTITY_WARDEN_AMBIENT.getId().toString(), 0.3f);
 		ambientSoundsSoundWeights.addProperty(SoundEvents.BLOCK_SCULK_SHRIEKER_SHRIEK.getId().toString(), 0.2f);
 		ambientSoundsSoundWeights.addProperty(SoundEvents.ENTITY_WARDEN_ROAR.getId().toString(), 0.1f);
+		ambientSoundsSoundWeights.addProperty(SoundEvents.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR.getId().toString(), 0.1f);
 
 		try {
 			ambientSoundsEnabled = Presence.config.getOrSetValue("ambientSoundsEnabled", ambientSoundsEnabled).getAsBoolean();

@@ -25,6 +25,45 @@ public class Commands {
 			.requires(source -> source.hasPermissionLevel(2))
 			.then(
 				literal("event")
+					.then(
+						literal("afkSounds")
+							.executes(context -> {
+								if (context.getSource().isExecutedByPlayer()) {
+									if (AFKSounds.playAFKSound(context.getSource().getPlayer(), true)) {
+										context.getSource().sendFeedback(() -> Text.literal("Successfully executed AFK sounds event.").withColor(Formatting.BLUE.getColorValue()), false);
+									} else {
+										context.getSource().sendFeedback(() -> Text.literal("Conditions to execute AFK sounds not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+									}
+								} else {
+									context.getSource().sendFeedback(() -> Text.literal("Cannot execute AFK sounds event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								}
+								return 1;
+							})
+							.then(
+								argument("player", StringArgumentType.word())
+									.suggests((context, builder) -> {
+										final Iterable<String> playerNames = context.getSource().getPlayerNames();
+										for (final String playerName : playerNames) {
+											builder.suggest(playerName);
+										}
+										return builder.buildFuture();
+									})
+									.executes(context -> {
+										final String playerName = StringArgumentType.getString(context, "player");
+										final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+										if (player == null) {
+											context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+										} else {
+											if (AFKSounds.playAFKSound(player, true)) {
+												context.getSource().sendFeedback(() -> Text.literal("Successfully executed AFK sounds event.").withColor(Formatting.BLUE.getColorValue()), false);
+											} else {
+												context.getSource().sendFeedback(() -> Text.literal("Conditions to execute AFK sounds not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+											}
+										}
+										return 1;
+									})
+							)
+					)
 				.then(
 					literal("ambientSounds")
 					.executes(context -> {

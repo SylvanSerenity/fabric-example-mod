@@ -21,6 +21,7 @@ public class Events {
 	public static final Set<PlayerEntity> hauntedPlayers = new HashSet<>();
 
 	public static void initEvents() {
+		AFKSounds.initEvent();
 		AmbientSounds.initEvent();
 		FlowerGift.initEvent();
 		NearbySounds.initEvent();
