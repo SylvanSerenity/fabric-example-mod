@@ -446,6 +446,45 @@ public class Commands {
 					)
 				)
 				.then(
+					literal("intruder")
+						.executes(context -> {
+							if (context.getSource().isExecutedByPlayer()) {
+								if (Intruder.intrude(context.getSource().getPlayer(), true)) {
+									context.getSource().sendFeedback(() -> Text.literal("Executing intruder event.").withColor(Formatting.BLUE.getColorValue()), false);
+								} else {
+									context.getSource().sendFeedback(() -> Text.literal("Conditions to execute intruder event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+								}
+							} else {
+								context.getSource().sendFeedback(() -> Text.literal("Cannot execute intruder event on server. Please specify a player.").withColor(Formatting.DARK_RED.getColorValue()), false);
+							}
+							return 1;
+						})
+						.then(
+							argument("player", StringArgumentType.word())
+								.suggests((context, builder) -> {
+									final Iterable<String> playerNames = context.getSource().getPlayerNames();
+									for (final String playerName : playerNames) {
+										builder.suggest(playerName);
+									}
+									return builder.buildFuture();
+								})
+								.executes(context -> {
+									final String playerName = StringArgumentType.getString(context, "player");
+									final PlayerEntity player = context.getSource().getServer().getPlayerManager().getPlayer(playerName);
+									if (player == null) {
+										context.getSource().sendFeedback(() -> Text.literal("Player not found.").withColor(Formatting.DARK_RED.getColorValue()), false);
+									} else {
+										if (Intruder.intrude(player, true)) {
+											context.getSource().sendFeedback(() -> Text.literal("Executing intruder event for player " + player.getName().getString() + ".").withColor(Formatting.BLUE.getColorValue()), false);
+										} else {
+											context.getSource().sendFeedback(() -> Text.literal("Conditions to execute intruder event not met.").withColor(Formatting.DARK_RED.getColorValue()), false);
+										}
+									}
+									return 1;
+								})
+						)
+				)
+				.then(
 					literal("lightning")
 						.executes(context -> {
 							if (context.getSource().isExecutedByPlayer()) {

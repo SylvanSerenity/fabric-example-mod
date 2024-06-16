@@ -51,6 +51,7 @@ public class Presence implements ModInitializer {
 		FlowerGift.loadConfig();
 		Footsteps.loadConfig();
 		Freeze.loadConfig();
+		Intruder.loadConfig();
 		Lightning.loadConfig();
 		Mine.loadConfig();
 		NearbySounds.loadConfig();

@@ -38,7 +38,7 @@ public class Events {
 			PlayerData.setInstance(serverStarting);
 		});
 		ServerLifecycleEvents.SERVER_STOPPING.register((serverStopping) -> {
-			scheduler.shutdown();
+			scheduler.shutdownNow();
 
 			Creep.onShutdown();
 			Stalk.onShutdown();

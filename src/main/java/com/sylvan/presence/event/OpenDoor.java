@@ -23,7 +23,7 @@ public class OpenDoor {
 	private static int openDoorDelayMin = 60 * 60;			// The minimum delay between open door events
 	private static int openDoorDelayMax = 60 * 60 * 4;		// The maximum delay between open door events
 	private static int openDoorRetryDelay = 60;			// The delay between retrying to open a door if the previous attempt failed
-	private static int openDoorSearchRadius = 32;			// The search radius of finding doors to open. Higher values have exponential lag during the tick performing the search
+	public static int openDoorSearchRadius = 32;			// The search radius of finding doors to open. Higher values have exponential lag during the tick performing the search
 	private static boolean openDoorNotSeenConstraint = true;	// Whether the constraint for making the door open only when not seen is active
 
 	public static final ArrayList<Block> doorBlocks = new ArrayList<>();
@@ -56,6 +56,7 @@ public class OpenDoor {
 		doorBlocks.add(Blocks.OAK_DOOR);
 		doorBlocks.add(Blocks.SPRUCE_DOOR);
 		doorBlocks.add(Blocks.WARPED_DOOR);
+		doorBlocks.add(Blocks.IRON_DOOR);
 	}
 
 	public static void scheduleEvent(final PlayerEntity player) {

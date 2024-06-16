@@ -134,6 +134,7 @@ public class PlayerData {
 
 	public void setHaunted(boolean haunted) {
 		this.isHaunted = haunted;
+		if (haunted) Events.hauntedPlayers.add(player);
 	}
 
 	public boolean rollHauntChance() {
@@ -191,6 +192,7 @@ public class PlayerData {
 		if (FlowerGift.flowerGiftEnabled) FlowerGift.scheduleEvent(player);
 		if (Footsteps.footstepsEnabled) Footsteps.scheduleEvent(player);
 		if (Freeze.freezeEnabled) Freeze.scheduleEvent(player);
+		if (Intruder.intruderEnabled) Intruder.scheduleEvent(player);
 		if (Lightning.lightningEnabled) Lightning.scheduleEvent(player);
 		if (Mine.mineEnabled) Mine.scheduleEvent(player);
 		if (NearbySounds.nearbySoundsEnabled) NearbySounds.scheduleEvent(player);
