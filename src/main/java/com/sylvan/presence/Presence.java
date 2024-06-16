@@ -36,6 +36,7 @@ public class Presence implements ModInitializer {
 	}
 
 	public static void initConfig() {
+		LOGGER.info("Loading config...");
 		// Load/create config file
 		config = new JsonFile(FabricLoader.getInstance().getConfigDir().toString() + "/" + MOD_ID + ".json");
 
@@ -61,5 +62,7 @@ public class Presence implements ModInitializer {
 		Stalk.loadConfig();
 		SubtitleWarning.loadConfig();
 		TrampleCrops.loadConfig();
+
+		LOGGER.info("Loaded config.");
 	}
 }

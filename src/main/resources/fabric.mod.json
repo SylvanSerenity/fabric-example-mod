@@ -17,9 +17,7 @@
 			"com.sylvan.presence.Presence"
 		]
 	},
-	"mixins": [
-		"presence.mixins.json"
-	],
+	"mixins": [],
 	"depends": {
 		"fabricloader": ">=0.15.10",
 		"minecraft": "~1.21",

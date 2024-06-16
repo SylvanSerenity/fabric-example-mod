@@ -922,7 +922,7 @@ public class Commands {
 			.then(
 				literal("query")
 					.then(
-						literal("AFK")
+						literal("isAFK")
 								.executes(context -> {
 									if (context.getSource().isExecutedByPlayer()) {
 										final PlayerEntity player = context.getSource().getPlayer();
@@ -1115,6 +1115,15 @@ public class Commands {
 						})
 					)
 				)
+			)
+			.then(
+				literal("reloadConfig")
+				.executes(context -> {
+					context.getSource().sendFeedback(() -> Text.literal("Reloading config...").withColor(Formatting.BLUE.getColorValue()), false);
+					Presence.initConfig();
+					context.getSource().sendFeedback(() -> Text.literal("Config reloaded.").withColor(Formatting.BLUE.getColorValue()), false);
+					return 1;
+				})
 			)
 		));
 	}
