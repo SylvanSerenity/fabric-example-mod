@@ -89,7 +89,7 @@ public class Algorithms {
 			Presence.LOGGER.warn("Invalid sound key \"" + identifier + "\".");
 			return null;
 		}
-		return new Identifier(namespace, name);
+		return Identifier.of(namespace, name);
 	}
 
 	public static HitResult castRayFromEye(final Entity entity, final Vec3d pos) {
