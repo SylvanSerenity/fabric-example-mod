@@ -15,11 +15,11 @@ import java.util.concurrent.TimeUnit;
 public class Mine {
 
 	// Config
-	public static boolean mineEnabled = true;				// Whether the nearby sounds event is active
+	public static boolean mineEnabled = true;				// Whether the mine event is active
 	public static float mineHauntLevelMin = 1.75f;			// The minimum haunt level to play event
-	private static int mineDelayMin = 60 * 45;				// The minimum delay between nearby sounds events
-	private static int mineDelayMax = 60 * 60 * 3;			// The maximum delay between nearby sounds events
-	private static int mineRetryDelay = 60 * 5;				// The maximum delay between nearby sounds events
+	private static int mineDelayMin = 60 * 45;				// The minimum delay between mine events
+	private static int mineDelayMax = 60 * 60 * 3;			// The maximum delay between mine events
+	private static int mineRetryDelay = 60 * 5;				// The maximum delay between mine events
 	private static int mineDistanceMin = 2;					// The minimum distance to start mining towards the player.
 	private static int mineDistanceMax = 6;					// The maximum distance to start mining towards the player.
 	public static int mineBlocksMin = 1;					// The minimum number of blocks to mine towards the player.
