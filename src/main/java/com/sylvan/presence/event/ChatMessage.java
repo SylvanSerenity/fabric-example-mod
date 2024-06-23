@@ -1,5 +1,6 @@
 package com.sylvan.presence.event;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import com.sylvan.presence.Presence;
@@ -54,7 +55,7 @@ public class ChatMessage {
 		}
 
 		// Player must be alone
-		if (chatMessageAloneConstraint && !overrideAloneConstraint && player.getServer().getPlayerManager().getPlayerList().size() != 1) return;
+		if (chatMessageAloneConstraint && !overrideAloneConstraint && Objects.requireNonNull(player.getServer()).getPlayerManager().getPlayerList().size() != 1) return;
 
 		player.sendMessage(Text.literal("."));
 	}

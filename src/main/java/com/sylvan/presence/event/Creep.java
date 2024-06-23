@@ -28,7 +28,7 @@ public class Creep {
 	public static int creepDistanceMax = 1;		// The maximum distance behind the player to summon Herobrine
 	public static int creepVerticalDistanceMax = 3;	// The maximum distance Herobrine can be above/below the player
 	private static int creepReflexMs = 0;			// The time in milliseconds before Herobrine vanishes
-	private static double creepLookAtThreshold = 0.25;	// The threshold at which the player will be considered looking at Herobrine. -1.0 is directly oppsotie, 1.0 is directly towards
+	private static double creepLookAtThreshold = 0.25;	// The threshold at which the player will be considered looking at Herobrine. -1.0 is directly opposite, 1.0 is directly towards
 
 	public static final List<CreepingEntity> creepingEntities = new ArrayList<>();
 
